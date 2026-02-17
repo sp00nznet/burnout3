@@ -3,6 +3,9 @@
 
 add_library(d3d8_compat STATIC
     d3d8_device.c
+    d3d8_resources.c
+    d3d8_shaders.c
+    d3d8_states.c
 )
 
 target_include_directories(d3d8_compat PUBLIC
@@ -14,6 +17,7 @@ target_link_libraries(d3d8_compat
     d3d11
     dxgi
     dxguid
+    d3dcompiler
 )
 
 if(MSVC)

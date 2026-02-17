@@ -15,11 +15,7 @@
  * Build: Requires Windows SDK with d3d11.h and dxgi.h
  */
 
-#define COBJMACROS
-#include "d3d8_xbox.h"
-
-#include <d3d11.h>
-#include <dxgi.h>
+#include "d3d8_internal.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -76,8 +72,29 @@ static D3D8DeviceState g_device_state;
 static IDirect3DDevice8 g_device;
 static BOOL g_device_initialized = FALSE;
 
+/* Current resource bindings */
+static IDirect3DVertexBuffer8 *g_cur_vb = NULL;
+static UINT                    g_cur_vb_stride = 0;
+static IDirect3DIndexBuffer8  *g_cur_ib = NULL;
+static UINT                    g_cur_ib_base_vertex = 0;
+static IDirect3DBaseTexture8  *g_cur_textures[4] = { NULL };
+
 /* Forward declarations */
 static const IDirect3DDevice8Vtbl g_device_vtbl;
+
+/* ================================================================
+ * Internal accessors (used by d3d8_resources/shaders/states)
+ * ================================================================ */
+
+ID3D11Device        *d3d8_GetD3D11Device(void) { return g_device_state.d3d11_device; }
+ID3D11DeviceContext *d3d8_GetD3D11Context(void) { return g_device_state.d3d11_context; }
+UINT                 d3d8_GetBackbufferWidth(void) { return g_device_state.width; }
+UINT                 d3d8_GetBackbufferHeight(void) { return g_device_state.height; }
+const DWORD         *d3d8_GetRenderStates(void) { return g_device_state.render_states; }
+const DWORD         *d3d8_GetTSS(DWORD stage) { return (stage < MAX_TEXTURE_STAGES) ? g_device_state.tss[stage] : NULL; }
+const D3DMATRIX     *d3d8_GetTransform(D3DTRANSFORMSTATETYPE type) {
+    return ((DWORD)type < MAX_TRANSFORMS) ? &g_device_state.transforms[(DWORD)type] : NULL;
+}
 
 /* ================================================================
  * D3D11 initialization helpers
@@ -246,6 +263,10 @@ static ULONG __stdcall dev_Release(IDirect3DDevice8 *self)
     (void)self;
     LONG ref = InterlockedDecrement(&g_device_state.ref_count);
     if (ref <= 0) {
+        /* Cleanup subsystems first */
+        d3d8_states_shutdown();
+        d3d8_shaders_shutdown();
+
         /* Cleanup D3D11 resources */
         D3D8DeviceState *s = &g_device_state;
         if (s->default_dsv) { ID3D11DepthStencilView_Release(s->default_dsv); s->default_dsv = NULL; }
@@ -405,8 +426,26 @@ static HRESULT __stdcall dev_GetTextureStageState(IDirect3DDevice8 *self, DWORD 
 
 static HRESULT __stdcall dev_SetTexture(IDirect3DDevice8 *self, DWORD Stage, IDirect3DBaseTexture8 *pTexture)
 {
-    (void)self; (void)Stage; (void)pTexture;
-    /* TODO: bind texture to D3D11 shader resource view */
+    (void)self;
+    if (Stage >= 4) return E_INVALIDARG;
+    g_cur_textures[Stage] = pTexture;
+
+    /* Bind SRV to pixel shader */
+    if (pTexture) {
+        D3D8Texture *tex = (D3D8Texture *)pTexture;
+        if (tex->srv) {
+            ID3D11DeviceContext_PSSetShaderResources(g_device_state.d3d11_context,
+                Stage, 1, &tex->srv);
+        }
+        /* Mark texture stage as active */
+        if (g_device_state.tss[Stage][D3DTSS_COLOROP] == D3DTOP_DISABLE)
+            g_device_state.tss[Stage][D3DTSS_COLOROP] = D3DTOP_MODULATE;
+    } else {
+        ID3D11ShaderResourceView *null_srv = NULL;
+        ID3D11DeviceContext_PSSetShaderResources(g_device_state.d3d11_context,
+            Stage, 1, &null_srv);
+        g_device_state.tss[Stage][D3DTSS_COLOROP] = D3DTOP_DISABLE;
+    }
     return S_OK;
 }
 
@@ -418,8 +457,17 @@ static HRESULT __stdcall dev_GetTexture(IDirect3DDevice8 *self, DWORD Stage, IDi
 
 static HRESULT __stdcall dev_SetStreamSource(IDirect3DDevice8 *self, UINT StreamNumber, IDirect3DVertexBuffer8 *pStreamData, UINT Stride)
 {
-    (void)self; (void)StreamNumber; (void)pStreamData; (void)Stride;
-    /* TODO: bind vertex buffer to D3D11 input assembler */
+    (void)self;
+    if (StreamNumber != 0) return S_OK; /* Only stream 0 supported */
+    g_cur_vb = pStreamData;
+    g_cur_vb_stride = Stride;
+
+    if (pStreamData) {
+        D3D8VertexBuffer *vb = (D3D8VertexBuffer *)pStreamData;
+        UINT offset = 0;
+        ID3D11DeviceContext_IASetVertexBuffers(g_device_state.d3d11_context,
+            0, 1, &vb->d3d11_buffer, &Stride, &offset);
+    }
     return S_OK;
 }
 
@@ -431,8 +479,17 @@ static HRESULT __stdcall dev_GetStreamSource(IDirect3DDevice8 *self, UINT Stream
 
 static HRESULT __stdcall dev_SetIndices(IDirect3DDevice8 *self, IDirect3DIndexBuffer8 *pIndexData, UINT BaseVertexIndex)
 {
-    (void)self; (void)pIndexData; (void)BaseVertexIndex;
-    /* TODO: bind index buffer */
+    (void)self;
+    g_cur_ib = pIndexData;
+    g_cur_ib_base_vertex = BaseVertexIndex;
+
+    if (pIndexData) {
+        D3D8IndexBuffer *ib = (D3D8IndexBuffer *)pIndexData;
+        DXGI_FORMAT fmt = (ib->format == D3DFMT_INDEX32)
+            ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
+        ID3D11DeviceContext_IASetIndexBuffer(g_device_state.d3d11_context,
+            ib->d3d11_buffer, fmt, 0);
+    }
     return S_OK;
 }
 
@@ -442,22 +499,31 @@ static HRESULT __stdcall dev_GetIndices(IDirect3DDevice8 *self, IDirect3DIndexBu
     return E_NOTIMPL;
 }
 
+static D3D11_PRIMITIVE_TOPOLOGY map_primitive_type(D3DPRIMITIVETYPE pt, UINT count, UINT *out_count)
+{
+    switch (pt) {
+    case D3DPT_TRIANGLELIST:  *out_count = count * 3; return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+    case D3DPT_TRIANGLESTRIP: *out_count = count + 2; return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+    case D3DPT_TRIANGLEFAN:   *out_count = count * 3; return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST; /* needs conversion */
+    case D3DPT_LINELIST:      *out_count = count * 2; return D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+    case D3DPT_LINESTRIP:     *out_count = count + 1; return D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
+    case D3DPT_POINTLIST:     *out_count = count;     return D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+    default:                  *out_count = 0;          return D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
+    }
+}
+
 static HRESULT __stdcall dev_DrawPrimitive(IDirect3DDevice8 *self, D3DPRIMITIVETYPE PrimitiveType, UINT StartVertex, UINT PrimitiveCount)
 {
     (void)self;
-    /* TODO: set D3D11 topology, apply render states, draw */
     D3D11_PRIMITIVE_TOPOLOGY topology;
     UINT vertex_count;
 
-    switch (PrimitiveType) {
-        case D3DPT_TRIANGLELIST:  topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST; vertex_count = PrimitiveCount * 3; break;
-        case D3DPT_TRIANGLESTRIP: topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP; vertex_count = PrimitiveCount + 2; break;
-        case D3DPT_TRIANGLEFAN:   topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST; vertex_count = PrimitiveCount * 3; break; /* needs conversion */
-        case D3DPT_LINELIST:      topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST; vertex_count = PrimitiveCount * 2; break;
-        case D3DPT_LINESTRIP:     topology = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP; vertex_count = PrimitiveCount + 1; break;
-        case D3DPT_POINTLIST:     topology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST; vertex_count = PrimitiveCount; break;
-        default: return E_INVALIDARG;
-    }
+    topology = map_primitive_type(PrimitiveType, PrimitiveCount, &vertex_count);
+    if (vertex_count == 0) return E_INVALIDARG;
+
+    /* Prepare pipeline: shaders, input layout, constant buffers, render states */
+    d3d8_shaders_prepare_draw(g_device_state.vertex_shader);
+    d3d8_states_apply();
 
     ID3D11DeviceContext_IASetPrimitiveTopology(g_device_state.d3d11_context, topology);
     ID3D11DeviceContext_Draw(g_device_state.d3d11_context, vertex_count, StartVertex);
@@ -467,19 +533,17 @@ static HRESULT __stdcall dev_DrawPrimitive(IDirect3DDevice8 *self, D3DPRIMITIVET
 static HRESULT __stdcall dev_DrawIndexedPrimitive(IDirect3DDevice8 *self, D3DPRIMITIVETYPE PrimitiveType, UINT MinVertexIndex, UINT NumVertices, UINT StartIndex, UINT PrimitiveCount)
 {
     (void)self; (void)MinVertexIndex; (void)NumVertices;
-
     D3D11_PRIMITIVE_TOPOLOGY topology;
     UINT index_count;
 
-    switch (PrimitiveType) {
-        case D3DPT_TRIANGLELIST:  topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST; index_count = PrimitiveCount * 3; break;
-        case D3DPT_TRIANGLESTRIP: topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP; index_count = PrimitiveCount + 2; break;
-        case D3DPT_LINELIST:      topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST; index_count = PrimitiveCount * 2; break;
-        default: return E_INVALIDARG;
-    }
+    topology = map_primitive_type(PrimitiveType, PrimitiveCount, &index_count);
+    if (index_count == 0) return E_INVALIDARG;
+
+    d3d8_shaders_prepare_draw(g_device_state.vertex_shader);
+    d3d8_states_apply();
 
     ID3D11DeviceContext_IASetPrimitiveTopology(g_device_state.d3d11_context, topology);
-    ID3D11DeviceContext_DrawIndexed(g_device_state.d3d11_context, index_count, StartIndex, 0);
+    ID3D11DeviceContext_DrawIndexed(g_device_state.d3d11_context, index_count, StartIndex, (INT)g_cur_ib_base_vertex);
     return S_OK;
 }
 
@@ -499,22 +563,20 @@ static HRESULT __stdcall dev_DrawIndexedPrimitiveUP(IDirect3DDevice8 *self, D3DP
 
 static HRESULT __stdcall dev_CreateTexture(IDirect3DDevice8 *self, UINT Width, UINT Height, UINT Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DTexture8 **ppTexture)
 {
-    (void)self; (void)Width; (void)Height; (void)Levels; (void)Usage; (void)Format; (void)Pool; (void)ppTexture;
-    /* TODO: create D3D11 texture wrapped in D3D8 interface */
-    return E_NOTIMPL;
+    (void)self; (void)Pool;
+    return d3d8_CreateTextureImpl(Width, Height, Levels, Usage, Format, ppTexture);
 }
 
 static HRESULT __stdcall dev_CreateVertexBuffer(IDirect3DDevice8 *self, UINT Length, DWORD Usage, DWORD FVF, D3DPOOL Pool, IDirect3DVertexBuffer8 **ppVertexBuffer)
 {
-    (void)self; (void)Length; (void)Usage; (void)FVF; (void)Pool; (void)ppVertexBuffer;
-    /* TODO: create D3D11 buffer wrapped in D3D8 interface */
-    return E_NOTIMPL;
+    (void)self; (void)Pool;
+    return d3d8_CreateVertexBufferImpl(Length, Usage, FVF, ppVertexBuffer);
 }
 
 static HRESULT __stdcall dev_CreateIndexBuffer(IDirect3DDevice8 *self, UINT Length, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, IDirect3DIndexBuffer8 **ppIndexBuffer)
 {
-    (void)self; (void)Length; (void)Usage; (void)Format; (void)Pool; (void)ppIndexBuffer;
-    return E_NOTIMPL;
+    (void)self; (void)Pool;
+    return d3d8_CreateIndexBufferImpl(Length, Usage, Format, ppIndexBuffer);
 }
 
 static HRESULT __stdcall dev_CreateRenderTarget(IDirect3DDevice8 *self, UINT Width, UINT Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, BOOL Lockable, IDirect3DSurface8 **ppSurface)
@@ -801,10 +863,24 @@ static HRESULT __stdcall d3d8_CreateDevice(IDirect3D8 *self, UINT Adapter, DWORD
 
     d3d8_init_default_states(&g_device_state);
 
+    /* Initialize shader and state subsystems */
+    hr = d3d8_shaders_init();
+    if (FAILED(hr)) {
+        fprintf(stderr, "D3D8: Shader init failed: 0x%08lX\n", hr);
+        return hr;
+    }
+
+    hr = d3d8_states_init();
+    if (FAILED(hr)) {
+        fprintf(stderr, "D3D8: State init failed: 0x%08lX\n", hr);
+        return hr;
+    }
+
     g_device.lpVtbl = &g_device_vtbl;
     g_device_initialized = TRUE;
 
     *ppDevice = &g_device;
+    fprintf(stderr, "D3D8: Device created (%ux%u)\n", g_device_state.width, g_device_state.height);
     return S_OK;
 }
 

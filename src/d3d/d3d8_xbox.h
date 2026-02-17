@@ -139,6 +139,10 @@ typedef enum D3DFORMAT {
     /* YUV */
     D3DFMT_YUY2          = 0x24,
     D3DFMT_UYVY          = 0x25,
+
+    /* Index buffer formats */
+    D3DFMT_INDEX16        = 101,
+    D3DFMT_INDEX32        = 102,
 } D3DFORMAT;
 
 typedef enum D3DPRIMITIVETYPE {
@@ -454,6 +458,102 @@ typedef struct D3DPushBuffer {
     DWORD Size;
     DWORD AllocationSize;
 } D3DPushBuffer;
+
+/* ================================================================
+ * IDirect3DVertexBuffer8 interface
+ * ================================================================ */
+
+typedef struct IDirect3DVertexBuffer8Vtbl {
+    /* IUnknown */
+    HRESULT (__stdcall *QueryInterface)(IDirect3DVertexBuffer8 *self, const IID *riid, void **ppv);
+    ULONG   (__stdcall *AddRef)(IDirect3DVertexBuffer8 *self);
+    ULONG   (__stdcall *Release)(IDirect3DVertexBuffer8 *self);
+    /* IDirect3DResource8 */
+    HRESULT (__stdcall *GetDevice)(IDirect3DVertexBuffer8 *self, IDirect3DDevice8 **ppDevice);
+    DWORD   (__stdcall *SetPriority)(IDirect3DVertexBuffer8 *self, DWORD Priority);
+    DWORD   (__stdcall *GetPriority)(IDirect3DVertexBuffer8 *self);
+    void    (__stdcall *PreLoad)(IDirect3DVertexBuffer8 *self);
+    DWORD   (__stdcall *GetType)(IDirect3DVertexBuffer8 *self);
+    /* IDirect3DVertexBuffer8 */
+    HRESULT (__stdcall *Lock)(IDirect3DVertexBuffer8 *self, UINT OffsetToLock, UINT SizeToLock, BYTE **ppbData, DWORD Flags);
+    HRESULT (__stdcall *Unlock)(IDirect3DVertexBuffer8 *self);
+    HRESULT (__stdcall *GetDesc)(IDirect3DVertexBuffer8 *self, void *pDesc);
+} IDirect3DVertexBuffer8Vtbl;
+
+struct IDirect3DVertexBuffer8 {
+    const IDirect3DVertexBuffer8Vtbl *lpVtbl;
+};
+
+/* ================================================================
+ * IDirect3DIndexBuffer8 interface
+ * ================================================================ */
+
+typedef struct IDirect3DIndexBuffer8Vtbl {
+    /* IUnknown */
+    HRESULT (__stdcall *QueryInterface)(IDirect3DIndexBuffer8 *self, const IID *riid, void **ppv);
+    ULONG   (__stdcall *AddRef)(IDirect3DIndexBuffer8 *self);
+    ULONG   (__stdcall *Release)(IDirect3DIndexBuffer8 *self);
+    /* IDirect3DResource8 */
+    HRESULT (__stdcall *GetDevice)(IDirect3DIndexBuffer8 *self, IDirect3DDevice8 **ppDevice);
+    DWORD   (__stdcall *SetPriority)(IDirect3DIndexBuffer8 *self, DWORD Priority);
+    DWORD   (__stdcall *GetPriority)(IDirect3DIndexBuffer8 *self);
+    void    (__stdcall *PreLoad)(IDirect3DIndexBuffer8 *self);
+    DWORD   (__stdcall *GetType)(IDirect3DIndexBuffer8 *self);
+    /* IDirect3DIndexBuffer8 */
+    HRESULT (__stdcall *Lock)(IDirect3DIndexBuffer8 *self, UINT OffsetToLock, UINT SizeToLock, BYTE **ppbData, DWORD Flags);
+    HRESULT (__stdcall *Unlock)(IDirect3DIndexBuffer8 *self);
+    HRESULT (__stdcall *GetDesc)(IDirect3DIndexBuffer8 *self, void *pDesc);
+} IDirect3DIndexBuffer8Vtbl;
+
+struct IDirect3DIndexBuffer8 {
+    const IDirect3DIndexBuffer8Vtbl *lpVtbl;
+};
+
+/* ================================================================
+ * IDirect3DTexture8 interface
+ * ================================================================ */
+
+typedef struct IDirect3DTexture8Vtbl {
+    /* IUnknown */
+    HRESULT (__stdcall *QueryInterface)(IDirect3DTexture8 *self, const IID *riid, void **ppv);
+    ULONG   (__stdcall *AddRef)(IDirect3DTexture8 *self);
+    ULONG   (__stdcall *Release)(IDirect3DTexture8 *self);
+    /* IDirect3DResource8 */
+    HRESULT (__stdcall *GetDevice)(IDirect3DTexture8 *self, IDirect3DDevice8 **ppDevice);
+    DWORD   (__stdcall *SetPriority)(IDirect3DTexture8 *self, DWORD Priority);
+    DWORD   (__stdcall *GetPriority)(IDirect3DTexture8 *self);
+    void    (__stdcall *PreLoad)(IDirect3DTexture8 *self);
+    DWORD   (__stdcall *GetType)(IDirect3DTexture8 *self);
+    /* IDirect3DBaseTexture8 */
+    DWORD   (__stdcall *GetLevelCount)(IDirect3DTexture8 *self);
+    /* IDirect3DTexture8 */
+    HRESULT (__stdcall *GetLevelDesc)(IDirect3DTexture8 *self, UINT Level, D3DSURFACE_DESC *pDesc);
+    HRESULT (__stdcall *GetSurfaceLevel)(IDirect3DTexture8 *self, UINT Level, IDirect3DSurface8 **ppSurface);
+    HRESULT (__stdcall *LockRect)(IDirect3DTexture8 *self, UINT Level, D3DLOCKED_RECT *pLockedRect, const RECT *pRect, DWORD Flags);
+    HRESULT (__stdcall *UnlockRect)(IDirect3DTexture8 *self, UINT Level);
+} IDirect3DTexture8Vtbl;
+
+struct IDirect3DTexture8 {
+    const IDirect3DTexture8Vtbl *lpVtbl;
+};
+
+/* ================================================================
+ * IDirect3DSurface8 interface
+ * ================================================================ */
+
+typedef struct IDirect3DSurface8Vtbl {
+    HRESULT (__stdcall *QueryInterface)(IDirect3DSurface8 *self, const IID *riid, void **ppv);
+    ULONG   (__stdcall *AddRef)(IDirect3DSurface8 *self);
+    ULONG   (__stdcall *Release)(IDirect3DSurface8 *self);
+    HRESULT (__stdcall *GetDevice)(IDirect3DSurface8 *self, IDirect3DDevice8 **ppDevice);
+    HRESULT (__stdcall *GetDesc)(IDirect3DSurface8 *self, D3DSURFACE_DESC *pDesc);
+    HRESULT (__stdcall *LockRect)(IDirect3DSurface8 *self, D3DLOCKED_RECT *pLockedRect, const RECT *pRect, DWORD Flags);
+    HRESULT (__stdcall *UnlockRect)(IDirect3DSurface8 *self);
+} IDirect3DSurface8Vtbl;
+
+struct IDirect3DSurface8 {
+    const IDirect3DSurface8Vtbl *lpVtbl;
+};
 
 /* ================================================================
  * IDirect3DDevice8 interface (COM vtable)
