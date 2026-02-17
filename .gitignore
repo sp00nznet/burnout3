@@ -1,0 +1,57 @@
+# ============================================================
+# Burnout 3: Takedown - Static Recompilation Project
+# ============================================================
+
+# Original Xbox game assets (large binary files - do NOT commit)
+Burnout 3 Takedown/
+
+# Build artifacts
+build/
+out/
+bin/
+obj/
+*.o
+*.obj
+*.exe
+*.dll
+*.lib
+*.exp
+*.pdb
+*.ilk
+*.idb
+
+# IDE files
+.vs/
+*.suo
+*.user
+*.sln.docstates
+.idea/
+*.swp
+*.swo
+*~
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Claude Code auto memory
+.claude/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Temporary / intermediate
+*.tmp
+*.bak
+*.log
