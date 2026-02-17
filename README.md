@@ -97,6 +97,7 @@ The main executable (`default.xbe`) contains:
 - [x] String extraction (1,988 strings)
 - [x] Xbox kernel replacement layer (147/147 imports, builds as static lib)
 - [x] Function identification tool (85.3% classified: RW, CRT, vtables, stubs)
+- [x] x86→C static recompiler (4,044 game functions, 445K lines of C, pattern-matching lifter)
 
 ### Phase 2: Analysis
 - [x] Identify all function boundaries in `.text` (20,816 detected)
@@ -144,6 +145,8 @@ burnout3/
 ├── tools/                    # Recompilation toolchain
 │   ├── xbe_parser/           # XBE file parser
 │   ├── disasm/               # Disassembly and analysis
+│   ├── func_id/              # Function identification
+│   ├── recomp/               # x86→C static recompiler
 │   └── asset_tools/          # Asset conversion utilities
 ├── src/                      # Recompiled/reimplemented source
 │   ├── kernel/               # Xbox kernel replacement (Win32)

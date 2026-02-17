@@ -58,6 +58,9 @@ tools/abi_analysis/output/
 # Asset tools generated output (regenerate with: py -3 -m tools.asset_tools)
 tools/asset_tools/output/
 
+# Recompiler generated output (regenerate with: py -3 -m tools.recomp)
+tools/recomp/output/
+
 # Claude Code auto memory
 .claude/
 
