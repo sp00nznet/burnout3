@@ -49,6 +49,9 @@ tools/disasm/output/
 # Function ID tool generated output (regenerate with: py -3 -m tools.func_id)
 tools/func_id/output/
 
+# Global map tool generated output (regenerate with: py -3 -m tools.global_map)
+tools/global_map/output/
+
 # Claude Code auto memory
 .claude/
 
