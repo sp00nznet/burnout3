@@ -298,6 +298,10 @@ class Lifter:
             return self._lift_imul(insn, ops)
         if m in ("mul", "div", "idiv"):
             return self._lift_muldiv(insn, ops, m)
+        if m == "sbb":
+            return self._lift_sbb(insn, ops)
+        if m == "adc":
+            return self._lift_adc(insn, ops)
         if m in ("shl", "sal"):
             return self._lift_shift(insn, ops, "<<")
         if m == "shr":
@@ -324,10 +328,13 @@ class Lifter:
             return self._lift_jcc(insn)
 
         # ── String operations ──
-        if m in ("rep movsb", "rep movsd", "rep stosb", "rep stosd"):
+        if m.startswith("rep ") or m.startswith("repe ") or m.startswith("repne "):
             return self._lift_rep_string(insn, m)
-        if m in ("movsb", "movsd", "stosb", "stosd", "lodsb", "lodsd"):
+        if m in ("movsb", "movsd", "movsw", "stosb", "stosd", "stosw",
+                 "lodsb", "lodsd", "lodsw"):
             return self._lift_string_op(insn, m)
+        if m == "wait":
+            return ["/* wait - FPU sync */"]
 
         # ── Misc ──
         if m == "cdq":
@@ -345,12 +352,45 @@ class Lifter:
             return ["esp = ebp;", "POP32(esp, ebp); /* leave */"]
         if m in ("cld", "std"):
             return [f"/* {m} - direction flag */"]
+        if m == "lahf":
+            return ["/* lahf - load AH from flags (used in FPU compare idiom) */"]
+        if m == "sahf":
+            return ["/* sahf - store AH to flags */"]
+        if m == "shld":
+            return self._lift_shld(insn, ops)
+        if m == "shrd":
+            return self._lift_shrd(insn, ops)
+        if m == "bt":
+            if len(ops) >= 2:
+                return [f"/* bt {_fmt_operand_read(ops[0])}, {_fmt_operand_read(ops[1])} - bit test */"]
+            return [f"/* bt {insn.op_str} */"]
+        if m == "emms":
+            return ["/* emms - empty MMX state */"]
         if m in ("sete", "setne", "setb", "setae", "setbe", "seta",
                  "setl", "setge", "setle", "setg", "sets", "setns"):
             return self._lift_setcc(insn, ops, m)
         if m in ("cmove", "cmovne", "cmovb", "cmovae", "cmovbe", "cmova",
                  "cmovl", "cmovge", "cmovle", "cmovg", "cmovs", "cmovns"):
             return self._lift_cmovcc(insn, ops, m)
+
+        # ── SSE (scalar float) ──
+        if m in ("movss", "movsd", "movaps", "movups", "movlps", "movhps",
+                 "addss", "subss", "mulss", "divss", "sqrtss",
+                 "addsd", "subsd", "mulsd", "divsd", "sqrtsd",
+                 "minss", "maxss", "minsd", "maxsd",
+                 "comiss", "comisd", "ucomiss", "ucomisd",
+                 "cvtsi2ss", "cvtss2si", "cvttss2si",
+                 "cvtsi2sd", "cvtsd2si", "cvttsd2si",
+                 "cvtss2sd", "cvtsd2ss",
+                 "xorps", "xorpd", "andps", "orps",
+                 "movd", "movq",
+                 "shufps", "unpcklps", "unpckhps",
+                 "addps", "subps", "mulps", "divps",
+                 "minps", "maxps", "rsqrtss", "rcpss",
+                 "cmpneqps", "cmpeqps", "cmpltps", "cmpleps",
+                 "movmskps",
+                 "pand", "pandn", "por", "pxor", "pcmpgtd"):
+            return self._lift_sse(insn, m, ops)
 
         # ── FPU ──
         if m.startswith("f"):
@@ -469,6 +509,45 @@ class Lifter:
             return ["/* not: no operand */"]
         val = _fmt_operand_read(ops[0])
         return [_fmt_operand_write(ops[0], f"~{val}")]
+
+    def _lift_sbb(self, insn, ops):
+        """SBB: subtract with borrow. Common idiom: sbb reg, reg → -CF (0 or -1)."""
+        if len(ops) < 2:
+            return ["/* sbb: bad operands */"]
+        dst = _fmt_operand_read(ops[0])
+        src = _fmt_operand_read(ops[1])
+        # sbb reg, reg is a common idiom: result is 0 or 0xFFFFFFFF depending on CF
+        if ops[0].type == "reg" and ops[1].type == "reg" and ops[0].reg == ops[1].reg:
+            return [_fmt_operand_write(ops[0], "_cf ? 0xFFFFFFFF : 0") + " /* sbb self (CF extend) */"]
+        return [_fmt_operand_write(ops[0], f"{dst} - {src} - _cf") + " /* sbb */"]
+
+    def _lift_adc(self, insn, ops):
+        """ADC: add with carry."""
+        if len(ops) < 2:
+            return ["/* adc: bad operands */"]
+        dst = _fmt_operand_read(ops[0])
+        src = _fmt_operand_read(ops[1])
+        return [_fmt_operand_write(ops[0], f"{dst} + {src} + _cf") + " /* adc */"]
+
+    def _lift_shld(self, insn, ops):
+        """SHLD: double-precision shift left."""
+        if len(ops) < 3:
+            return [f"/* shld: bad operands */"]
+        dst = _fmt_operand_read(ops[0])
+        src = _fmt_operand_read(ops[1])
+        cnt = _fmt_operand_read(ops[2])
+        return [_fmt_operand_write(ops[0],
+            f"({dst} << {cnt}) | ({src} >> (32 - {cnt}))") + " /* shld */"]
+
+    def _lift_shrd(self, insn, ops):
+        """SHRD: double-precision shift right."""
+        if len(ops) < 3:
+            return [f"/* shrd: bad operands */"]
+        dst = _fmt_operand_read(ops[0])
+        src = _fmt_operand_read(ops[1])
+        cnt = _fmt_operand_read(ops[2])
+        return [_fmt_operand_write(ops[0],
+            f"({dst} >> {cnt}) | ({src} << (32 - {cnt}))") + " /* shrd */"]
 
     def _lift_imul(self, insn, ops):
         nops = len(ops)
@@ -607,6 +686,9 @@ class Lifter:
         if "movsd" in m:
             return ["memcpy((void*)(uintptr_t)edi, (void*)(uintptr_t)esi, ecx * 4);",
                     "esi += ecx * 4; edi += ecx * 4; ecx = 0; /* rep movsd */"]
+        if "movsw" in m:
+            return ["memcpy((void*)(uintptr_t)edi, (void*)(uintptr_t)esi, ecx * 2);",
+                    "esi += ecx * 2; edi += ecx * 2; ecx = 0; /* rep movsw */"]
         if "stosb" in m:
             return ["memset((void*)(uintptr_t)edi, (uint8_t)eax, ecx);",
                     "edi += ecx; ecx = 0; /* rep stosb */"]
@@ -615,6 +697,15 @@ class Lifter:
                 "{ uint32_t _i; for (_i = 0; _i < ecx; _i++) MEM32(edi + _i*4) = eax; }",
                 "edi += ecx * 4; ecx = 0; /* rep stosd */"
             ]
+        if "stosw" in m:
+            return [
+                "{ uint32_t _i; for (_i = 0; _i < ecx; _i++) MEM16(edi + _i*2) = LO16(eax); }",
+                "edi += ecx * 2; ecx = 0; /* rep stosw */"
+            ]
+        if "cmpsb" in m or "cmpsw" in m or "cmpsd" in m:
+            return [f"/* {m} - string compare, ecx iterations */"]
+        if "scasb" in m or "scasw" in m or "scasd" in m:
+            return [f"/* {m} - string scan, ecx iterations */"]
         return [f"/* {m} */"]
 
     def _lift_string_op(self, insn, m):
@@ -630,7 +721,163 @@ class Lifter:
             return ["SET_LO8(eax, MEM8(esi)); esi++; /* lodsb */"]
         if m == "lodsd":
             return ["eax = MEM32(esi); esi += 4; /* lodsd */"]
+        if m == "movsw":
+            return ["MEM16(edi) = MEM16(esi); esi += 2; edi += 2; /* movsw */"]
+        if m == "stosw":
+            return ["MEM16(edi) = LO16(eax); edi += 2; /* stosw */"]
+        if m == "lodsw":
+            return ["SET_LO16(eax, MEM16(esi)); esi += 2; /* lodsw */"]
         return [f"/* {m} */"]
+
+    # ── FPU (x87) ──
+
+    # ── SSE (scalar/packed float) ──
+
+    def _lift_sse(self, insn, m, ops):
+        """Translate SSE instructions to C float operations."""
+        nops = len(ops)
+        if nops < 1:
+            return [f"/* {m}: no operands */"]
+
+        # SSE register names (xmm0-xmm7) are used as float locals
+        def _sse_read(op):
+            if op.type == "reg":
+                return op.reg  # xmm0, xmm1, etc.
+            elif op.type == "mem":
+                if op.mem_size == 8:
+                    return f"MEMD({_fmt_mem(op)})"
+                return f"MEMF({_fmt_mem(op)})"
+            elif op.type == "imm":
+                return _fmt_imm(op.imm)
+            return f"/* sse_read? */"
+
+        def _sse_write(op, val):
+            if op.type == "reg":
+                return f"{op.reg} = {val};"
+            elif op.type == "mem":
+                if op.mem_size == 8:
+                    return f"MEMD({_fmt_mem(op)}) = {val};"
+                return f"MEMF({_fmt_mem(op)}) = {val};"
+            return f"/* sse_write? */;"
+
+        # ── Moves ──
+        if m in ("movss", "movsd", "movaps", "movups", "movlps", "movhps"):
+            if nops >= 2:
+                src = _sse_read(ops[1])
+                return [_sse_write(ops[0], src) + f" /* {m} */"]
+            return [f"/* {m} {insn.op_str} */"]
+
+        if m == "movd":
+            if nops >= 2:
+                src = _fmt_operand_read(ops[1]) if ops[1].type != "reg" or not ops[1].reg.startswith("xmm") else _sse_read(ops[1])
+                if ops[0].type == "reg" and ops[0].reg.startswith("xmm"):
+                    return [f"memcpy(&{ops[0].reg}, &{src}, 4); /* movd to xmm */"]
+                else:
+                    return [f"{_fmt_operand_write(ops[0], src)} /* movd */"]
+            return [f"/* movd {insn.op_str} */"]
+
+        # ── Arithmetic ──
+        if m in ("addss", "addsd"):
+            if nops >= 2:
+                return [_sse_write(ops[0], f"{_sse_read(ops[0])} + {_sse_read(ops[1])}") + f" /* {m} */"]
+        if m in ("subss", "subsd"):
+            if nops >= 2:
+                return [_sse_write(ops[0], f"{_sse_read(ops[0])} - {_sse_read(ops[1])}") + f" /* {m} */"]
+        if m in ("mulss", "mulsd"):
+            if nops >= 2:
+                return [_sse_write(ops[0], f"{_sse_read(ops[0])} * {_sse_read(ops[1])}") + f" /* {m} */"]
+        if m in ("divss", "divsd"):
+            if nops >= 2:
+                return [_sse_write(ops[0], f"{_sse_read(ops[0])} / {_sse_read(ops[1])}") + f" /* {m} */"]
+        if m in ("sqrtss", "sqrtsd"):
+            if nops >= 2:
+                return [_sse_write(ops[0], f"sqrtf({_sse_read(ops[1])})") + f" /* {m} */"]
+        if m in ("minss", "minsd"):
+            if nops >= 2:
+                a, b = _sse_read(ops[0]), _sse_read(ops[1])
+                return [_sse_write(ops[0], f"({a} < {b} ? {a} : {b})") + f" /* {m} */"]
+        if m in ("maxss", "maxsd"):
+            if nops >= 2:
+                a, b = _sse_read(ops[0]), _sse_read(ops[1])
+                return [_sse_write(ops[0], f"({a} > {b} ? {a} : {b})") + f" /* {m} */"]
+
+        # ── Packed arithmetic ──
+        if m in ("addps", "subps", "mulps", "divps"):
+            if nops >= 2:
+                c_op = {"addps": "+", "subps": "-", "mulps": "*", "divps": "/"}[m]
+                d, s = _sse_read(ops[0]), _sse_read(ops[1])
+                return [f"/* {m}: {d} {c_op}= {s} (packed 4xfloat) */"]
+
+        # ── Conversions ──
+        if m == "cvtsi2ss":
+            if nops >= 2:
+                src = _fmt_operand_read(ops[1])
+                return [_sse_write(ops[0], f"(float)(int32_t){src}") + " /* cvtsi2ss */"]
+        if m in ("cvtss2si", "cvttss2si"):
+            if nops >= 2:
+                return [_fmt_operand_write(ops[0], f"(int32_t){_sse_read(ops[1])}") + f" /* {m} */"]
+        if m == "cvtsi2sd":
+            if nops >= 2:
+                src = _fmt_operand_read(ops[1])
+                return [_sse_write(ops[0], f"(double)(int32_t){src}") + " /* cvtsi2sd */"]
+        if m in ("cvtsd2si", "cvttsd2si"):
+            if nops >= 2:
+                return [_fmt_operand_write(ops[0], f"(int32_t){_sse_read(ops[1])}") + f" /* {m} */"]
+        if m == "cvtss2sd":
+            if nops >= 2:
+                return [_sse_write(ops[0], f"(double){_sse_read(ops[1])}") + " /* cvtss2sd */"]
+        if m == "cvtsd2ss":
+            if nops >= 2:
+                return [_sse_write(ops[0], f"(float){_sse_read(ops[1])}") + " /* cvtsd2ss */"]
+
+        # ── Comparison ──
+        if m in ("comiss", "comisd", "ucomiss", "ucomisd"):
+            if nops >= 2:
+                return [f"/* {m} {_sse_read(ops[0])}, {_sse_read(ops[1])} - sets EFLAGS */"]
+
+        # ── Bitwise ──
+        if m in ("xorps", "xorpd"):
+            if nops >= 2 and ops[0].type == "reg" and ops[1].type == "reg" and ops[0].reg == ops[1].reg:
+                return [_sse_write(ops[0], "0.0f") + f" /* {m} self = zero */"]
+            if nops >= 2:
+                return [f"/* {m} {_sse_read(ops[0])}, {_sse_read(ops[1])} */"]
+        if m in ("andps", "orps"):
+            if nops >= 2:
+                return [f"/* {m} {_sse_read(ops[0])}, {_sse_read(ops[1])} */"]
+
+        # ── Packed min/max ──
+        if m in ("minps", "maxps"):
+            if nops >= 2:
+                return [f"/* {m} {_sse_read(ops[0])}, {_sse_read(ops[1])} (packed 4xfloat) */"]
+
+        # ── Reciprocal / rsqrt ──
+        if m == "rsqrtss":
+            if nops >= 2:
+                return [_sse_write(ops[0], f"1.0f / sqrtf({_sse_read(ops[1])})") + " /* rsqrtss */"]
+        if m == "rcpss":
+            if nops >= 2:
+                return [_sse_write(ops[0], f"1.0f / {_sse_read(ops[1])}") + " /* rcpss */"]
+
+        # ── Packed comparison ──
+        if m in ("cmpneqps", "cmpeqps", "cmpltps", "cmpleps"):
+            if nops >= 2:
+                return [f"/* {m} {_sse_read(ops[0])}, {_sse_read(ops[1])} (packed compare) */"]
+
+        # ── Move mask ──
+        if m == "movmskps":
+            if nops >= 2:
+                return [_fmt_operand_write(ops[0], f"0 /* movmskps {_sse_read(ops[1])} */")]
+
+        # ── MMX / integer SIMD ──
+        if m in ("pand", "pandn", "por", "pxor", "pcmpgtd"):
+            if nops >= 2:
+                return [f"/* {m} {insn.op_str} (MMX/SIMD integer) */"]
+
+        # ── Shuffle/unpack ──
+        if m in ("shufps", "unpcklps", "unpckhps"):
+            return [f"/* {m} {insn.op_str} */"]
+
+        return [f"/* SSE: {m} {insn.op_str} */"]
 
     # ── FPU (x87) ──
 

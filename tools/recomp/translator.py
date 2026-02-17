@@ -101,6 +101,7 @@ class FunctionTranslator:
 
         # Determine which registers are used
         used_regs = self._find_used_registers(instructions)
+        used_xmm = self._find_used_xmm(instructions)
         has_prologue = self._func_has_prologue(instructions)
         has_fpu = any(insn.mnemonic.startswith("f") for insn in instructions)
 
@@ -138,6 +139,11 @@ class FunctionTranslator:
                 reg_decls.append(reg)
         if reg_decls:
             lines.append(f"    uint32_t {', '.join(reg_decls)};")
+
+        # SSE register declarations
+        if used_xmm:
+            xmm_decls = sorted(used_xmm)
+            lines.append(f"    float {', '.join(xmm_decls)};")
 
         # FPU stack (simplified)
         if has_fpu:
@@ -210,6 +216,15 @@ class FunctionTranslator:
                     if op.mem_index and op.mem_index in reg_map:
                         regs.add(reg_map[op.mem_index])
         return regs
+
+    def _find_used_xmm(self, instructions):
+        """Find which XMM registers are used."""
+        xmm = set()
+        for insn in instructions:
+            for op in insn.operands:
+                if op.type == "reg" and op.reg and op.reg.startswith("xmm"):
+                    xmm.add(op.reg)
+        return xmm
 
 
 class BatchTranslator:
