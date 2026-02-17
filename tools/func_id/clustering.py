@@ -129,6 +129,16 @@ def propagate_labels(functions, rw_results, crt_results, imm_refs, strings,
         if new_labels == 0:
             break
 
+    # RW region call-graph propagation: within the RW code region,
+    # propagate RW labels more aggressively (any connection suffices).
+    # The linker places RW code together, so functions in this region
+    # connected to known RW functions are very likely RW.
+    rw_region_count = _rw_region_propagation(
+        sorted_addrs, labels, propagated, callees, callers
+    )
+    if verbose:
+        print(f"  RW region propagation: {rw_region_count} new labels")
+
     # Iterative proximity propagation - each pass can fill one more layer
     total_prox = 0
     for prox_pass in range(20):
@@ -147,6 +157,66 @@ def propagate_labels(functions, rw_results, crt_results, imm_refs, strings,
         print(f"  Game sub-classification: {game_sub_count} functions categorized")
 
     return propagated
+
+
+def _rw_region_propagation(sorted_addrs, labels, propagated, callees, callers):
+    """
+    Within the RW code region, propagate RW labels aggressively.
+
+    If a function is inside the RW code region and has ANY call-graph
+    connection to a known RW function, classify it as RW. This is more
+    aggressive than global propagation because the linker places RW
+    object code contiguously.
+
+    Iterates until convergence.
+    """
+    # Determine RW code region from current labels
+    rw_addrs = [a for a in sorted_addrs if a in labels and labels[a].startswith("rw_")]
+    if len(rw_addrs) < 10:
+        return 0
+
+    rw_code_lo = min(rw_addrs)
+    rw_code_hi = max(rw_addrs)
+
+    # Build set of addresses in the RW region
+    region_addrs = [a for a in sorted_addrs if rw_code_lo <= a <= rw_code_hi]
+
+    total_count = 0
+    for iteration in range(20):
+        count = 0
+        for addr in region_addrs:
+            if addr in labels:
+                continue
+
+            # Check if this function has any connection to a known RW function
+            connected_rw = False
+            rw_subcounts = defaultdict(int)
+
+            for c in callers.get(addr, set()):
+                if c in labels and labels[c].startswith("rw_"):
+                    connected_rw = True
+                    rw_subcounts[labels[c]] += 1
+            for c in callees.get(addr, set()):
+                if c in labels and labels[c].startswith("rw_"):
+                    connected_rw = True
+                    rw_subcounts[labels[c]] += 1
+
+            if connected_rw:
+                best = max(rw_subcounts, key=rw_subcounts.get) if rw_subcounts else "rw_core"
+                labels[addr] = best
+                propagated[addr] = {
+                    "category": best,
+                    "subcategory": None,
+                    "confidence": 0.70,
+                    "method": "rw_region_propagation",
+                }
+                count += 1
+
+        total_count += count
+        if count == 0:
+            break
+
+    return total_count
 
 
 def _proximity_propagation(sorted_addrs, labels, propagated):

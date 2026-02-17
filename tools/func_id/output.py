@@ -10,7 +10,7 @@ from collections import Counter
 
 
 def write_results(functions, rw_results, crt_results, propagated,
-                  rw_modules, output_dir, verbose=False):
+                  rw_modules, output_dir, verbose=False, stub_results=None):
     """
     Write all output files.
 
@@ -22,11 +22,14 @@ def write_results(functions, rw_results, crt_results, propagated,
         rw_modules: RW module -> function mappings.
         output_dir: Directory to write output files.
         verbose: Print progress info.
+        stub_results: Stub classification results (optional).
     """
     os.makedirs(output_dir, exist_ok=True)
+    stub_results = stub_results or {}
 
     # Build the enriched function database
-    enriched = _build_enriched_db(functions, rw_results, crt_results, propagated)
+    enriched = _build_enriched_db(functions, rw_results, crt_results,
+                                  propagated, stub_results)
 
     # Write files
     _write_json(os.path.join(output_dir, "identified_functions.json"), enriched)
@@ -44,7 +47,8 @@ def write_results(functions, rw_results, crt_results, propagated,
     return summary
 
 
-def _build_enriched_db(functions, rw_results, crt_results, propagated):
+def _build_enriched_db(functions, rw_results, crt_results, propagated,
+                       stub_results):
     """Build enriched function entries with classification info."""
     enriched = []
     for f in functions:
@@ -76,6 +80,12 @@ def _build_enriched_db(functions, rw_results, crt_results, propagated):
             entry["subcategory"] = info.get("subcategory")
             entry["confidence"] = info["confidence"]
             entry["method"] = info["method"]
+        elif addr in stub_results:
+            info = stub_results[addr]
+            entry["category"] = info["category"]
+            entry["stub_type"] = info.get("stub_type", "")
+            entry["confidence"] = info["confidence"]
+            entry["method"] = info["method"]
         else:
             entry["category"] = "unknown"
             entry["confidence"] = 0.0
@@ -92,10 +102,11 @@ def _build_summary(enriched, rw_results, crt_results, propagated, rw_modules):
     cat_counts = Counter(e["category"] for e in enriched)
     method_counts = Counter(e["method"] for e in enriched)
 
-    # Group RW subcategories
+    # Group subcategories
     rw_total = sum(v for k, v in cat_counts.items() if k.startswith("rw_"))
     game_total = sum(v for k, v in cat_counts.items() if k.startswith("game_"))
     crt_total = cat_counts.get("crt", 0)
+    data_init_total = cat_counts.get("data_init", 0)
     unknown_total = cat_counts.get("unknown", 0)
 
     # RW modules with function counts
@@ -112,12 +123,14 @@ def _build_summary(enriched, rw_results, crt_results, propagated, rw_modules):
         "classification": {
             "renderware": rw_total,
             "crt": crt_total,
+            "data_init": data_init_total,
             "game_classified": game_total,
             "unknown": unknown_total,
         },
         "percentages": {
             "renderware": round(rw_total / total * 100, 1) if total else 0,
             "crt": round(crt_total / total * 100, 1) if total else 0,
+            "data_init": round(data_init_total / total * 100, 1) if total else 0,
             "game_classified": round(game_total / total * 100, 1) if total else 0,
             "unknown": round(unknown_total / total * 100, 1) if total else 0,
         },
@@ -167,6 +180,7 @@ def _print_summary(summary):
     print(f"  Total functions:    {total:,}")
     print(f"  RenderWare:         {cls['renderware']:,}  ({pct['renderware']}%)")
     print(f"  CRT/MSVC:           {cls['crt']:,}  ({pct['crt']}%)")
+    print(f"  Data init stubs:    {cls['data_init']:,}  ({pct['data_init']}%)")
     print(f"  Game (classified):  {cls['game_classified']:,}  ({pct['game_classified']}%)")
     print(f"  Unknown:            {cls['unknown']:,}  ({pct['unknown']}%)")
 

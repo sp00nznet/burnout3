@@ -14,6 +14,7 @@ from . import config
 from .imm_scanner import scan_immediate_refs
 from .rw_identifier import identify_rw_functions
 from .crt_identifier import identify_crt_functions
+from .stub_classifier import classify_stubs
 from .clustering import propagate_labels
 from .output import write_results
 
@@ -93,6 +94,19 @@ def run(xbe_path, functions_path=None, strings_path=None, xrefs_path=None,
         if addr in rw_results:
             del crt_results[addr]
 
+    # ── Phase 3b: Stub classification ────────────────────────
+    if verbose:
+        print("\nPhase 3b: Stub classification...")
+    t3b = time.time()
+    stub_results = classify_stubs(xbe_data, functions, verbose=verbose)
+    if verbose:
+        print(f"  Done in {time.time() - t3b:.1f}s")
+
+    # Remove stubs that overlap with RW or CRT
+    for addr in list(stub_results.keys()):
+        if addr in rw_results or addr in crt_results:
+            del stub_results[addr]
+
     # ── Phase 4: Label propagation ───────────────────────────
     if verbose:
         print("\nPhase 4: Label propagation...")
@@ -110,7 +124,7 @@ def run(xbe_path, functions_path=None, strings_path=None, xrefs_path=None,
 
     summary = write_results(
         functions, rw_results, crt_results, propagated, rw_modules,
-        output_dir, verbose=verbose
+        output_dir, verbose=verbose, stub_results=stub_results
     )
 
     if verbose:
