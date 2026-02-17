@@ -549,15 +549,123 @@ static HRESULT __stdcall dev_DrawIndexedPrimitive(IDirect3DDevice8 *self, D3DPRI
 
 static HRESULT __stdcall dev_DrawPrimitiveUP(IDirect3DDevice8 *self, D3DPRIMITIVETYPE PrimitiveType, UINT PrimitiveCount, const void *pVertexData, UINT VertexStreamZeroStride)
 {
-    (void)self; (void)PrimitiveType; (void)PrimitiveCount; (void)pVertexData; (void)VertexStreamZeroStride;
-    /* TODO: create temporary VB, upload data, draw */
+    (void)self;
+    D3D11_PRIMITIVE_TOPOLOGY topology;
+    D3D11_BUFFER_DESC bd;
+    D3D11_SUBRESOURCE_DATA sd;
+    ID3D11Buffer *tmp_vb = NULL;
+    UINT vertex_count, vb_size, offset = 0;
+    HRESULT hr;
+
+    if (!pVertexData || !VertexStreamZeroStride) return E_INVALIDARG;
+
+    topology = map_primitive_type(PrimitiveType, PrimitiveCount, &vertex_count);
+    if (vertex_count == 0) return E_INVALIDARG;
+
+    vb_size = vertex_count * VertexStreamZeroStride;
+
+    /* Create temporary vertex buffer with initial data */
+    memset(&bd, 0, sizeof(bd));
+    bd.ByteWidth = vb_size;
+    bd.Usage = D3D11_USAGE_IMMUTABLE;
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    memset(&sd, 0, sizeof(sd));
+    sd.pSysMem = pVertexData;
+
+    hr = ID3D11Device_CreateBuffer(g_device_state.d3d11_device, &bd, &sd, &tmp_vb);
+    if (FAILED(hr)) return hr;
+
+    /* Bind temp VB, prepare pipeline, draw */
+    ID3D11DeviceContext_IASetVertexBuffers(g_device_state.d3d11_context,
+        0, 1, &tmp_vb, &VertexStreamZeroStride, &offset);
+
+    d3d8_shaders_prepare_draw(g_device_state.vertex_shader);
+    d3d8_states_apply();
+
+    ID3D11DeviceContext_IASetPrimitiveTopology(g_device_state.d3d11_context, topology);
+    ID3D11DeviceContext_Draw(g_device_state.d3d11_context, vertex_count, 0);
+
+    /* Release temp buffer */
+    ID3D11Buffer_Release(tmp_vb);
+
+    /* Restore previous VB binding if any */
+    if (g_cur_vb) {
+        D3D8VertexBuffer *vb = (D3D8VertexBuffer *)g_cur_vb;
+        offset = 0;
+        ID3D11DeviceContext_IASetVertexBuffers(g_device_state.d3d11_context,
+            0, 1, &vb->d3d11_buffer, &g_cur_vb_stride, &offset);
+    }
     return S_OK;
 }
 
 static HRESULT __stdcall dev_DrawIndexedPrimitiveUP(IDirect3DDevice8 *self, D3DPRIMITIVETYPE PrimitiveType, UINT MinVertexIndex, UINT NumVertices, UINT PrimitiveCount, const void *pIndexData, D3DFORMAT IndexDataFormat, const void *pVertexData, UINT VertexStreamZeroStride)
 {
-    (void)self; (void)PrimitiveType; (void)MinVertexIndex; (void)NumVertices; (void)PrimitiveCount; (void)pIndexData; (void)IndexDataFormat; (void)pVertexData; (void)VertexStreamZeroStride;
-    /* TODO: create temporary VB/IB, upload data, draw */
+    (void)self; (void)MinVertexIndex;
+    D3D11_PRIMITIVE_TOPOLOGY topology;
+    D3D11_BUFFER_DESC bd;
+    D3D11_SUBRESOURCE_DATA sd;
+    ID3D11Buffer *tmp_vb = NULL, *tmp_ib = NULL;
+    UINT index_count, vb_size, ib_size, offset = 0;
+    UINT idx_bytes;
+    DXGI_FORMAT ib_fmt;
+    HRESULT hr;
+
+    if (!pVertexData || !pIndexData || !VertexStreamZeroStride) return E_INVALIDARG;
+
+    topology = map_primitive_type(PrimitiveType, PrimitiveCount, &index_count);
+    if (index_count == 0) return E_INVALIDARG;
+
+    idx_bytes = (IndexDataFormat == D3DFMT_INDEX32) ? 4 : 2;
+    ib_fmt = (IndexDataFormat == D3DFMT_INDEX32) ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
+    vb_size = NumVertices * VertexStreamZeroStride;
+    ib_size = index_count * idx_bytes;
+
+    /* Create temp vertex buffer */
+    memset(&bd, 0, sizeof(bd));
+    bd.ByteWidth = vb_size;
+    bd.Usage = D3D11_USAGE_IMMUTABLE;
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    memset(&sd, 0, sizeof(sd));
+    sd.pSysMem = pVertexData;
+    hr = ID3D11Device_CreateBuffer(g_device_state.d3d11_device, &bd, &sd, &tmp_vb);
+    if (FAILED(hr)) return hr;
+
+    /* Create temp index buffer */
+    bd.ByteWidth = ib_size;
+    bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    sd.pSysMem = pIndexData;
+    hr = ID3D11Device_CreateBuffer(g_device_state.d3d11_device, &bd, &sd, &tmp_ib);
+    if (FAILED(hr)) { ID3D11Buffer_Release(tmp_vb); return hr; }
+
+    /* Bind, prepare, draw */
+    ID3D11DeviceContext_IASetVertexBuffers(g_device_state.d3d11_context,
+        0, 1, &tmp_vb, &VertexStreamZeroStride, &offset);
+    ID3D11DeviceContext_IASetIndexBuffer(g_device_state.d3d11_context,
+        tmp_ib, ib_fmt, 0);
+
+    d3d8_shaders_prepare_draw(g_device_state.vertex_shader);
+    d3d8_states_apply();
+
+    ID3D11DeviceContext_IASetPrimitiveTopology(g_device_state.d3d11_context, topology);
+    ID3D11DeviceContext_DrawIndexed(g_device_state.d3d11_context, index_count, 0, 0);
+
+    /* Cleanup temp buffers */
+    ID3D11Buffer_Release(tmp_ib);
+    ID3D11Buffer_Release(tmp_vb);
+
+    /* Restore previous bindings */
+    if (g_cur_vb) {
+        D3D8VertexBuffer *vb = (D3D8VertexBuffer *)g_cur_vb;
+        offset = 0;
+        ID3D11DeviceContext_IASetVertexBuffers(g_device_state.d3d11_context,
+            0, 1, &vb->d3d11_buffer, &g_cur_vb_stride, &offset);
+    }
+    if (g_cur_ib) {
+        D3D8IndexBuffer *ib = (D3D8IndexBuffer *)g_cur_ib;
+        DXGI_FORMAT fmt = (ib->format == D3DFMT_INDEX32) ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
+        ID3D11DeviceContext_IASetIndexBuffer(g_device_state.d3d11_context,
+            ib->d3d11_buffer, fmt, 0);
+    }
     return S_OK;
 }
 
