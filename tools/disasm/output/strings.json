@@ -1,0 +1,10005 @@
+[
+  {
+    "address": "0x0036BA10",
+    "string": "\\SaveMeta.xbx",
+    "length": 13
+  },
+  {
+    "address": "0x0036BA24",
+    "string": "\\TitleMeta.xbx",
+    "length": 14
+  },
+  {
+    "address": "0x0036BA38",
+    "string": "\\TitleImage.xbx",
+    "length": 15
+  },
+  {
+    "address": "0x0036BA4C",
+    "string": "\\SaveImage.xbx",
+    "length": 14
+  },
+  {
+    "address": "0x0036BA60",
+    "string": "\\ContentMeta.xbx",
+    "length": 16
+  },
+  {
+    "address": "0x0036BAA0",
+    "string": "$C\\*",
+    "length": 4
+  },
+  {
+    "address": "0x0036BB00",
+    "string": "\\Device\\Harddisk0\\Partition%d\\",
+    "length": 30
+  },
+  {
+    "address": "0x0036BB28",
+    "string": "\\Device\\Harddisk0\\partition0",
+    "length": 28
+  },
+  {
+    "address": "0x0036BB48",
+    "string": "\\??\\X:",
+    "length": 6
+  },
+  {
+    "address": "0x0036BB50",
+    "string": "\\??\\W:",
+    "length": 6
+  },
+  {
+    "address": "0x0036BB58",
+    "string": "\\??\\N:",
+    "length": 6
+  },
+  {
+    "address": "0x0036BB60",
+    "string": "\\??\\Z:",
+    "length": 6
+  },
+  {
+    "address": "0x0036BB68",
+    "string": "%08lx",
+    "length": 5
+  },
+  {
+    "address": "0x0036BB78",
+    "string": "\\Device\\Cdrom0",
+    "length": 14
+  },
+  {
+    "address": "0x0036BB8C",
+    "string": "\\??\\D:",
+    "length": 6
+  },
+  {
+    "address": "0x0036BB94",
+    "string": "\\Device\\Harddisk0\\Partition1\\TDATA\\FFFE0000\\MUSIC\\",
+    "length": 50
+  },
+  {
+    "address": "0x0036BBD0",
+    "string": "\\Device\\Harddisk0\\Partition1\\TDATA\\FFFE0000\\MUSIC\\ST.DB",
+    "length": 55
+  },
+  {
+    "address": "0x0036BC08",
+    "string": "%s%04x\\%08x.WMA",
+    "length": 15
+  },
+  {
+    "address": "0x0036BC18",
+    "string": "\\SaveMeta.xbx",
+    "length": 13
+  },
+  {
+    "address": "0x0036BC2C",
+    "string": "\\TitleMeta.xbx",
+    "length": 14
+  },
+  {
+    "address": "0x0036BC40",
+    "string": "\\TitleImage.xbx",
+    "length": 15
+  },
+  {
+    "address": "0x0036BC54",
+    "string": "\\SaveImage.xbx",
+    "length": 14
+  },
+  {
+    "address": "0x0036BC68",
+    "string": "\\ContentMeta.xbx",
+    "length": 16
+  },
+  {
+    "address": "0x0036BCA8",
+    "string": "$C\\*",
+    "length": 4
+  },
+  {
+    "address": "0x0036BD4C",
+    "string": "\\Device\\Harddisk0\\partition1\\UDATA",
+    "length": 34
+  },
+  {
+    "address": "0x0036BD70",
+    "string": "\\??\\U:",
+    "length": 6
+  },
+  {
+    "address": "0x0036BD78",
+    "string": "\\Device\\Harddisk0\\partition1\\TDATA",
+    "length": 34
+  },
+  {
+    "address": "0x0036BD9C",
+    "string": "\\??\\T:",
+    "length": 6
+  },
+  {
+    "address": "0x0036BDA4",
+    "string": "\\Device\\Harddisk0\\partition1\\",
+    "length": 29
+  },
+  {
+    "address": "0x0036BDC4",
+    "string": "\\Device\\CdRom0",
+    "length": 14
+  },
+  {
+    "address": "0x0036BDD4",
+    "string": "\\SaveMeta.xbx",
+    "length": 13
+  },
+  {
+    "address": "0x0036BDE8",
+    "string": "\\TitleMeta.xbx",
+    "length": 14
+  },
+  {
+    "address": "0x0036BDFC",
+    "string": "\\TitleImage.xbx",
+    "length": 15
+  },
+  {
+    "address": "0x0036BE10",
+    "string": "\\SaveImage.xbx",
+    "length": 14
+  },
+  {
+    "address": "0x0036BE24",
+    "string": "\\ContentMeta.xbx",
+    "length": 16
+  },
+  {
+    "address": "0x0036BE64",
+    "string": "$C\\*",
+    "length": 4
+  },
+  {
+    "address": "0x0036BEB4",
+    "string": "$$XSIMAGE",
+    "length": 9
+  },
+  {
+    "address": "0x0036BEC0",
+    "string": "$$XTIMAGE",
+    "length": 9
+  },
+  {
+    "address": "0x0036BECC",
+    "string": "$$XTINFO",
+    "length": 8
+  },
+  {
+    "address": "0x0036BEE4",
+    "string": "\\??\\Y:",
+    "length": 6
+  },
+  {
+    "address": "0x0036BEEC",
+    "string": "t:\\$u\\%s",
+    "length": 8
+  },
+  {
+    "address": "0x0036BEF8",
+    "string": "\\Device\\Cdrom0",
+    "length": 14
+  },
+  {
+    "address": "0x0036BF08",
+    "string": "contentmeta.xbx",
+    "length": 15
+  },
+  {
+    "address": "0x0036BF18",
+    "string": "y:\\XODash\\xonlinedash.xbe",
+    "length": 25
+  },
+  {
+    "address": "0x0036BF34",
+    "string": "y:\\xboxdash.xbe",
+    "length": 15
+  },
+  {
+    "address": "0x0036BF44",
+    "string": "d:\\dashupdate.xbe",
+    "length": 17
+  },
+  {
+    "address": "0x0036BF58",
+    "string": "t:\\$u\\",
+    "length": 6
+  },
+  {
+    "address": "0x0036BFEC",
+    "string": "\\SaveMeta.xbx",
+    "length": 13
+  },
+  {
+    "address": "0x0036C000",
+    "string": "\\TitleMeta.xbx",
+    "length": 14
+  },
+  {
+    "address": "0x0036C014",
+    "string": "\\TitleImage.xbx",
+    "length": 15
+  },
+  {
+    "address": "0x0036C028",
+    "string": "\\SaveImage.xbx",
+    "length": 14
+  },
+  {
+    "address": "0x0036C03C",
+    "string": "\\ContentMeta.xbx",
+    "length": 16
+  },
+  {
+    "address": "0x0036C07C",
+    "string": "$C\\*",
+    "length": 4
+  },
+  {
+    "address": "0x0036C0CC",
+    "string": "T:\\$C\\%08X%08X",
+    "length": 14
+  },
+  {
+    "address": "0x0036C2FA",
+    "string": "@?fff?",
+    "length": 6
+  },
+  {
+    "address": "0x0036C390",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/driver/xbox/xbcache.c#1 $",
+    "length": 67
+  },
+  {
+    "address": "0x0036C3D4",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/bacamera.c#2 $",
+    "length": 58
+  },
+  {
+    "address": "0x0036C420",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/driver/xbox/xbrendst.c#1 $",
+    "length": 68
+  },
+  {
+    "address": "0x0036C598",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/badevice.c#1 $",
+    "length": 58
+  },
+  {
+    "address": "0x0036C5D4",
+    "string": "\nCore built at Jul 24 2003 06:46:14\n",
+    "length": 36
+  },
+  {
+    "address": "0x0036C600",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/bavector.c#1 $",
+    "length": 65
+  },
+  {
+    "address": "0x0036C648",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/driver/xbox/xbraster.c#1 $",
+    "length": 68
+  },
+  {
+    "address": "0x0036C690",
+    "string": "Failed to create surface.",
+    "length": 25
+  },
+  {
+    "address": "0x0036C6AC",
+    "string": "Failed to create palette.",
+    "length": 25
+  },
+  {
+    "address": "0x0036C6C8",
+    "string": "Failed to create depth stencil surface.",
+    "length": 39
+  },
+  {
+    "address": "0x0036C6F0",
+    "string": "The minimun pitch for a ZBuffer is 64.",
+    "length": 38
+  },
+  {
+    "address": "0x0036C718",
+    "string": "The minimun pitch for a camera texture is 64.",
+    "length": 45
+  },
+  {
+    "address": "0x0036C748",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/baframe.c#1 $",
+    "length": 57
+  },
+  {
+    "address": "0x0036C788",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/driver/xbox/xbdevice.c#1 $",
+    "length": 68
+  },
+  {
+    "address": "0x0036C7F0",
+    "string": "Xbox",
+    "length": 4
+  },
+  {
+    "address": "0x0036C7F9",
+    "string": "$tIInvalid subsystem number",
+    "length": 27
+  },
+  {
+    "address": "0x0036C818",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/baraster.c#1 $",
+    "length": 60
+  },
+  {
+    "address": "0x0036C858",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/bastream.c#1 $",
+    "length": 65
+  },
+  {
+    "address": "0x0036C8A0",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/bafsys.c#1 $",
+    "length": 63
+  },
+  {
+    "address": "0x0036C8E0",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/baimras.c#1 $",
+    "length": 57
+  },
+  {
+    "address": "0x0036C91C",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/baimage.c#1 $",
+    "length": 59
+  },
+  {
+    "address": "0x0036C958",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/bamatrix.c#1 $",
+    "length": 65
+  },
+  {
+    "address": "0x0036C99C",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/batypehf.c#1 $",
+    "length": 58
+  },
+  {
+    "address": "0x0036C9D8",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/bamemory.c#2 $",
+    "length": 65
+  },
+  {
+    "address": "0x0036CA20",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/babinary.c#1 $",
+    "length": 65
+  },
+  {
+    "address": "0x0036CA64",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/babbox.c#1 $",
+    "length": 56
+  },
+  {
+    "address": "0x0036CAA0",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/pipe/p2/bapipe.c#1 $",
+    "length": 64
+  },
+  {
+    "address": "0x0036CAE4",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/basync.c#1 $",
+    "length": 56
+  },
+  {
+    "address": "0x0036CB20",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/baerr.c#1 $",
+    "length": 62
+  },
+  {
+    "address": "0x0036CB60",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/batkreg.c#2 $",
+    "length": 64
+  },
+  {
+    "address": "0x0036CBA8",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/baresour.c#1 $",
+    "length": 65
+  },
+  {
+    "address": "0x0036CBF0",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/pipe/p2/baim3d.c#1 $",
+    "length": 64
+  },
+  {
+    "address": "0x0036CC34",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/batextur.c#2 $",
+    "length": 58
+  },
+  {
+    "address": "0x0036CC70",
+    "string": "0123456789abcdef",
+    "length": 16
+  },
+  {
+    "address": "0x0036CC88",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/bacolor.c#1 $",
+    "length": 64
+  },
+  {
+    "address": "0x0036CCD0",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/rwstring.c#1 $",
+    "length": 65
+  },
+  {
+    "address": "0x0036CD18",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/driver/xbox/xbmemory.c#1 $",
+    "length": 68
+  },
+  {
+    "address": "0x0036CD60",
+    "string": "Failed to create a vertex buffer.",
+    "length": 33
+  },
+  {
+    "address": "0x0036CD88",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/driver/xbox/xbconvrt.c#1 $",
+    "length": 68
+  },
+  {
+    "address": "0x0036CDD0",
+    "string": "Conversion from non palettised rasters to 8bit images is not supported",
+    "length": 70
+  },
+  {
+    "address": "0x0036CE18",
+    "string": "Conversion from rasters to 4bit images is not supported",
+    "length": 55
+  },
+  {
+    "address": "0x0036CE50",
+    "string": "Conversion from compressed rasters is not supported.",
+    "length": 52
+  },
+  {
+    "address": "0x0036CE88",
+    "string": "Conversion to compressed rasters is not supported.",
+    "length": 50
+  },
+  {
+    "address": "0x0036CEC0",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/driver/xbox/xb2drend.c#1 $",
+    "length": 68
+  },
+  {
+    "address": "0x0036CF58",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/driver/xbox/xbtexdic.c#1 $",
+    "length": 68
+  },
+  {
+    "address": "0x0036CFF8",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/driver/xbox/xbsprite.c#1 $",
+    "length": 68
+  },
+  {
+    "address": "0x0036D040",
+    "string": "SRC, DST Raster render combination not supported",
+    "length": 48
+  },
+  {
+    "address": "0x0036D074",
+    "string": "Only the entire raster can be cleared",
+    "length": 37
+  },
+  {
+    "address": "0x0036D09C",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/baresamp.c#1 $",
+    "length": 58
+  },
+  {
+    "address": "0x0036D0DB",
+    "string": "7@@(#)$Id: //RenderWare/RW36Active/rwsdk/os/xbox/osintf.c#1 $",
+    "length": 61
+  },
+  {
+    "address": "0x0036D120",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/pipe/p2/p2core.c#1 $",
+    "length": 64
+  },
+  {
+    "address": "0x0036D168",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/resmem.c#1 $",
+    "length": 65
+  },
+  {
+    "address": "0x0036D1B0",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/pipe/p2/p2heap.c#1 $",
+    "length": 64
+  },
+  {
+    "address": "0x0036D1F8",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/pipe/p2/xbox/im3dpipe.c#1 $",
+    "length": 73
+  },
+  {
+    "address": "0x0036D248",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/driver/common/palquant.c#1 $",
+    "length": 68
+  },
+  {
+    "address": "0x0036D29F",
+    "string": "?@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/pipe/p2/p2renderstate.c#1 $",
+    "length": 72
+  },
+  {
+    "address": "0x0036D2E8",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/pipe/p2/xbox/nodeXBoxSubmitNoLight.c#1 $",
+    "length": 86
+  },
+  {
+    "address": "0x0036D340",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/pipe/p2/p2dep.c#1 $",
+    "length": 63
+  },
+  {
+    "address": "0x0036D380",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/pipe/p2/p2resort.c#1 $",
+    "length": 66
+  },
+  {
+    "address": "0x0036D3C4",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/baworld.c#2 $",
+    "length": 59
+  },
+  {
+    "address": "0x0036D400",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/baclump.c#1 $",
+    "length": 59
+  },
+  {
+    "address": "0x0036D43C",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/basector.c#1 $",
+    "length": 60
+  },
+  {
+    "address": "0x0036D47C",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/bamesh.c#1 $",
+    "length": 58
+  },
+  {
+    "address": "0x0036D4B8",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/bameshop.c#1 $",
+    "length": 60
+  },
+  {
+    "address": "0x0036D4F8",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/baworobj.c#1 $",
+    "length": 60
+  },
+  {
+    "address": "0x0036D538",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/pipe/p2/bapipew.c#1 $",
+    "length": 67
+  },
+  {
+    "address": "0x0036D57C",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/bamatlst.c#1 $",
+    "length": 60
+  },
+  {
+    "address": "0x0036D5C0",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/pipe/p2/xbox/wrldpipe.c#1 $",
+    "length": 75
+  },
+  {
+    "address": "0x0036D60C",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/babinwor.c#2 $",
+    "length": 60
+  },
+  {
+    "address": "0x0036D64C",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/balight.c#1 $",
+    "length": 59
+  },
+  {
+    "address": "0x0036D6BE",
+    "string": "I@@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/bageomet.c#1 $",
+    "length": 62
+  },
+  {
+    "address": "0x0036D700",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/bamateri.c#1 $",
+    "length": 60
+  },
+  {
+    "address": "0x0036D740",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/pipe/p2/xbox/native.c#1 $",
+    "length": 73
+  },
+  {
+    "address": "0x0036D790",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/pipe/p2/xbox/xbvtxfmt.c#1 $",
+    "length": 75
+  },
+  {
+    "address": "0x0036D80E",
+    "string": "q=@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/pipe/p2/xbox/xbpixelshader.c#1 $",
+    "length": 82
+  },
+  {
+    "address": "0x0036D958",
+    "string": "XboxWorldSectorAllInOne.csl",
+    "length": 27
+  },
+  {
+    "address": "0x0036D978",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/pipe/p2/xbox/nodeXBoxWorldSectorAllInOne.c#1 $",
+    "length": 94
+  },
+  {
+    "address": "0x0036DA17",
+    "string": "?@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/pipe/p2/xbox/xblights.c#1 $",
+    "length": 76
+  },
+  {
+    "address": "0x0036DA64",
+    "string": "XboxAtomicAllInOne.csl",
+    "length": 22
+  },
+  {
+    "address": "0x0036DA80",
+    "string": "@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/pipe/p2/xbox/nodeXBoxAtomicAllInOne.c#1 $",
+    "length": 89
+  },
+  {
+    "address": "0x0036DADC",
+    "string": "33s?@@@@(#)$Id: //RenderWare/RW36Active/rwsdk/world/pipe/p2/xbox/xbpipe.c#1 $",
+    "length": 77,
+    "referenced_from": [
+      "0x001F496C"
+    ]
+  },
+  {
+    "address": "0x0036DB97",
+    "string": "Hrbs",
+    "length": 4
+  },
+  {
+    "address": "0x0036DF7C",
+    "string": "failed to open stream file [%s]\n",
+    "length": 32
+  },
+  {
+    "address": "0x0036E39F",
+    "string": "4rws;1",
+    "length": 6
+  },
+  {
+    "address": "0x0036EA38",
+    "string": "d:\\data\\dsstdfx.bin",
+    "length": 19
+  },
+  {
+    "address": "0x0036EAE3",
+    "string": "@bufferDesc = 0x%lx\n",
+    "length": 20
+  },
+  {
+    "address": "0x0036EAF8",
+    "string": "buffer create fail state = 0x%lx buffer count = %d error = %d\n",
+    "length": 62
+  },
+  {
+    "address": "0x0036EB38",
+    "string": "SetMixBinVolumes failed. state = 0x%lx\n",
+    "length": 39
+  },
+  {
+    "address": "0x0036EB60",
+    "string": "SetMixBinVolumes failed in pan state = 0x%lx\n",
+    "length": 45
+  },
+  {
+    "address": "0x0036EB90",
+    "string": "SetMixBinVolumes failed in reverb state = 0x%lx\n",
+    "length": 48
+  },
+  {
+    "address": "0x0036EBCB",
+    "string": "?SetMixBinVolumes failed in update pos state = 0x%lx\n",
+    "length": 53
+  },
+  {
+    "address": "0x0036EC4E",
+    "string": "7HNHQ>wma",
+    "length": 9
+  },
+  {
+    "address": "0x0036EC67",
+    "string": "G#f@",
+    "length": 4
+  },
+  {
+    "address": "0x0036EF78",
+    "string": "Unable to load Gamertags.",
+    "length": 25
+  },
+  {
+    "address": "0x0036EF94",
+    "string": "Error Loading",
+    "length": 13
+  },
+  {
+    "address": "0x0036EFA8",
+    "string": "You were signed out of Xbox Live because another player signed in using your account.",
+    "length": 85
+  },
+  {
+    "address": "0x0036F000",
+    "string": "Sign in Error",
+    "length": 13
+  },
+  {
+    "address": "0x0036F010",
+    "string": "The Pass Code you entered is incorrect.",
+    "length": 39
+  },
+  {
+    "address": "0x0036F038",
+    "string": "Incorrect Pass Code",
+    "length": 19
+  },
+  {
+    "address": "0x0036F050",
+    "string": "You can choose to update the account in Account Recovery or cancel.",
+    "length": 67
+  },
+  {
+    "address": "0x0036F094",
+    "string": "This account is not current.",
+    "length": 28
+  },
+  {
+    "address": "0x0036F0B4",
+    "string": "Account Error",
+    "length": 13
+  },
+  {
+    "address": "0x0036F0C4",
+    "string": "You have a new Xbox Live message.",
+    "length": 33
+  },
+  {
+    "address": "0x0036F0E8",
+    "string": "New Message",
+    "length": 11
+  },
+  {
+    "address": "0x0036F0F4",
+    "string": "You have an important message from Xbox Live.",
+    "length": 45
+  },
+  {
+    "address": "0x0036F124",
+    "string": "Important Message",
+    "length": 17
+  },
+  {
+    "address": "0x0036F138",
+    "string": "The Xbox Live service is busy.",
+    "length": 30
+  },
+  {
+    "address": "0x0036F158",
+    "string": "You cannot connect to Xbox Live until the update is installed.",
+    "length": 62
+  },
+  {
+    "address": "0x0036F198",
+    "string": "A required update is available for the Xbox Live service.",
+    "length": 57
+  },
+  {
+    "address": "0x0036F1D4",
+    "string": "Update Required",
+    "length": 15
+  },
+  {
+    "address": "0x0036F1E4",
+    "string": "Your Xbox console cannot connect to Xbox Live.",
+    "length": 46
+  },
+  {
+    "address": "0x0036F214",
+    "string": "Cannot Connect",
+    "length": 14
+  },
+  {
+    "address": "0x0036F308",
+    "string": "Your account information will be emailed to you shortly.",
+    "length": 56
+  },
+  {
+    "address": "0x0036F348",
+    "string": "Your password will be sent to the email address associated with this account.",
+    "length": 77
+  },
+  {
+    "address": "0x0036F398",
+    "string": "Information",
+    "length": 11
+  },
+  {
+    "address": "0x0036F3A8",
+    "string": "You will now be disconnected from the EA server. Remove the device if you want to reconnect.",
+    "length": 92
+  },
+  {
+    "address": "0x0036F408",
+    "string": "A cheat device has been detected on your system.",
+    "length": 48
+  },
+  {
+    "address": "0x0036F43C",
+    "string": "Invalid Device",
+    "length": 14
+  },
+  {
+    "address": "0x0036F450",
+    "string": "Please check to see if you are still connected to your ISP or try again later.",
+    "length": 78
+  },
+  {
+    "address": "0x0036F4A0",
+    "string": "Your connection has been interrupted.",
+    "length": 37
+  },
+  {
+    "address": "0x0036F4C8",
+    "string": "The EA server is currently down.",
+    "length": 32
+  },
+  {
+    "address": "0x0036F4EC",
+    "string": "Please check your network connection or try again later.",
+    "length": 56
+  },
+  {
+    "address": "0x0036F528",
+    "string": "You are unable to connect to the EA server at this time.",
+    "length": 56
+  },
+  {
+    "address": "0x0036F564",
+    "string": "Server Error",
+    "length": 12
+  },
+  {
+    "address": "0x0036F574",
+    "string": "Please enter another Gamertag and try again.",
+    "length": 44
+  },
+  {
+    "address": "0x0036F5A4",
+    "string": "The Gamertag you selected is reserved.",
+    "length": 38
+  },
+  {
+    "address": "0x0036F5CC",
+    "string": "Reserved",
+    "length": 8
+  },
+  {
+    "address": "0x0036F5D8",
+    "string": "Please contact EA customer support.",
+    "length": 35
+  },
+  {
+    "address": "0x0036F5FC",
+    "string": "Your account has been locked by Electronic Arts.",
+    "length": 48
+  },
+  {
+    "address": "0x0036F630",
+    "string": "Locked Account",
+    "length": 14
+  },
+  {
+    "address": "0x0036F640",
+    "string": "Someone is already logged in with this Gamertag.",
+    "length": 48
+  },
+  {
+    "address": "0x0036F674",
+    "string": "Missing parameter(s).",
+    "length": 21
+  },
+  {
+    "address": "0x0036F68C",
+    "string": "Please enter a valid Gamertag and try again.",
+    "length": 44
+  },
+  {
+    "address": "0x0036F6BC",
+    "string": "The Gamertag you selected is invalid.",
+    "length": 37
+  },
+  {
+    "address": "0x0036F6E4",
+    "string": "Please enter a different Gamertag and try again.",
+    "length": 48
+  },
+  {
+    "address": "0x0036F718",
+    "string": "The Gamertag you selected is not appropriate.",
+    "length": 45
+  },
+  {
+    "address": "0x0036F748",
+    "string": "Invalid Gamertag",
+    "length": 16
+  },
+  {
+    "address": "0x0036F75C",
+    "string": "Please try again later.",
+    "length": 23
+  },
+  {
+    "address": "0x0036F774",
+    "string": "A database error has occured.",
+    "length": 29
+  },
+  {
+    "address": "0x0036F794",
+    "string": "Error",
+    "length": 5
+  },
+  {
+    "address": "0x0036F79C",
+    "string": "Please retry again later.",
+    "length": 25
+  },
+  {
+    "address": "0x0036F7B8",
+    "string": "An unknown error occurred.",
+    "length": 26
+  },
+  {
+    "address": "0x0036F7D4",
+    "string": "Unknown Error",
+    "length": 13
+  },
+  {
+    "address": "0x0036F7E4",
+    "string": "cvs-dpu-ysb-tca-gsm-vni-nip-pud-",
+    "length": 32
+  },
+  {
+    "address": "0x0036F808",
+    "string": "VOCBAN",
+    "length": 6
+  },
+  {
+    "address": "0x0036F814",
+    "string": "USER",
+    "length": 4
+  },
+  {
+    "address": "0x0036F820",
+    "string": "Received unknown response '%c%c%c%c'",
+    "length": 36
+  },
+  {
+    "address": "0x0036F848",
+    "string": "NOREPLY",
+    "length": 7
+  },
+  {
+    "address": "0x0036F951",
+    "string": "123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "length": 255
+  },
+  {
+    "address": "0x0036FD91",
+    "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "length": 26
+  },
+  {
+    "address": "0x0036FDB1",
+    "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "length": 26
+  },
+  {
+    "address": "0x0036FE50",
+    "string": "@ABCDEFGHIJKLMNOPQRSTUVWXYZ0123",
+    "length": 31
+  },
+  {
+    "address": "0x0036FFD4",
+    "string": "%d.%d.%d %d:%02d:%02d",
+    "length": 21
+  },
+  {
+    "address": "0x0036FFEC",
+    "string": "0123456789abcdef-nosecure",
+    "length": 25
+  },
+  {
+    "address": "0x00370008",
+    "string": "-coop",
+    "length": 5
+  },
+  {
+    "address": "0x00370010",
+    "string": "0123456789abcdefPING",
+    "length": 20
+  },
+  {
+    "address": "0x00370028",
+    "string": "ADDR",
+    "length": 4
+  },
+  {
+    "address": "0x00370048",
+    "string": "CHAN",
+    "length": 4
+  },
+  {
+    "address": "0x00370050",
+    "string": "MASK",
+    "length": 4
+  },
+  {
+    "address": "0x00370058",
+    "string": "%s-%s-%08x",
+    "length": 10
+  },
+  {
+    "address": "0x00370064",
+    "string": "SESS",
+    "length": 4
+  },
+  {
+    "address": "0x0037006C",
+    "string": "PARTPARAMS%d",
+    "length": 12
+  },
+  {
+    "address": "0x0037007C",
+    "string": "PARTSIZE%d",
+    "length": 10
+  },
+  {
+    "address": "0x00370088",
+    "string": "OPFLAG%d",
+    "length": 8
+  },
+  {
+    "address": "0x00370094",
+    "string": "OPPARAM%d",
+    "length": 9
+  },
+  {
+    "address": "0x003700A0",
+    "string": "OPPART%d",
+    "length": 8
+  },
+  {
+    "address": "0x003700AC",
+    "string": "MADDR%d",
+    "length": 7
+  },
+  {
+    "address": "0x003700B4",
+    "string": "LADDR%d",
+    "length": 7
+  },
+  {
+    "address": "0x003700BC",
+    "string": "ADDR%d",
+    "length": 6
+  },
+  {
+    "address": "0x003700C4",
+    "string": "OPPO%d",
+    "length": 6
+  },
+  {
+    "address": "0x003700CC",
+    "string": "OPID%d",
+    "length": 6
+  },
+  {
+    "address": "0x003700D4",
+    "string": "SEED",
+    "length": 4
+  },
+  {
+    "address": "0x003700DC",
+    "string": "NUMPART",
+    "length": 7
+  },
+  {
+    "address": "0x003700E4",
+    "string": "CUSTFLAGS",
+    "length": 9
+  },
+  {
+    "address": "0x003700F0",
+    "string": "SELF",
+    "length": 4
+  },
+  {
+    "address": "0x00370100",
+    "string": "%03d",
+    "length": 4
+  },
+  {
+    "address": "0x00370128",
+    "string": "FLAGS",
+    "length": 5
+  },
+  {
+    "address": "0x00370130",
+    "string": "LCOUNT",
+    "length": 6
+  },
+  {
+    "address": "0x00370138",
+    "string": "LIDENT",
+    "length": 6
+  },
+  {
+    "address": "0x00370158",
+    "string": "~%dms",
+    "length": 5
+  },
+  {
+    "address": "0x00370174",
+    "string": "STATS",
+    "length": 5
+  },
+  {
+    "address": "0x0037017C",
+    "string": "SLOTS",
+    "length": 5
+  },
+  {
+    "address": "0x00370184",
+    "string": "MORE",
+    "length": 4
+  },
+  {
+    "address": "0x0037018C",
+    "string": "NAME=7",
+    "length": 6
+  },
+  {
+    "address": "0x00370194",
+    "string": "SKEY",
+    "length": 4
+  },
+  {
+    "address": "0x0037019C",
+    "string": "Public Key",
+    "length": 10
+  },
+  {
+    "address": "0x003701A8",
+    "string": "DOWN",
+    "length": 4
+  },
+  {
+    "address": "0x003701B0",
+    "string": "DIRECT",
+    "length": 6
+  },
+  {
+    "address": "0x003701B8",
+    "string": "RC4+MD5-V2",
+    "length": 10
+  },
+  {
+    "address": "0x003701C8",
+    "string": "\nConnection: close",
+    "length": 18
+  },
+  {
+    "address": "0x003701DC",
+    "string": "\nContent-Length:",
+    "length": 16
+  },
+  {
+    "address": "0x003701F0",
+    "string": "https",
+    "length": 5
+  },
+  {
+    "address": "0x003701F8",
+    "string": "GET ",
+    "length": 4
+  },
+  {
+    "address": "0x00370200",
+    "string": "HEAD ",
+    "length": 5
+  },
+  {
+    "address": "0x00370208",
+    "string": " HTTP/1.0\r\nAccept: */*\r\n%sContent-Length: 0\r\nUser-Agent: Custom/1.0\r\n\r\n",
+    "length": 71
+  },
+  {
+    "address": "0x00370250",
+    "string": "Connection: Keep-Alive\r\n",
+    "length": 24
+  },
+  {
+    "address": "0x00370278",
+    "string": "COLWIDTH%d",
+    "length": 10
+  },
+  {
+    "address": "0x00370284",
+    "string": "COLPARAM%d",
+    "length": 10
+  },
+  {
+    "address": "0x00370290",
+    "string": "COLDESC%d",
+    "length": 9
+  },
+  {
+    "address": "0x0037029C",
+    "string": "COLNAME%d",
+    "length": 9
+  },
+  {
+    "address": "0x003702AC",
+    "string": "DESC",
+    "length": 4
+  },
+  {
+    "address": "0x003702B4",
+    "string": "RANGE",
+    "length": 5
+  },
+  {
+    "address": "0x003702BC",
+    "string": "SEQN",
+    "length": 4
+  },
+  {
+    "address": "0x003702C4",
+    "string": "VIEW",
+    "length": 4
+  },
+  {
+    "address": "0x003702CC",
+    "string": "BUDDIES",
+    "length": 7
+  },
+  {
+    "address": "0x003702D4",
+    "string": "FIND",
+    "length": 4
+  },
+  {
+    "address": "0x003702E0",
+    "string": "COLS",
+    "length": 4
+  },
+  {
+    "address": "0x0037030C",
+    "string": "%s %s %s,",
+    "length": 9
+  },
+  {
+    "address": "0x00370318",
+    "string": "10.40.0.0 255.255.0.0 45410000,159.153.224.0 255.255.240.0 45410000",
+    "length": 67
+  },
+  {
+    "address": "0x0037035C",
+    "string": "XBOX_REMAP",
+    "length": 10
+  },
+  {
+    "address": "0x0037036C",
+    "string": "XFLAGS",
+    "length": 6
+  },
+  {
+    "address": "0x00370374",
+    "string": "PURCHBAN",
+    "length": 8
+  },
+  {
+    "address": "0x00370380",
+    "string": "XUID",
+    "length": 4
+  },
+  {
+    "address": "0x00370388",
+    "string": "CDEV",
+    "length": 4
+  },
+  {
+    "address": "0x00370390",
+    "string": "PERSONAS",
+    "length": 8
+  },
+  {
+    "address": "0x0037039C",
+    "string": "SHARE",
+    "length": 5
+  },
+  {
+    "address": "0x003703A4",
+    "string": "WIDTHS",
+    "length": 6
+  },
+  {
+    "address": "0x003703AC",
+    "string": "DESCS",
+    "length": 5
+  },
+  {
+    "address": "0x003703B4",
+    "string": "NAMES",
+    "length": 5
+  },
+  {
+    "address": "0x003703BC",
+    "string": "SLOT",
+    "length": 4
+  },
+  {
+    "address": "0x003703C4",
+    "string": "reconnect wait",
+    "length": 14
+  },
+  {
+    "address": "0x003703D4",
+    "string": "disconnected",
+    "length": 12
+  },
+  {
+    "address": "0x003703E4",
+    "string": "online",
+    "length": 6
+  },
+  {
+    "address": "0x003703EC",
+    "string": "misc connection fail",
+    "length": 20
+  },
+  {
+    "address": "0x00370404",
+    "string": "server timeout",
+    "length": 14
+  },
+  {
+    "address": "0x00370414",
+    "string": "name lookup fail",
+    "length": 16
+  },
+  {
+    "address": "0x00370428",
+    "string": "connecting",
+    "length": 10
+  },
+  {
+    "address": "0x00370434",
+    "string": "idle",
+    "length": 4
+  },
+  {
+    "address": "0x00370448",
+    "string": "AWAY",
+    "length": 4
+  },
+  {
+    "address": "0x00370450",
+    "string": "CHAT",
+    "length": 4
+  },
+  {
+    "address": "0x00370458",
+    "string": "$%c%c%c%c",
+    "length": 9
+  },
+  {
+    "address": "0x00370464",
+    "string": "RSRC",
+    "length": 4
+  },
+  {
+    "address": "0x0037046C",
+    "string": "DOMN",
+    "length": 4
+  },
+  {
+    "address": "0x00370478",
+    "string": "STAT",
+    "length": 4
+  },
+  {
+    "address": "0x00370480",
+    "string": "EXTR",
+    "length": 4
+  },
+  {
+    "address": "0x00370488",
+    "string": "PROD",
+    "length": 4
+  },
+  {
+    "address": "0x00370490",
+    "string": "TITL",
+    "length": 4
+  },
+  {
+    "address": "0x00370498",
+    "string": "Server Missing Title",
+    "length": 20
+  },
+  {
+    "address": "0x003704B0",
+    "string": "CHNG",
+    "length": 4
+  },
+  {
+    "address": "0x003704B8",
+    "string": "SHOW",
+    "length": 4
+  },
+  {
+    "address": "0x003704C8",
+    "string": "SUBJ",
+    "length": 4
+  },
+  {
+    "address": "0x003704D0",
+    "string": "PRES",
+    "length": 4
+  },
+  {
+    "address": "0x003704D8",
+    "string": "ANSW",
+    "length": 4
+  },
+  {
+    "address": "0x003704E0",
+    "string": "LRSC",
+    "length": 4
+  },
+  {
+    "address": "0x003704E8",
+    "string": "PEND",
+    "length": 4
+  },
+  {
+    "address": "0x003704F0",
+    "string": "LIST",
+    "length": 4
+  },
+  {
+    "address": "0x003704F8",
+    "string": "MAXR",
+    "length": 4
+  },
+  {
+    "address": "0x00370500",
+    "string": "ENAB",
+    "length": 4
+  },
+  {
+    "address": "0x00370508",
+    "string": "BuddyApi: Doing %s Action",
+    "length": 25
+  },
+  {
+    "address": "0x00370524",
+    "string": "Bud ",
+    "length": 4
+  },
+  {
+    "address": "0x0037052C",
+    "string": "Game",
+    "length": 4
+  },
+  {
+    "address": "0x00370534",
+    "string": "%s|%c|%x|%x,",
+    "length": 12
+  },
+  {
+    "address": "0x00370544",
+    "string": "FUSR",
+    "length": 4
+  },
+  {
+    "address": "0x0037054C",
+    "string": "TIID",
+    "length": 4
+  },
+  {
+    "address": "0x00370A57",
+    "string": "-hello world",
+    "length": 12
+  },
+  {
+    "address": "0x00370A64",
+    "string": "ru paranoid?",
+    "length": 12
+  },
+  {
+    "address": "0x00370E80",
+    "string": "OTG Certificate Authority",
+    "length": 25
+  },
+  {
+    "address": "0x00370E9C",
+    "string": "Secure Server Certification Authority",
+    "length": 37
+  },
+  {
+    "address": "0x00370EC4",
+    "string": "RSA Data Security, Inc.",
+    "length": 23
+  },
+  {
+    "address": "0x00370EDC",
+    "string": "OTG3 Certificate Authority",
+    "length": 26
+  },
+  {
+    "address": "0x00370EF8",
+    "string": "Online Technology Group",
+    "length": 23
+  },
+  {
+    "address": "0x00370F10",
+    "string": "Electronic Arts, Inc.",
+    "length": 21
+  },
+  {
+    "address": "0x00370F28",
+    "string": "Redwood City",
+    "length": 12
+  },
+  {
+    "address": "0x00370F38",
+    "string": "California",
+    "length": 10
+  },
+  {
+    "address": "0x00370F44",
+    "string": "0123456789abcdef",
+    "length": 16
+  },
+  {
+    "address": "0x00370F58",
+    "string": " **** ENUM\n",
+    "length": 11
+  },
+  {
+    "address": "0x00370F64",
+    "string": "**** %s %x tid:%x xuid:%I64u  $%016I64x \n",
+    "length": 41
+  },
+  {
+    "address": "0x00370F90",
+    "string": " **** ENUM COUNT *** %d \n",
+    "length": 25
+  },
+  {
+    "address": "0x00370FAC",
+    "string": " ERROR: XOnlineTaskContinue(hFriends) returned FAILURE\n",
+    "length": 55
+  },
+  {
+    "address": "0x00370FE4",
+    "string": "%I64x,",
+    "length": 6
+  },
+  {
+    "address": "0x00370FEC",
+    "string": " ERROR: XOnlineFriendsStartup returned FAILURE\n",
+    "length": 47
+  },
+  {
+    "address": "0x0037101C",
+    "string": "EA::CrossGame",
+    "length": 13
+  },
+  {
+    "address": "0x0037102C",
+    "string": "\n UNKNOWN ACTION TYPE --- NOT DONE \n",
+    "length": 36
+  },
+  {
+    "address": "0x00371054",
+    "string": " **** DOING Operation On  %d:%c  on:%s: \n",
+    "length": 41
+  },
+  {
+    "address": "0x00371080",
+    "string": "\n *****Did Action %d:%c  status is: %d \n",
+    "length": 40
+  },
+  {
+    "address": "0x003710AC",
+    "string": " **** DOING Game On  %d:%c  on:%s: \n",
+    "length": 36
+  },
+  {
+    "address": "0x003710FF",
+    "string": "?SC.01.08.00",
+    "length": 12
+  },
+  {
+    "address": "0x00372AC2",
+    "string": "6?Zd[?",
+    "length": 6
+  },
+  {
+    "address": "0x00373123",
+    "string": "?=\nW?",
+    "length": 5
+  },
+  {
+    "address": "0x003731F7",
+    "string": "?UUU=",
+    "length": 5
+  },
+  {
+    "address": "0x00373F2F",
+    "string": ">K-!?",
+    "length": 5
+  },
+  {
+    "address": "0x00373FF6",
+    "string": "\">0 $",
+    "length": 5
+  },
+  {
+    "address": "0x00374121",
+    "string": "`h````",
+    "length": 6
+  },
+  {
+    "address": "0x00374144",
+    "string": "(null)",
+    "length": 6
+  },
+  {
+    "address": "0x0037417C",
+    "string": "_nextafter",
+    "length": 10
+  },
+  {
+    "address": "0x00374188",
+    "string": "_logb",
+    "length": 5
+  },
+  {
+    "address": "0x0037419C",
+    "string": "frexp",
+    "length": 5
+  },
+  {
+    "address": "0x003741A4",
+    "string": "fmod",
+    "length": 4
+  },
+  {
+    "address": "0x003741AC",
+    "string": "_hypot",
+    "length": 6
+  },
+  {
+    "address": "0x003741B4",
+    "string": "_cabs",
+    "length": 5
+  },
+  {
+    "address": "0x003741BC",
+    "string": "ldexp",
+    "length": 5
+  },
+  {
+    "address": "0x003741C4",
+    "string": "modf",
+    "length": 4
+  },
+  {
+    "address": "0x003741CC",
+    "string": "fabs",
+    "length": 4
+  },
+  {
+    "address": "0x003741D4",
+    "string": "floor",
+    "length": 5
+  },
+  {
+    "address": "0x003741DC",
+    "string": "ceil",
+    "length": 4
+  },
+  {
+    "address": "0x003741F0",
+    "string": "sqrt",
+    "length": 4
+  },
+  {
+    "address": "0x003741F8",
+    "string": "atan2",
+    "length": 5
+  },
+  {
+    "address": "0x00374200",
+    "string": "atan",
+    "length": 4
+  },
+  {
+    "address": "0x00374208",
+    "string": "acos",
+    "length": 4
+  },
+  {
+    "address": "0x00374210",
+    "string": "asin",
+    "length": 4
+  },
+  {
+    "address": "0x00374218",
+    "string": "tanh",
+    "length": 4
+  },
+  {
+    "address": "0x00374220",
+    "string": "cosh",
+    "length": 4
+  },
+  {
+    "address": "0x00374228",
+    "string": "sinh",
+    "length": 4
+  },
+  {
+    "address": "0x00374230",
+    "string": "log10",
+    "length": 5
+  },
+  {
+    "address": "0x0037477C",
+    "string": "e+000",
+    "length": 5
+  },
+  {
+    "address": "0x00374864",
+    "string": "SunMonTueWedThuFriSat",
+    "length": 21
+  },
+  {
+    "address": "0x0037487C",
+    "string": "JanFebMarAprMayJunJulAugSepOctNovDec",
+    "length": 36
+  },
+  {
+    "address": "0x003748D4",
+    "string": "runtime error ",
+    "length": 14
+  },
+  {
+    "address": "0x003748E4",
+    "string": "TLOSS error\n",
+    "length": 12
+  },
+  {
+    "address": "0x003748F4",
+    "string": "SING error\n",
+    "length": 11
+  },
+  {
+    "address": "0x00374900",
+    "string": "DOMAIN error\n",
+    "length": 13
+  },
+  {
+    "address": "0x00374910",
+    "string": "R6029\n- This application cannot run using the active version of the Microsoft .NET Runtime\nPlease contact the application's support team for more information.\n",
+    "length": 159
+  },
+  {
+    "address": "0x003749B0",
+    "string": "R6028\n- unable to initialize heap\n",
+    "length": 34
+  },
+  {
+    "address": "0x003749D4",
+    "string": "R6027\n- not enough space for lowio initialization\n",
+    "length": 50
+  },
+  {
+    "address": "0x00374A08",
+    "string": "R6026\n- not enough space for stdio initialization\n",
+    "length": 50
+  },
+  {
+    "address": "0x00374A3C",
+    "string": "R6025\n- pure virtual function call\n",
+    "length": 35
+  },
+  {
+    "address": "0x00374A60",
+    "string": "R6024\n- not enough space for _onexit/atexit table\n",
+    "length": 50
+  },
+  {
+    "address": "0x00374A94",
+    "string": "R6019\n- unable to open console device\n",
+    "length": 38
+  },
+  {
+    "address": "0x00374ABC",
+    "string": "R6018\n- unexpected heap error\n",
+    "length": 30
+  },
+  {
+    "address": "0x00374ADC",
+    "string": "R6017\n- unexpected multithread lock error\n",
+    "length": 42
+  },
+  {
+    "address": "0x00374B08",
+    "string": "R6016\n- not enough space for thread data\n",
+    "length": 41
+  },
+  {
+    "address": "0x00374B38",
+    "string": "\nThis application has requested the Runtime to terminate it in an unusual way.\nPlease contact the application's support team for more information.\n",
+    "length": 147
+  },
+  {
+    "address": "0x00374BCC",
+    "string": "R6009\n- not enough space for environment\n",
+    "length": 41
+  },
+  {
+    "address": "0x00374BF8",
+    "string": "R6008\n- not enough space for arguments\n",
+    "length": 39
+  },
+  {
+    "address": "0x00374C20",
+    "string": "R6002\n- floating point not loaded\n",
+    "length": 34
+  },
+  {
+    "address": "0x00374C9C",
+    "string": "1#QNAN",
+    "length": 6
+  },
+  {
+    "address": "0x00374CA4",
+    "string": "1#INF",
+    "length": 5
+  },
+  {
+    "address": "0x00374CAC",
+    "string": "1#IND",
+    "length": 5
+  },
+  {
+    "address": "0x00374CB4",
+    "string": "1#SNAN",
+    "length": 6
+  },
+  {
+    "address": "0x00374CE0",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/plcore/batkbin.c#1 $",
+    "length": 64
+  },
+  {
+    "address": "0x00374D24",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/babinfrm.c#1 $",
+    "length": 58
+  },
+  {
+    "address": "0x00374D60",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/babincam.c#1 $",
+    "length": 58
+  },
+  {
+    "address": "0x00374D9C",
+    "string": "@@(#)$Id: //RenderWare/RW36Active/rwsdk/src/babintex.c#1 $",
+    "length": 58
+  },
+  {
+    "address": "0x00374DDF",
+    "string": "=Xo<",
+    "length": 4
+  },
+  {
+    "address": "0x00374E57",
+    "string": "9`p<",
+    "length": 4
+  },
+  {
+    "address": "0x00374ECF",
+    "string": "?333?",
+    "length": 5
+  },
+  {
+    "address": "0x00376BBB",
+    "string": "?333?",
+    "length": 5
+  },
+  {
+    "address": "0x0037830D",
+    "string": "c6QA",
+    "length": 4
+  },
+  {
+    "address": "0x00378481",
+    "string": "]/]i_",
+    "length": 5
+  },
+  {
+    "address": "0x0037A52E",
+    "string": "L>fff>fff>fff>fff>",
+    "length": 18
+  },
+  {
+    "address": "0x0037ABD3",
+    "string": ">BrQ?",
+    "length": 5
+  },
+  {
+    "address": "0x0037AE6D",
+    "string": "FZ?KW",
+    "length": 5
+  },
+  {
+    "address": "0x0037AEBE",
+    "string": "x?kW",
+    "length": 4
+  },
+  {
+    "address": "0x0037B1BB",
+    "string": "?>B&?",
+    "length": 5
+  },
+  {
+    "address": "0x0037B42A",
+    "string": "S?KW",
+    "length": 4
+  },
+  {
+    "address": "0x0037B8C9",
+    "string": "9~?Y",
+    "length": 4
+  },
+  {
+    "address": "0x0037CF6B",
+    "string": "?<B&?",
+    "length": 5
+  },
+  {
+    "address": "0x0037E009",
+    "string": "9~?Y",
+    "length": 4
+  },
+  {
+    "address": "0x0038415B",
+    "string": ">fff?",
+    "length": 5
+  },
+  {
+    "address": "0x00384B46",
+    "string": "zDThere is a problem with the disc you are using.",
+    "length": 49
+  },
+  {
+    "address": "0x00384B78",
+    "string": "It may be dirty or damaged.",
+    "length": 27
+  },
+  {
+    "address": "0x00384BA6",
+    "string": "nder har ett fel.",
+    "length": 17
+  },
+  {
+    "address": "0x00384BB8",
+    "string": "Den kan vara smutsig eller skadad.",
+    "length": 34
+  },
+  {
+    "address": "0x00384BDC",
+    "string": "Bei der benutzten CD ist ein Problem aufgetreten.",
+    "length": 49
+  },
+  {
+    "address": "0x00384C3E",
+    "string": "digt.",
+    "length": 5
+  },
+  {
+    "address": "0x00384C59",
+    "string": "sente une anomalie.",
+    "length": 19
+  },
+  {
+    "address": "0x00384C94",
+    "string": "Il disco in uso ha qualche problema.",
+    "length": 36
+  },
+  {
+    "address": "0x00384CBC",
+    "string": "Potrebbe essere sporco o danneggiato.",
+    "length": 37
+  },
+  {
+    "address": "0x00384D09",
+    "string": " usando.",
+    "length": 8
+  },
+  {
+    "address": "0x00384D2B",
+    "string": "ado.",
+    "length": 4
+  },
+  {
+    "address": "0x00384D30",
+    "string": "Er is een probleem met de disc die jij gebruikt.",
+    "length": 48
+  },
+  {
+    "address": "0x00384D64",
+    "string": "De disc is mogelijk vuil of beschadigd.",
+    "length": 39
+  },
+  {
+    "address": "0x00385217",
+    "string": ":33s?333?",
+    "length": 9
+  },
+  {
+    "address": "0x00386DD4",
+    "string": "fff?",
+    "length": 4
+  },
+  {
+    "address": "0x00386DEF",
+    "string": "?333?",
+    "length": 5
+  },
+  {
+    "address": "0x00386DF8",
+    "string": "fff?",
+    "length": 4
+  },
+  {
+    "address": "0x003876DF",
+    "string": "?33s?",
+    "length": 5
+  },
+  {
+    "address": "0x003883CB",
+    "string": "A33s?",
+    "length": 5
+  },
+  {
+    "address": "0x003883D3",
+    "string": "<ff&?",
+    "length": 5
+  },
+  {
+    "address": "0x003883DF",
+    "string": "A33s?",
+    "length": 5
+  },
+  {
+    "address": "0x0038957B",
+    "string": ">333?",
+    "length": 5
+  },
+  {
+    "address": "0x0038A26A",
+    "string": "zDData\\LoadScrn.bin",
+    "length": 19
+  },
+  {
+    "address": "0x0039213C",
+    "string": "CPU 1",
+    "length": 5
+  },
+  {
+    "address": "0x00392146",
+    "string": "CPU 2",
+    "length": 5
+  },
+  {
+    "address": "0x00392150",
+    "string": "CPU 3",
+    "length": 5
+  },
+  {
+    "address": "0x0039215A",
+    "string": "CPU 4",
+    "length": 5
+  },
+  {
+    "address": "0x00392164",
+    "string": "CPU 5",
+    "length": 5
+  },
+  {
+    "address": "0x0039308F",
+    "string": "Dxblburnout05.ea.com",
+    "length": 20
+  },
+  {
+    "address": "0x003953FB",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x0039557F",
+    "string": "@HUD_Strikeout",
+    "length": 14
+  },
+  {
+    "address": "0x0039559C",
+    "string": "333?",
+    "length": 4
+  },
+  {
+    "address": "0x00395E86",
+    "string": "L>333@",
+    "length": 6
+  },
+  {
+    "address": "0x0039634B",
+    "string": "Dfff?",
+    "length": 5
+  },
+  {
+    "address": "0x0039714A",
+    "string": " Afff?",
+    "length": 6
+  },
+  {
+    "address": "0x00397414",
+    "string": "TButton",
+    "length": 7
+  },
+  {
+    "address": "0x0039741D",
+    "string": "TButton",
+    "length": 7
+  },
+  {
+    "address": "0x00397426",
+    "string": "Buttons",
+    "length": 7
+  },
+  {
+    "address": "0x0039742F",
+    "string": "Buttons",
+    "length": 7
+  },
+  {
+    "address": "0x00397AFF",
+    "string": "?=\nW?",
+    "length": 5
+  },
+  {
+    "address": "0x00397EF6",
+    "string": "@@fff?",
+    "length": 6
+  },
+  {
+    "address": "0x00397FA7",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x00398236",
+    "string": " Bfff?",
+    "length": 6
+  },
+  {
+    "address": "0x00398DEE",
+    "string": " Bfff?",
+    "length": 6
+  },
+  {
+    "address": "0x00398F3B",
+    "string": "@fff?",
+    "length": 5
+  },
+  {
+    "address": "0x00399436",
+    "string": "L?=\nW>",
+    "length": 6
+  },
+  {
+    "address": "0x0039A942",
+    "string": "pA333?",
+    "length": 6
+  },
+  {
+    "address": "0x0039AC63",
+    "string": "?33s?",
+    "length": 5
+  },
+  {
+    "address": "0x0039B0B7",
+    "string": "@fff?",
+    "length": 5
+  },
+  {
+    "address": "0x0039B6DF",
+    "string": "@fff?",
+    "length": 5
+  },
+  {
+    "address": "0x0039C762",
+    "string": "zD333?",
+    "length": 6
+  },
+  {
+    "address": "0x0039C8F0",
+    "string": "fff?",
+    "length": 4
+  },
+  {
+    "address": "0x0039CBEC",
+    "string": ";IPY",
+    "length": 4
+  },
+  {
+    "address": "0x0039CE44",
+    "string": "'gqv",
+    "length": 4
+  },
+  {
+    "address": "0x0039CE64",
+    "string": "'gqv",
+    "length": 4
+  },
+  {
+    "address": "0x0039D083",
+    "string": "?333?",
+    "length": 5
+  },
+  {
+    "address": "0x0039E33D",
+    "string": "  !!",
+    "length": 4
+  },
+  {
+    "address": "0x0039E813",
+    "string": "gjASP",
+    "length": 5
+  },
+  {
+    "address": "0x003A0CB7",
+    "string": "?Stagedat.bgd",
+    "length": 13
+  },
+  {
+    "address": "0x003A15DA",
+    "string": "zD../Export/ValueDB/Camera/",
+    "length": 27
+  },
+  {
+    "address": "0x003A2D37",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A2D52",
+    "string": " @ff&?",
+    "length": 6
+  },
+  {
+    "address": "0x003A2E48",
+    "string": "../Export/ValueDB/Score.cfg",
+    "length": 27
+  },
+  {
+    "address": "0x003A35D3",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A35DB",
+    "string": "Afff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A371B",
+    "string": ">333?",
+    "length": 5
+  },
+  {
+    "address": "0x003A3746",
+    "string": "#=fff?",
+    "length": 6
+  },
+  {
+    "address": "0x003A374F",
+    "string": "?333?",
+    "length": 5
+  },
+  {
+    "address": "0x003A3780",
+    "string": "fff?",
+    "length": 4
+  },
+  {
+    "address": "0x003A37BF",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A37F7",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A382F",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A383B",
+    "string": ">333?\t",
+    "length": 6
+  },
+  {
+    "address": "0x003A3867",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A389F",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A38D7",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A38F4",
+    "string": "333?",
+    "length": 4
+  },
+  {
+    "address": "0x003A392C",
+    "string": "fff?",
+    "length": 4
+  },
+  {
+    "address": "0x003A3964",
+    "string": "333?",
+    "length": 4
+  },
+  {
+    "address": "0x003A399C",
+    "string": "333?",
+    "length": 4
+  },
+  {
+    "address": "0x003A39D4",
+    "string": "333?",
+    "length": 4
+  },
+  {
+    "address": "0x003A3A0C",
+    "string": "333?",
+    "length": 4
+  },
+  {
+    "address": "0x003A3A56",
+    "string": "#<fff?",
+    "length": 6
+  },
+  {
+    "address": "0x003A3A5F",
+    "string": "?333?fff?",
+    "length": 9
+  },
+  {
+    "address": "0x003A3A8E",
+    "string": "L=fff?",
+    "length": 6
+  },
+  {
+    "address": "0x003A3A97",
+    "string": "?333?fff?",
+    "length": 9
+  },
+  {
+    "address": "0x003A3AC8",
+    "string": "fff?",
+    "length": 4
+  },
+  {
+    "address": "0x003A3ACF",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A3B07",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A3B3F",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A3B77",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A3BAF",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A3BE7",
+    "string": "?fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A473B",
+    "string": "@fff?",
+    "length": 5
+  },
+  {
+    "address": "0x003A4990",
+    "string": "../Export/ValueDB/Score.cfg",
+    "length": 27
+  },
+  {
+    "address": "0x003A4AF0",
+    "string": "efffgh",
+    "length": 6
+  },
+  {
+    "address": "0x003A4AFC",
+    "string": "ikmnop",
+    "length": 6
+  },
+  {
+    "address": "0x003A4B04",
+    "string": "789:;<=>?DDD@@@",
+    "length": 15
+  },
+  {
+    "address": "0x003A6598",
+    "string": "Header",
+    "length": 6
+  },
+  {
+    "address": "0x003A65B8",
+    "string": "Value",
+    "length": 5
+  },
+  {
+    "address": "0x003A65D8",
+    "string": "Array",
+    "length": 5
+  },
+  {
+    "address": "0x003A65F8",
+    "string": "None",
+    "length": 4
+  },
+  {
+    "address": "0x003A6618",
+    "string": "SignedInteger",
+    "length": 13
+  },
+  {
+    "address": "0x003A6638",
+    "string": "UnsignedInteger",
+    "length": 15
+  },
+  {
+    "address": "0x003A6658",
+    "string": "SingleFloat",
+    "length": 11
+  },
+  {
+    "address": "0x003A6A6E",
+    "string": "pA81.6.198.229",
+    "length": 14
+  },
+  {
+    "address": "0x003A6A80",
+    "string": "239.255.255.250",
+    "length": 15
+  },
+  {
+    "address": "0x003A6A98",
+    "string": "M-SEARCH * HTTP/1.1\r\nHost:239.255.255.250:1900\r\nST:urn:schemas-upnp-org:device:WANConnectionDevice:1\r\nMan:\"ssdp:discover\"\r\nMX:3\r\n\r\n",
+    "length": 131
+  },
+  {
+    "address": "0x003A6B1C",
+    "string": "GET ",
+    "length": 4
+  },
+  {
+    "address": "0x003A6B28",
+    "string": " HTTP/1.1\r\nAccept: text/xml, application/xml\r\nUser-Agent: PS2\r\n",
+    "length": 63
+  },
+  {
+    "address": "0x003A6B68",
+    "string": "Connection: Keep-Alive\r\n\r\n",
+    "length": 26
+  },
+  {
+    "address": "0x003A6B84",
+    "string": "POST ",
+    "length": 5
+  },
+  {
+    "address": "0x003A6B90",
+    "string": " HTTP/1.1\r\nContent-Type: text/xml; charset=\"utf-8\"\r\nSOAPAction: \"",
+    "length": 65
+  },
+  {
+    "address": "0x003A6BD4",
+    "string": "#AddPortMapping\"\r\nUser-Agent: PS2\r\n",
+    "length": 35
+  },
+  {
+    "address": "0x003A6BF8",
+    "string": "Connection: Keep-Alive\r\nCache-Control: no-cache\r\n\r\n",
+    "length": 51
+  },
+  {
+    "address": "0x003A6C30",
+    "string": "<?xml version=\"1.0\"?>\r\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><SOAP-ENV:Body><m:AddPortMapping xmlns:m=\"",
+    "length": 210
+  },
+  {
+    "address": "0x003A6D08",
+    "string": "\"><NewRemoteHost xmlns:dt=\"urn:schemas-microsoft-com:datatypes\" dt:dt=\"string\">",
+    "length": 79
+  },
+  {
+    "address": "0x003A6D58",
+    "string": "</NewRemoteHost><NewExternalPort xmlns:dt=\"urn:schemas-microsoft-com:datatypes\" dt:dt=\"ui2\">",
+    "length": 92
+  },
+  {
+    "address": "0x003A6DB8",
+    "string": "</NewExternalPort><NewProtocol xmlns:dt=\"urn:schemas-microsoft-com:datatypes\" dt:dt=\"string\">UDP</NewProtocol><NewInternalPort xmlns:dt=\"urn:schemas-microsoft-com:datatypes\" dt:dt=\"ui2\">",
+    "length": 186
+  },
+  {
+    "address": "0x003A6E78",
+    "string": "</NewInternalPort><NewInternalClient xmlns:dt=\"urn:schemas-microsoft-com:datatypes\" dt:dt=\"string\">",
+    "length": 99
+  },
+  {
+    "address": "0x003A6FE1",
+    "string": "wLeaseDuration xmlns:dt=\"urn:schemas-microsoft-com:datatypes\" dt:dt=\"ui4\">0</NewLeaseDuration></m:AddPortMapping></SOAP-ENV:Body></SOAP-ENV:Envelope>\r\n\r\n",
+    "length": 153
+  },
+  {
+    "address": "0x003A707C",
+    "string": "POST ",
+    "length": 5
+  },
+  {
+    "address": "0x003A7088",
+    "string": " HTTP/1.1\r\nContent-Type: text/xml; charset=\"utf-8\"\r\nSOAPAction: \"",
+    "length": 65
+  },
+  {
+    "address": "0x003A70CC",
+    "string": "#GetSpecificPortMappingEntry\"\r\nUser-Agent: PS2\r\n",
+    "length": 48
+  },
+  {
+    "address": "0x003A7100",
+    "string": "Connection: Keep-Alive\r\nCache-Control: no-cache\r\n\r\n",
+    "length": 51
+  },
+  {
+    "address": "0x003A7138",
+    "string": "<?xml version=\"1.0\"?>\r\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><SOAP-ENV:Body><m:GetSpecificPortMappingEntry xmlns:m=\"",
+    "length": 223
+  },
+  {
+    "address": "0x003A7218",
+    "string": "\"><NewRemoteHost xmlns:dt=\"urn:schemas-microsoft-com:datatypes\" dt:dt=\"string\">",
+    "length": 79
+  },
+  {
+    "address": "0x003A7268",
+    "string": "</NewRemoteHost><NewExternalPort xmlns:dt=\"urn:schemas-microsoft-com:datatypes\" dt:dt=\"ui2\">",
+    "length": 92
+  },
+  {
+    "address": "0x003A72C8",
+    "string": "</NewExternalPort><NewProtocol xmlns:dt=\"urn:schemas-microsoft-com:datatypes\" dt:dt=\"string\">UDP</NewProtocol></m:GetSpecificPortMappingEntry></SOAP-ENV:Body></SOAP-ENV:Envelope>\r\n\r\n",
+    "length": 182
+  },
+  {
+    "address": "0x003A7380",
+    "string": "POST ",
+    "length": 5
+  },
+  {
+    "address": "0x003A7388",
+    "string": " HTTP/1.1\r\nContent-Type: text/xml; charset=\"utf-8\"\r\nSOAPAction: \"",
+    "length": 65
+  },
+  {
+    "address": "0x003A73CC",
+    "string": "#DeletePortMapping\"\r\nUser-Agent: PS2\r\n",
+    "length": 38
+  },
+  {
+    "address": "0x003A73F4",
+    "string": "Connection: Keep-Alive\r\nCache-Control: no-cache\r\n\r\n",
+    "length": 51
+  },
+  {
+    "address": "0x003A7428",
+    "string": "<?xml version=\"1.0\"?>\r\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><SOAP-ENV:Body><m:DeletePortMapping xmlns:m=\"",
+    "length": 213
+  },
+  {
+    "address": "0x003A7500",
+    "string": "\"><NewRemoteHost xmlns:dt=\"urn:schemas-microsoft-com:datatypes\" dt:dt=\"string\">",
+    "length": 79
+  },
+  {
+    "address": "0x003A7550",
+    "string": "</NewRemoteHost><NewExternalPort xmlns:dt=\"urn:schemas-microsoft-com:datatypes\" dt:dt=\"ui2\">",
+    "length": 92
+  },
+  {
+    "address": "0x003A75B0",
+    "string": "</NewExternalPort><NewProtocol xmlns:dt=\"urn:schemas-microsoft-com:datatypes\" dt:dt=\"string\">UDP</NewProtocol></m:DeletePortMapping></SOAP-ENV:Body></SOAP-ENV:Envelope>\r\n\r\n",
+    "length": 172
+  },
+  {
+    "address": "0x003A7660",
+    "string": "POST ",
+    "length": 5
+  },
+  {
+    "address": "0x003A7668",
+    "string": " HTTP/1.1\r\nContent-Type: text/xml; charset=\"utf-8\"\r\nSOAPAction: \"",
+    "length": 65
+  },
+  {
+    "address": "0x003A76AC",
+    "string": "#GetExternalIPAddress\"\r\nUser-Agent: PS2\r\n",
+    "length": 41
+  },
+  {
+    "address": "0x003A76D8",
+    "string": "Connection: Keep-Alive\r\nCache-Control: no-cache\r\n\r\n",
+    "length": 51
+  },
+  {
+    "address": "0x003A7710",
+    "string": "<?xml version=\"1.0\"?>\r\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><SOAP-ENV:Body><m:GetExternalIPAddress xmlns:m=\"",
+    "length": 216
+  },
+  {
+    "address": "0x003A77EC",
+    "string": "\"/></SOAP-ENV:Body></SOAP-ENV:Envelope>\r\n\r\n",
+    "length": 43
+  },
+  {
+    "address": "0x003A7818",
+    "string": "urn:schemas-upnp-org:device:wanconnectiondevice",
+    "length": 47
+  },
+  {
+    "address": "0x003A7848",
+    "string": "</root>",
+    "length": 7
+  },
+  {
+    "address": "0x003A78D4",
+    "string": "/XBL/BURNOUT-CONSOLE-2005",
+    "length": 25
+  },
+  {
+    "address": "0x003A7F53",
+    "string": "?}?5?",
+    "length": 5
+  },
+  {
+    "address": "0x003A805F",
+    "string": "?}?5?",
+    "length": 5
+  },
+  {
+    "address": "0x003A8300",
+    "string": "%.03f",
+    "length": 5
+  },
+  {
+    "address": "0x003A8308",
+    "string": " Auto ",
+    "length": 6
+  },
+  {
+    "address": "0x003A8310",
+    "string": " Variable Absolute ",
+    "length": 19
+  },
+  {
+    "address": "0x003A8324",
+    "string": " Variable Relative ",
+    "length": 19
+  },
+  {
+    "address": "0x003A8338",
+    "string": " Constant ",
+    "length": 10
+  },
+  {
+    "address": "0x003A8344",
+    "string": "7 - Misc",
+    "length": 8
+  },
+  {
+    "address": "0x003A8350",
+    "string": "6 - Traffic",
+    "length": 11
+  },
+  {
+    "address": "0x003A835C",
+    "string": "5 - Sound",
+    "length": 9
+  },
+  {
+    "address": "0x003A8368",
+    "string": "4 - Physics",
+    "length": 11
+  },
+  {
+    "address": "0x003A8374",
+    "string": "3 - Networking",
+    "length": 14
+  },
+  {
+    "address": "0x003A8384",
+    "string": "2 - Graphics",
+    "length": 12
+  },
+  {
+    "address": "0x003A8394",
+    "string": "1 - AI",
+    "length": 6
+  },
+  {
+    "address": "0x003A839C",
+    "string": "0 - General",
+    "length": 11
+  },
+  {
+    "address": "0x003A83A8",
+    "string": "A:Select   B:Cancel   X:Back   Y:Log   B/W:Win Select   Left Trig Pin Window",
+    "length": 76
+  },
+  {
+    "address": "0x003A83F8",
+    "string": "Data/stagehed.bin",
+    "length": 17
+  },
+  {
+    "address": "0x003A840C",
+    "string": "Data/Frontend.txd",
+    "length": 17
+  },
+  {
+    "address": "0x003A8420",
+    "string": "Gain",
+    "length": 4
+  },
+  {
+    "address": "0x003A8428",
+    "string": "Sound/Front End",
+    "length": 15
+  },
+  {
+    "address": "0x003A8438",
+    "string": "../export/ValueDB/Sound/Movie.cfg",
+    "length": 33
+  },
+  {
+    "address": "0x003A845C",
+    "string": "tracks\\_femain.rws",
+    "length": 18
+  },
+  {
+    "address": "0x003A8470",
+    "string": "ovid\\movie.xwb",
+    "length": 14
+  },
+  {
+    "address": "0x003A8480",
+    "string": "D:\\tracks\\Static.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8498",
+    "string": "D:\\tracks\\Waterfr4.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A84B0",
+    "string": "D:\\tracks\\Waterfr3.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A84C8",
+    "string": "D:\\tracks\\Waterfr2.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A84E0",
+    "string": "D:\\tracks\\Waterfr1.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A84F8",
+    "string": "D:\\tracks\\SilverL4.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8510",
+    "string": "D:\\tracks\\SilverL3.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8528",
+    "string": "D:\\tracks\\SilverL2.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8540",
+    "string": "D:\\tracks\\SilverL1.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8558",
+    "string": "D:\\tracks\\Downtow3.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8570",
+    "string": "D:\\tracks\\Downtow2.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8588",
+    "string": "D:\\tracks\\Downtow1.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A85A0",
+    "string": "D:\\tracks\\IslandP4.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A85B8",
+    "string": "D:\\tracks\\IslandP3.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A85D0",
+    "string": "D:\\tracks\\IslandP2.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A85E8",
+    "string": "D:\\tracks\\IslandP1.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8600",
+    "string": "D:\\tracks\\GoldenC6.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8618",
+    "string": "D:\\tracks\\GoldenC5.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8630",
+    "string": "D:\\tracks\\GoldenC4.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8648",
+    "string": "D:\\tracks\\GoldenC3.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8660",
+    "string": "D:\\tracks\\GoldenC2.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8678",
+    "string": "D:\\tracks\\GoldenC1.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8690",
+    "string": "D:\\tracks\\Docksid5.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A86A8",
+    "string": "D:\\tracks\\Docksid4.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A86C0",
+    "string": "D:\\tracks\\Docksid3.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A86D8",
+    "string": "D:\\tracks\\Docksid2.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A86F0",
+    "string": "D:\\tracks\\Docksid1.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8708",
+    "string": "D:\\tracks\\WinterC6.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8720",
+    "string": "D:\\tracks\\WinterC5.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8738",
+    "string": "D:\\tracks\\WinterC4.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8750",
+    "string": "D:\\tracks\\WinterC3.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8768",
+    "string": "D:\\tracks\\WinterC2.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8780",
+    "string": "D:\\tracks\\WinterC1.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8798",
+    "string": "D:\\tracks\\Vineyar5.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A87B0",
+    "string": "D:\\tracks\\Vineyar4.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A87C8",
+    "string": "D:\\tracks\\Vineyar3.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A87E0",
+    "string": "D:\\tracks\\Vineyar2.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A87F8",
+    "string": "D:\\tracks\\Vineyar1.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8810",
+    "string": "D:\\tracks\\Riviera5.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8828",
+    "string": "D:\\tracks\\Riviera4.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8840",
+    "string": "D:\\tracks\\Riviera3.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8858",
+    "string": "D:\\tracks\\Riviera2.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8870",
+    "string": "D:\\tracks\\Riviera1.xmv",
+    "length": 22
+  },
+  {
+    "address": "0x003A8888",
+    "string": "D:\\tracks\\Alpine4.xmv",
+    "length": 21
+  },
+  {
+    "address": "0x003A88A0",
+    "string": "D:\\tracks\\Alpine3.xmv",
+    "length": 21
+  },
+  {
+    "address": "0x003A88B8",
+    "string": "D:\\tracks\\Alpine2.xmv",
+    "length": 21
+  },
+  {
+    "address": "0x003A88D0",
+    "string": "D:\\tracks\\Alpine1.xmv",
+    "length": 21
+  },
+  {
+    "address": "0x003A88E8",
+    "string": "D:\\ovid\\CrshHd10.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8900",
+    "string": "D:\\ovid\\CrshHd09.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8918",
+    "string": "D:\\ovid\\CrshHd08.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8930",
+    "string": "D:\\ovid\\CrshHd07.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8948",
+    "string": "D:\\ovid\\CrshHd06.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8960",
+    "string": "D:\\ovid\\CrshHd05.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8978",
+    "string": "D:\\ovid\\CrshHd04.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8990",
+    "string": "D:\\ovid\\CrshHd03.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A89A8",
+    "string": "D:\\ovid\\CrshHd02.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A89C0",
+    "string": "D:\\ovid\\CrshHd01.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A89D8",
+    "string": "D:\\ovid\\TkdTrp04.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A89F0",
+    "string": "D:\\ovid\\TkdTrp03.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8A08",
+    "string": "D:\\ovid\\TkdTrp02.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8A20",
+    "string": "D:\\ovid\\TkdTrp01.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8A38",
+    "string": "D:\\ovid\\SigTkd20.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8A50",
+    "string": "D:\\ovid\\SigTkd19.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8A68",
+    "string": "D:\\ovid\\SigTkd18.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8A80",
+    "string": "D:\\ovid\\SigTkd17.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8A98",
+    "string": "D:\\ovid\\SigTkd16.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8AB0",
+    "string": "D:\\ovid\\SigTkd15.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8AC8",
+    "string": "D:\\ovid\\SigTkd14.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8AE0",
+    "string": "D:\\ovid\\SigTkd13.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8AF8",
+    "string": "D:\\ovid\\SigTkd12.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8B10",
+    "string": "D:\\ovid\\SigTkd11.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8B28",
+    "string": "D:\\ovid\\SigTkd10.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8B40",
+    "string": "D:\\ovid\\SigTkd09.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8B58",
+    "string": "D:\\ovid\\SigTkd08.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8B70",
+    "string": "D:\\ovid\\SigTkd07.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8B88",
+    "string": "D:\\ovid\\SigTkd06.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8BA0",
+    "string": "D:\\ovid\\SigTkd05.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8BB8",
+    "string": "D:\\ovid\\SigTkd04.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8BD0",
+    "string": "D:\\ovid\\SigTkd03.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8BE8",
+    "string": "D:\\ovid\\SigTkd02.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8C00",
+    "string": "D:\\ovid\\SigTkd01.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8C18",
+    "string": "D:\\ovid\\SpcPst10.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8C30",
+    "string": "D:\\ovid\\SpcPst09.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8C48",
+    "string": "D:\\ovid\\SpcPst08.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8C60",
+    "string": "D:\\ovid\\SpcPst07.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8C78",
+    "string": "D:\\ovid\\SpcPst06.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8C90",
+    "string": "D:\\ovid\\SpcPst05.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8CA8",
+    "string": "D:\\ovid\\SpcPst04.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8CC0",
+    "string": "D:\\ovid\\SpcPst03.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8CD8",
+    "string": "D:\\ovid\\SpcPst02.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8CF0",
+    "string": "D:\\ovid\\SpcPst01.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8D08",
+    "string": "D:\\ovid\\SpcInv03.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8D20",
+    "string": "D:\\ovid\\SpcInv02.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8D38",
+    "string": "D:\\ovid\\SpcInv01.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8D50",
+    "string": "D:\\ovid\\credits.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8D64",
+    "string": "D:\\ovid\\EndCrsh.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8D78",
+    "string": "D:\\ovid\\EndRace.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8D8C",
+    "string": "D:\\ovid\\suunlock.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8DA4",
+    "string": "D:\\ovid\\spunlock.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8DBC",
+    "string": "D:\\ovid\\counlock.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8DD4",
+    "string": "D:\\ovid\\muunlock.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8DEC",
+    "string": "D:\\ovid\\complock.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8E04",
+    "string": "D:\\tracks\\_FEMain.xmv",
+    "length": 21
+  },
+  {
+    "address": "0x003A8E1C",
+    "string": "D:\\ovid\\TrD_SWE.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8E30",
+    "string": "D:\\ovid\\TrD_SPA.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8E44",
+    "string": "D:\\ovid\\TrD_JAP.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8E58",
+    "string": "D:\\ovid\\TrD_ITA.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8E6C",
+    "string": "D:\\ovid\\TrD_GER.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8E80",
+    "string": "D:\\ovid\\TrD_FRA.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8E94",
+    "string": "D:\\ovid\\TrD_ENG.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8EA8",
+    "string": "D:\\ovid\\TrD_DUT.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8EBC",
+    "string": "D:\\ovid\\TrC_SWE.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8ED0",
+    "string": "D:\\ovid\\TrC_SPA.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8EE4",
+    "string": "D:\\ovid\\TrC_JAP.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8EF8",
+    "string": "D:\\ovid\\TrC_ITA.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8F0C",
+    "string": "D:\\ovid\\TrC_GER.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8F20",
+    "string": "D:\\ovid\\TrC_FRA.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8F34",
+    "string": "D:\\ovid\\TrC_ENG.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8F48",
+    "string": "D:\\ovid\\TrC_DUT.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8F5C",
+    "string": "D:\\ovid\\cri_rw%d.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8F74",
+    "string": "D:\\ovid\\swedis%d.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8F8C",
+    "string": "D:\\ovid\\spanis%d.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8FA4",
+    "string": "D:\\ovid\\japan%d.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A8FB8",
+    "string": "D:\\ovid\\italia%d.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8FD0",
+    "string": "D:\\ovid\\german%d.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A8FE8",
+    "string": "D:\\ovid\\french%d.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A9000",
+    "string": "D:\\ovid\\englis%d.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003A9018",
+    "string": "D:\\ovid\\dutch%d.xmv",
+    "length": 19
+  },
+  {
+    "address": "0x003A902C",
+    "string": "D:\\ovid\\Titles%d.xmv",
+    "length": 20
+  },
+  {
+    "address": "0x003AA344",
+    "string": "Data/vdb.xml",
+    "length": 12
+  },
+  {
+    "address": "0x003AA354",
+    "string": "Data/EALogin.ico",
+    "length": 16
+  },
+  {
+    "address": "0x003AA368",
+    "string": "Data/PrgData.bin",
+    "length": 16
+  },
+  {
+    "address": "0x003AA37C",
+    "string": "Tracks/tlist.bin",
+    "length": 16
+  },
+  {
+    "address": "0x003AA390",
+    "string": "pveh/vlist.bin",
+    "length": 14
+  },
+  {
+    "address": "0x003AA3A0",
+    "string": "Data/Global.txd",
+    "length": 15
+  },
+  {
+    "address": "0x003AA3B0",
+    "string": "Data/HeadIt.bin",
+    "length": 15
+  },
+  {
+    "address": "0x003AA3C0",
+    "string": "Data/HeadGe.bin",
+    "length": 15
+  },
+  {
+    "address": "0x003AA3D0",
+    "string": "Data/HeadFr.bin",
+    "length": 15
+  },
+  {
+    "address": "0x003AA3E0",
+    "string": "Data/HeadJa.bin",
+    "length": 15
+  },
+  {
+    "address": "0x003AA3F0",
+    "string": "Data/HeadUs.bin",
+    "length": 15
+  },
+  {
+    "address": "0x003AA400",
+    "string": "Data/HeadSw.bin",
+    "length": 15
+  },
+  {
+    "address": "0x003AA410",
+    "string": "Data/HeadSp.bin",
+    "length": 15
+  },
+  {
+    "address": "0x003AA420",
+    "string": "Data/HeadDu.bin",
+    "length": 15
+  },
+  {
+    "address": "0x003AA430",
+    "string": "Data/HeadEn.bin",
+    "length": 15
+  },
+  {
+    "address": "0x003AA440",
+    "string": "Data/GlobalIt.bin",
+    "length": 17
+  },
+  {
+    "address": "0x003AA454",
+    "string": "Data/GlobalGe.bin",
+    "length": 17
+  },
+  {
+    "address": "0x003AA468",
+    "string": "Data/GlobalFr.bin",
+    "length": 17
+  },
+  {
+    "address": "0x003AA47C",
+    "string": "Data/GlobalJa.bin",
+    "length": 17
+  },
+  {
+    "address": "0x003AA490",
+    "string": "Data/GlobalUs.bin",
+    "length": 17
+  },
+  {
+    "address": "0x003AA4A4",
+    "string": "Data/GlobalSw.bin",
+    "length": 17
+  },
+  {
+    "address": "0x003AA4B8",
+    "string": "Data/GlobalSp.bin",
+    "length": 17
+  },
+  {
+    "address": "0x003AA4CC",
+    "string": "Data/GlobalDu.bin",
+    "length": 17
+  },
+  {
+    "address": "0x003AA4E0",
+    "string": "Data/GlobalEn.bin",
+    "length": 17
+  },
+  {
+    "address": "0x003AA4F4",
+    "string": "%s/%s",
+    "length": 5
+  },
+  {
+    "address": "0x003AA4FC",
+    "string": "World Time %.5f",
+    "length": 15
+  },
+  {
+    "address": "0x003AA50C",
+    "string": "AWESOME NEAR MISS!",
+    "length": 18
+  },
+  {
+    "address": "0x003AA520",
+    "string": "FANTASTIC NEAR MISS!",
+    "length": 20
+  },
+  {
+    "address": "0x003AA538",
+    "string": "GREAT NEAR MISS!",
+    "length": 16
+  },
+  {
+    "address": "0x003AA54C",
+    "string": "GOOD NEAR MISS!",
+    "length": 15
+  },
+  {
+    "address": "0x003AA55C",
+    "string": "AWESOME ONCOMING!",
+    "length": 17
+  },
+  {
+    "address": "0x003AA570",
+    "string": "FANTASTIC ONCOMING!",
+    "length": 19
+  },
+  {
+    "address": "0x003AA584",
+    "string": "GREAT ONCOMING!",
+    "length": 15
+  },
+  {
+    "address": "0x003AA594",
+    "string": "GOOD ONCOMING!",
+    "length": 14
+  },
+  {
+    "address": "0x003AA5A4",
+    "string": "AWESOME DRIFT!",
+    "length": 14
+  },
+  {
+    "address": "0x003AA5B4",
+    "string": "FANTASTIC DRIFT!",
+    "length": 16
+  },
+  {
+    "address": "0x003AA5C8",
+    "string": "GREAT DRIFT!",
+    "length": 12
+  },
+  {
+    "address": "0x003AA5D8",
+    "string": "GOOD DRIFT!",
+    "length": 11
+  },
+  {
+    "address": "0x003AA5E4",
+    "string": "AWESOME AIR!",
+    "length": 12
+  },
+  {
+    "address": "0x003AA5F4",
+    "string": "FANTASTIC AIR!",
+    "length": 14
+  },
+  {
+    "address": "0x003AA604",
+    "string": "GREAT AIR!",
+    "length": 10
+  },
+  {
+    "address": "0x003AA610",
+    "string": "GOOD AIR!",
+    "length": 9
+  },
+  {
+    "address": "0x003AA61C",
+    "string": "Menu test Jolt time (s)",
+    "length": 23
+  },
+  {
+    "address": "0x003AA634",
+    "string": "Crashing Car v. World Fade time (s)",
+    "length": 35
+  },
+  {
+    "address": "0x003AA658",
+    "string": "Crashing Car v. World Jolt time (s)",
+    "length": 35
+  },
+  {
+    "address": "0x003AA67C",
+    "string": "Crashing Car v. World Jolt Amount (0.0 to 1.0)",
+    "length": 46
+  },
+  {
+    "address": "0x003AA6AC",
+    "string": "Crashing Car v. World jolt type (0=samll,1=large)",
+    "length": 49
+  },
+  {
+    "address": "0x003AA6E0",
+    "string": "Car v. World Fade time (s)",
+    "length": 26
+  },
+  {
+    "address": "0x003AA6FC",
+    "string": "Car v. World Jolt time (s)",
+    "length": 26
+  },
+  {
+    "address": "0x003AA718",
+    "string": "Car v. World Jolt Amount (0.0 to 1.0)",
+    "length": 37
+  },
+  {
+    "address": "0x003AA740",
+    "string": "Car v. World jolt type (0=samll,1=large)",
+    "length": 40
+  },
+  {
+    "address": "0x003AA76C",
+    "string": "Crashing Car v. Car Fade time (s)",
+    "length": 33
+  },
+  {
+    "address": "0x003AA790",
+    "string": "Crashing Car v. Car Jolt time (s)",
+    "length": 33
+  },
+  {
+    "address": "0x003AA7B4",
+    "string": "Crashing Car v. Car Jolt Amount (0.0 to 1.0)",
+    "length": 44
+  },
+  {
+    "address": "0x003AA7E4",
+    "string": "Crashing Car v. Car jolt type (0=samll,1=large)",
+    "length": 47
+  },
+  {
+    "address": "0x003AA814",
+    "string": "Car v. Traffic Fade time (s)",
+    "length": 28
+  },
+  {
+    "address": "0x003AA834",
+    "string": "Car v. Traffic Jolt time (s)",
+    "length": 28
+  },
+  {
+    "address": "0x003AA854",
+    "string": "Car v. Traffic Jolt Amount (0.0 to 1.0)",
+    "length": 39
+  },
+  {
+    "address": "0x003AA87C",
+    "string": "Car v. Traffic jolt type (0=samll,1=large)",
+    "length": 42
+  },
+  {
+    "address": "0x003AA8A8",
+    "string": "Car v. Car Fade time (s)",
+    "length": 24
+  },
+  {
+    "address": "0x003AA8C4",
+    "string": "Car v. Car Jolt time (s)",
+    "length": 24
+  },
+  {
+    "address": "0x003AA8E0",
+    "string": "Car v. Car Jolt Amount (0.0 to 1.0)",
+    "length": 35
+  },
+  {
+    "address": "0x003AA904",
+    "string": "Car v. Car jolt type (0=samll,1=large)",
+    "length": 38
+  },
+  {
+    "address": "0x003AA92C",
+    "string": "Crash Fade time (s)",
+    "length": 19
+  },
+  {
+    "address": "0x003AA940",
+    "string": "Crash Jolt time (s)",
+    "length": 19
+  },
+  {
+    "address": "0x003AA954",
+    "string": "Crash Jolt Amount (0.0 to 1.0)",
+    "length": 30
+  },
+  {
+    "address": "0x003AA974",
+    "string": "Crash jolt type (0=samll,1=large)",
+    "length": 33
+  },
+  {
+    "address": "0x003AA998",
+    "string": "Big Air Fade time (s)",
+    "length": 21
+  },
+  {
+    "address": "0x003AA9B0",
+    "string": "Big Air Jolt time (s)",
+    "length": 21
+  },
+  {
+    "address": "0x003AA9C8",
+    "string": "Big Air Base Jolt Amount (0.0 to 1.0)",
+    "length": 37
+  },
+  {
+    "address": "0x003AA9F0",
+    "string": "Big Air jolt type (0=samll,1=large)",
+    "length": 35
+  },
+  {
+    "address": "0x003AAA14",
+    "string": "Off-line Dirt rumble (0.0 to 1.0)",
+    "length": 33
+  },
+  {
+    "address": "0x003AAA38",
+    "string": "Racing Line Dirt rumble (0.0 to 1.0)",
+    "length": 36
+  },
+  {
+    "address": "0x003AAA60",
+    "string": "Wheel Drift rumble (0.0 to 1.0)",
+    "length": 31
+  },
+  {
+    "address": "0x003AAA80",
+    "string": "Wheel Skid rumble (0.0 to 1.0)",
+    "length": 30
+  },
+  {
+    "address": "0x003AAAA0",
+    "string": "Kerb Fade time (s)",
+    "length": 18
+  },
+  {
+    "address": "0x003AAAB4",
+    "string": "Kerb Jolt time (s)",
+    "length": 18
+  },
+  {
+    "address": "0x003AAAC8",
+    "string": "Kerb Jolt Amount (0.0 to 1.0)",
+    "length": 29
+  },
+  {
+    "address": "0x003AAAE8",
+    "string": "Kerb jolt type (0=samll,1=large)",
+    "length": 32
+  },
+  {
+    "address": "0x003AAB0C",
+    "string": "Chain Fade time (s)",
+    "length": 19
+  },
+  {
+    "address": "0x003AAB20",
+    "string": "Chain Jolt time (s)",
+    "length": 19
+  },
+  {
+    "address": "0x003AAB34",
+    "string": "Chain Jolt Amount (0.0 to 1.0)",
+    "length": 30
+  },
+  {
+    "address": "0x003AAB54",
+    "string": "Chain Boost jolt type (0=samll,1=large)",
+    "length": 39
+  },
+  {
+    "address": "0x003AAB7C",
+    "string": "Boost start Brakes Released Rumble (0.0 to 1.0)",
+    "length": 47
+  },
+  {
+    "address": "0x003AABAC",
+    "string": "Boost start Accelerator Rumble (0.0 to 1.0)",
+    "length": 43
+  },
+  {
+    "address": "0x003AABD8",
+    "string": "Boost Fade time (s)",
+    "length": 19
+  },
+  {
+    "address": "0x003AABEC",
+    "string": "Boost Jolt time (s)",
+    "length": 19
+  },
+  {
+    "address": "0x003AAC00",
+    "string": "Boost Jolt Amount (0.0 to 1.0)",
+    "length": 30
+  },
+  {
+    "address": "0x003AAC20",
+    "string": "Boost jolt type (0=samll,1=large)",
+    "length": 33
+  },
+  {
+    "address": "0x003AAC44",
+    "string": "../Export/ValueDB/Input/rumble.cfg",
+    "length": 34
+  },
+  {
+    "address": "0x003AAC68",
+    "string": "Rumble/Menu",
+    "length": 11
+  },
+  {
+    "address": "0x003AAC74",
+    "string": "Rumble/Collision/CarVWorld",
+    "length": 26
+  },
+  {
+    "address": "0x003AAC90",
+    "string": "Rumble/Collision/CarVTraffic",
+    "length": 28
+  },
+  {
+    "address": "0x003AACB0",
+    "string": "Rumble/Collision/CarVCar",
+    "length": 24
+  },
+  {
+    "address": "0x003AACCC",
+    "string": "Rumble/Collision/Crash",
+    "length": 22
+  },
+  {
+    "address": "0x003AACE4",
+    "string": "Rumble/Car/Air",
+    "length": 14
+  },
+  {
+    "address": "0x003AACF4",
+    "string": "Rumble/Car/Surface",
+    "length": 18
+  },
+  {
+    "address": "0x003AAD08",
+    "string": "Rumble/Car/Kerb",
+    "length": 15
+  },
+  {
+    "address": "0x003AAD18",
+    "string": "Rumble/Car/Chain",
+    "length": 16
+  },
+  {
+    "address": "0x003AAD2C",
+    "string": "Rumble/Car/BoostStart",
+    "length": 21
+  },
+  {
+    "address": "0x003AAD44",
+    "string": "Rumble/Car/Boost",
+    "length": 16
+  },
+  {
+    "address": "0x003AADB4",
+    "string": "dvd:",
+    "length": 4
+  },
+  {
+    "address": "0x003AADC8",
+    "string": "Profile 3",
+    "length": 9
+  },
+  {
+    "address": "0x003AADD4",
+    "string": "Profile 2",
+    "length": 9
+  },
+  {
+    "address": "0x003AADE0",
+    "string": "Profile 1",
+    "length": 9
+  },
+  {
+    "address": "0x003AAE64",
+    "string": "None",
+    "length": 4
+  },
+  {
+    "address": "0x003AAE6C",
+    "string": "EATrax",
+    "length": 6
+  },
+  {
+    "address": "0x003AAE74",
+    "string": "VehicleUnderside",
+    "length": 16
+  },
+  {
+    "address": "0x003AAE88",
+    "string": "SmashedGlass",
+    "length": 12
+  },
+  {
+    "address": "0x003AAE98",
+    "string": "CrackedGlass",
+    "length": 12
+  },
+  {
+    "address": "0x003AAEA8",
+    "string": "UnbrokenGlass",
+    "length": 13
+  },
+  {
+    "address": "0x003AAEB8",
+    "string": "SmallFont",
+    "length": 9
+  },
+  {
+    "address": "0x003AAEC4",
+    "string": "HeadFont",
+    "length": 8
+  },
+  {
+    "address": "0x003AAED0",
+    "string": "GlobalFont",
+    "length": 10
+  },
+  {
+    "address": "0x003AAEDC",
+    "string": ".cfg",
+    "length": 4,
+    "referenced_from": [
+      "0x0016081F",
+      "0x0019AEBB"
+    ]
+  },
+  {
+    "address": "0x003AAEE4",
+    "string": "../export/ValueDB/VehicleMaterial/default.cfg",
+    "length": 45
+  },
+  {
+    "address": "0x003AAF14",
+    "string": "../export/ValueDB/VehicleMaterial/",
+    "length": 34
+  },
+  {
+    "address": "0x003AAF38",
+    "string": "envmapsun",
+    "length": 9
+  },
+  {
+    "address": "0x003AAF44",
+    "string": "fxdebris2",
+    "length": 9
+  },
+  {
+    "address": "0x003AAF50",
+    "string": "fxgravel",
+    "length": 8
+  },
+  {
+    "address": "0x003AAF5C",
+    "string": "fxsnow",
+    "length": 6
+  },
+  {
+    "address": "0x003AAF64",
+    "string": "fxglass",
+    "length": 7
+  },
+  {
+    "address": "0x003AAF6C",
+    "string": "fxsmoke",
+    "length": 7
+  },
+  {
+    "address": "0x003AAF74",
+    "string": "fxexplosionsmoke",
+    "length": 16
+  },
+  {
+    "address": "0x003AAF88",
+    "string": "fxfire",
+    "length": 6
+  },
+  {
+    "address": "0x003AAF90",
+    "string": "fxexplosionfire",
+    "length": 15
+  },
+  {
+    "address": "0x003AAFA0",
+    "string": "fxexplosionflash",
+    "length": 16
+  },
+  {
+    "address": "0x003AAFB4",
+    "string": "fxdebris1",
+    "length": 9
+  },
+  {
+    "address": "0x003AAFC0",
+    "string": "fxspark",
+    "length": 7
+  },
+  {
+    "address": "0x003AAFC8",
+    "string": "Graphics/%d.bum",
+    "length": 15
+  },
+  {
+    "address": "0x003AAFD8",
+    "string": "WaterFresnel",
+    "length": 12
+  },
+  {
+    "address": "0x003AAFE8",
+    "string": "radialblurmask",
+    "length": 14
+  },
+  {
+    "address": "0x003AAFF8",
+    "string": "blobbyshadow",
+    "length": 12
+  },
+  {
+    "address": "0x003AB008",
+    "string": "fxpopcorndebris",
+    "length": 15
+  },
+  {
+    "address": "0x003AB018",
+    "string": "fxpopcornspark",
+    "length": 14
+  },
+  {
+    "address": "0x003AB028",
+    "string": "fxscrape",
+    "length": 8,
+    "referenced_from": [
+      "0x00044BF8"
+    ]
+  },
+  {
+    "address": "0x003AB09F",
+    "string": "?33s?",
+    "length": 5
+  },
+  {
+    "address": "0x003AB0E9",
+    "string": "Qx?333?",
+    "length": 7
+  },
+  {
+    "address": "0x003AB127",
+    "string": "?Bad",
+    "length": 4
+  },
+  {
+    "address": "0x003AB12C",
+    "string": "HUD_crash_stealer",
+    "length": 17
+  },
+  {
+    "address": "0x003AB140",
+    "string": "HUD_crash_skull",
+    "length": 15
+  },
+  {
+    "address": "0x003AB150",
+    "string": "HUD_crash_breaker",
+    "length": 17
+  },
+  {
+    "address": "0x003AB164",
+    "string": "HUD_crash_x4",
+    "length": 12
+  },
+  {
+    "address": "0x003AB174",
+    "string": "HUD_crash_x2",
+    "length": 12
+  },
+  {
+    "address": "0x003AB184",
+    "string": "HUD_crash_score03",
+    "length": 17
+  },
+  {
+    "address": "0x003AB198",
+    "string": "HUD_crash_score02",
+    "length": 17
+  },
+  {
+    "address": "0x003AB1AC",
+    "string": "HUD_crash_score01",
+    "length": 17
+  },
+  {
+    "address": "0x003AB1C0",
+    "string": "HUD_crash_boost",
+    "length": 15
+  },
+  {
+    "address": "0x003AB1D0",
+    "string": "MedalBronze",
+    "length": 11
+  },
+  {
+    "address": "0x003AB1DC",
+    "string": "MedalSilver",
+    "length": 11
+  },
+  {
+    "address": "0x003AB1E8",
+    "string": "MedalGold",
+    "length": 9
+  },
+  {
+    "address": "0x003AB1F4",
+    "string": "hud_signs_td",
+    "length": 12
+  },
+  {
+    "address": "0x003AB204",
+    "string": "hud_award_star",
+    "length": 14
+  },
+  {
+    "address": "0x003AB214",
+    "string": "hud_sign_skull",
+    "length": 14
+  },
+  {
+    "address": "0x003AB224",
+    "string": "hud_sign_flame",
+    "length": 14
+  },
+  {
+    "address": "0x003AB234",
+    "string": "boostearnflame",
+    "length": 14
+  },
+  {
+    "address": "0x003AB244",
+    "string": "boostbits",
+    "length": 9
+  },
+  {
+    "address": "0x003AB250",
+    "string": "boostfireover%02d",
+    "length": 17
+  },
+  {
+    "address": "0x003AB264",
+    "string": "boostfireedge%02d",
+    "length": 17
+  },
+  {
+    "address": "0x003AB278",
+    "string": "boostfirecore%02d",
+    "length": 17
+  },
+  {
+    "address": "0x003AB28C",
+    "string": "hud_boost_stars",
+    "length": 15
+  },
+  {
+    "address": "0x003AB29C",
+    "string": "Aftertouch",
+    "length": 10
+  },
+  {
+    "address": "0x003AB2A8",
+    "string": "hud_element01",
+    "length": 13
+  },
+  {
+    "address": "0x003AB2B8",
+    "string": "health_bar",
+    "length": 10
+  },
+  {
+    "address": "0x003AB2C4",
+    "string": "boostflare",
+    "length": 10
+  },
+  {
+    "address": "0x003AB2D4",
+    "string": "B_Button",
+    "length": 8
+  },
+  {
+    "address": "0x003AB2E0",
+    "string": "A_Button",
+    "length": 8
+  },
+  {
+    "address": "0x003AB2EC",
+    "string": "%02d:%02d:%02d",
+    "length": 14
+  },
+  {
+    "address": "0x003AB3D4",
+    "string": "HUD_Strikeout",
+    "length": 13
+  },
+  {
+    "address": "0x003AB3E8",
+    "string": " AWARDED AT ",
+    "length": 12,
+    "referenced_from": [
+      "0x0005A1B7"
+    ]
+  },
+  {
+    "address": "0x003AB3F8",
+    "string": "%01d:%02d",
+    "length": 9
+  },
+  {
+    "address": "0x003AB404",
+    "string": "COMPCAR1",
+    "length": 8
+  },
+  {
+    "address": "0x003AB414",
+    "string": "Gamedata.bgd",
+    "length": 12
+  },
+  {
+    "address": "0x003AB430",
+    "string": "TSPC",
+    "length": 4
+  },
+  {
+    "address": "0x003AB438",
+    "string": "TRAF",
+    "length": 4
+  },
+  {
+    "address": "0x003AB440",
+    "string": "HEVY",
+    "length": 4
+  },
+  {
+    "address": "0x003AB448",
+    "string": "HSPC",
+    "length": 4
+  },
+  {
+    "address": "0x003AB450",
+    "string": "SUPR",
+    "length": 4
+  },
+  {
+    "address": "0x003AB458",
+    "string": "SPRT",
+    "length": 4
+  },
+  {
+    "address": "0x003AB460",
+    "string": "CUPE",
+    "length": 4
+  },
+  {
+    "address": "0x003AB468",
+    "string": "MSCL",
+    "length": 4
+  },
+  {
+    "address": "0x003AB470",
+    "string": "COMP",
+    "length": 4
+  },
+  {
+    "address": "0x003AB5E0",
+    "string": "Arrow",
+    "length": 5
+  },
+  {
+    "address": "0x003AB5E8",
+    "string": "FE_Element01",
+    "length": 12
+  },
+  {
+    "address": "0x003AB5F8",
+    "string": "LOADCAR1",
+    "length": 8
+  },
+  {
+    "address": "0x003AB604",
+    "string": "LOADCAR2",
+    "length": 8
+  },
+  {
+    "address": "0x003AB614",
+    "string": "cross",
+    "length": 5
+  },
+  {
+    "address": "0x003AB61C",
+    "string": "sign_tip",
+    "length": 8
+  },
+  {
+    "address": "0x003AB628",
+    "string": "HUD_Sign_Crash",
+    "length": 14
+  },
+  {
+    "address": "0x003AB638",
+    "string": "HUD_Signs_TD",
+    "length": 12
+  },
+  {
+    "address": "0x003AB648",
+    "string": "HUD_Sign_Flame",
+    "length": 14
+  },
+  {
+    "address": "0x003AB658",
+    "string": "hud_sign_exclam",
+    "length": 15
+  },
+  {
+    "address": "0x003AB668",
+    "string": "lobby",
+    "length": 5
+  },
+  {
+    "address": "0x003AB670",
+    "string": "Tick",
+    "length": 4
+  },
+  {
+    "address": "0x003AB678",
+    "string": "dpad",
+    "length": 4
+  },
+  {
+    "address": "0x003AB680",
+    "string": "buttons",
+    "length": 7
+  },
+  {
+    "address": "0x003AB688",
+    "string": "shutter",
+    "length": 7
+  },
+  {
+    "address": "0x003AB690",
+    "string": "circle",
+    "length": 6
+  },
+  {
+    "address": "0x003AB698",
+    "string": "16_curveb",
+    "length": 9
+  },
+  {
+    "address": "0x003AB6A4",
+    "string": "box_curveb",
+    "length": 10
+  },
+  {
+    "address": "0x003AB6B0",
+    "string": "16_curve",
+    "length": 8
+  },
+  {
+    "address": "0x003AB6BC",
+    "string": "box_curve",
+    "length": 9
+  },
+  {
+    "address": "0x003AB6C8",
+    "string": "big_curve",
+    "length": 9
+  },
+  {
+    "address": "0x003AB6D4",
+    "string": "small_curve",
+    "length": 11
+  },
+  {
+    "address": "0x003AB6E0",
+    "string": "grid",
+    "length": 4
+  },
+  {
+    "address": "0x003AB6E8",
+    "string": "b3logo",
+    "length": 6
+  },
+  {
+    "address": "0x003AB6F8",
+    "string": "points_globe",
+    "length": 12
+  },
+  {
+    "address": "0x003AB708",
+    "string": "Newspaper",
+    "length": 9
+  },
+  {
+    "address": "0x003AB714",
+    "string": "Letter",
+    "length": 6
+  },
+  {
+    "address": "0x003AB71C",
+    "string": "Polariods",
+    "length": 9
+  },
+  {
+    "address": "0x003AB72C",
+    "string": "Trophy",
+    "length": 6
+  },
+  {
+    "address": "0x003AB734",
+    "string": "Globe",
+    "length": 5
+  },
+  {
+    "address": "0x003AB73C",
+    "string": "DD_Icons",
+    "length": 8
+  },
+  {
+    "address": "0x003AB748",
+    "string": "TrainingCar",
+    "length": 11
+  },
+  {
+    "address": "0x003AB754",
+    "string": "Toolbox",
+    "length": 7
+  },
+  {
+    "address": "0x003AB75C",
+    "string": "Memory_Card",
+    "length": 11
+  },
+  {
+    "address": "0x003AB768",
+    "string": "GotInvitation",
+    "length": 13
+  },
+  {
+    "address": "0x003AB778",
+    "string": "Friendonline",
+    "length": 12
+  },
+  {
+    "address": "0x003AB788",
+    "string": "Voiceenabled",
+    "length": 12
+  },
+  {
+    "address": "0x003AB798",
+    "string": "Sentfriendrequest",
+    "length": 17
+  },
+  {
+    "address": "0x003AB7AC",
+    "string": "Mail",
+    "length": 4
+  },
+  {
+    "address": "0x003AB7B4",
+    "string": "Invitation",
+    "length": 10
+  },
+  {
+    "address": "0x003AB7C0",
+    "string": "Gotfriendrequest",
+    "length": 16
+  },
+  {
+    "address": "0x003AB7D4",
+    "string": "Blocked",
+    "length": 7
+  },
+  {
+    "address": "0x003AB7DC",
+    "string": "CarArrow",
+    "length": 8
+  },
+  {
+    "address": "0x003AB7E8",
+    "string": "ProgMap",
+    "length": 7
+  },
+  {
+    "address": "0x003AB7F0",
+    "string": "ProgDots",
+    "length": 8
+  },
+  {
+    "address": "0x003AB7FC",
+    "string": "Japanese",
+    "length": 8
+  },
+  {
+    "address": "0x003AB808",
+    "string": "Italian",
+    "length": 7
+  },
+  {
+    "address": "0x003AB810",
+    "string": "Germany",
+    "length": 7
+  },
+  {
+    "address": "0x003AB818",
+    "string": "France",
+    "length": 6
+  },
+  {
+    "address": "0x003AB820",
+    "string": "Swedish",
+    "length": 7
+  },
+  {
+    "address": "0x003AB828",
+    "string": "Spanish",
+    "length": 7
+  },
+  {
+    "address": "0x003AB830",
+    "string": "Dutch",
+    "length": 5
+  },
+  {
+    "address": "0x003AB83C",
+    "string": "Circuit_line",
+    "length": 12
+  },
+  {
+    "address": "0x003AB84C",
+    "string": "Circuit_glow",
+    "length": 12
+  },
+  {
+    "address": "0x003AB85C",
+    "string": "titlescreen_logo",
+    "length": 16
+  },
+  {
+    "address": "0x003AB870",
+    "string": "FE_element03",
+    "length": 12
+  },
+  {
+    "address": "0x003AB880",
+    "string": "Completion_icons",
+    "length": 16
+  },
+  {
+    "address": "0x003AB894",
+    "string": "Halo",
+    "length": 4
+  },
+  {
+    "address": "0x003AB89C",
+    "string": "Europe",
+    "length": 6
+  },
+  {
+    "address": "0x003AB8A4",
+    "string": "FarEast",
+    "length": 7
+  },
+  {
+    "address": "0x003AB8AC",
+    "string": "Alaska",
+    "length": 6
+  },
+  {
+    "address": "0x003AB8B8",
+    "string": "World_Map",
+    "length": 9
+  },
+  {
+    "address": "0x003AB8C4",
+    "string": "SatMapA3_2",
+    "length": 10
+  },
+  {
+    "address": "0x003AB8D0",
+    "string": "SatMapA2_2",
+    "length": 10
+  },
+  {
+    "address": "0x003AB8DC",
+    "string": "SatMapA1_2",
+    "length": 10
+  },
+  {
+    "address": "0x003AB8E8",
+    "string": "SatMapA3_1",
+    "length": 10
+  },
+  {
+    "address": "0x003AB8F4",
+    "string": "SatMapA2_1",
+    "length": 10
+  },
+  {
+    "address": "0x003AB900",
+    "string": "SatMapA1_1",
+    "length": 10
+  },
+  {
+    "address": "0x003AB90C",
+    "string": "SatMapA_L4",
+    "length": 10
+  },
+  {
+    "address": "0x003AB918",
+    "string": "SatMapA_L3",
+    "length": 10
+  },
+  {
+    "address": "0x003AB924",
+    "string": "SatMapA_L2",
+    "length": 10
+  },
+  {
+    "address": "0x003AB930",
+    "string": "SatMapA_L1",
+    "length": 10
+  },
+  {
+    "address": "0x003AB93C",
+    "string": "AU_LSat",
+    "length": 7
+  },
+  {
+    "address": "0x003AB944",
+    "string": "ASIA1",
+    "length": 5
+  },
+  {
+    "address": "0x003AB94C",
+    "string": "SatMapE3_2",
+    "length": 10
+  },
+  {
+    "address": "0x003AB958",
+    "string": "SatMapE2_2",
+    "length": 10
+  },
+  {
+    "address": "0x003AB964",
+    "string": "SatMapE1_2",
+    "length": 10
+  },
+  {
+    "address": "0x003AB970",
+    "string": "SatMapE3_1",
+    "length": 10
+  },
+  {
+    "address": "0x003AB97C",
+    "string": "SatMapE2_1",
+    "length": 10
+  },
+  {
+    "address": "0x003AB988",
+    "string": "SatMapE1_1",
+    "length": 10
+  },
+  {
+    "address": "0x003AB994",
+    "string": "SatMapE_L4",
+    "length": 10
+  },
+  {
+    "address": "0x003AB9A0",
+    "string": "SatMapE_L3",
+    "length": 10
+  },
+  {
+    "address": "0x003AB9AC",
+    "string": "SatMapE_L2",
+    "length": 10
+  },
+  {
+    "address": "0x003AB9B8",
+    "string": "SatMapE_L1",
+    "length": 10
+  },
+  {
+    "address": "0x003AB9C4",
+    "string": "EU_LSat",
+    "length": 7
+  },
+  {
+    "address": "0x003AB9CC",
+    "string": "Europe1",
+    "length": 7
+  },
+  {
+    "address": "0x003AB9D4",
+    "string": "SatMapU3_2",
+    "length": 10
+  },
+  {
+    "address": "0x003AB9E0",
+    "string": "SatMapU2_2",
+    "length": 10
+  },
+  {
+    "address": "0x003AB9EC",
+    "string": "SatMapU1_2",
+    "length": 10
+  },
+  {
+    "address": "0x003AB9F8",
+    "string": "SatMapU3_1",
+    "length": 10
+  },
+  {
+    "address": "0x003ABA04",
+    "string": "SatMapU2_1",
+    "length": 10
+  },
+  {
+    "address": "0x003ABA10",
+    "string": "SatMapU1_1",
+    "length": 10
+  },
+  {
+    "address": "0x003ABA1C",
+    "string": "SatMapU_L4",
+    "length": 10
+  },
+  {
+    "address": "0x003ABA28",
+    "string": "SatMapU_L3",
+    "length": 10
+  },
+  {
+    "address": "0x003ABA34",
+    "string": "SatMapU_L2",
+    "length": 10
+  },
+  {
+    "address": "0x003ABA40",
+    "string": "SatMapU_L1",
+    "length": 10
+  },
+  {
+    "address": "0x003ABA4C",
+    "string": "US_LSat",
+    "length": 7
+  },
+  {
+    "address": "0x003ABA54",
+    "string": "USA1",
+    "length": 4
+  },
+  {
+    "address": "0x003ABA5C",
+    "string": "Takedown",
+    "length": 8
+  },
+  {
+    "address": "0x003ABA68",
+    "string": "Traffic_Cam",
+    "length": 11
+  },
+  {
+    "address": "0x003ABA74",
+    "string": "WinCar_icon",
+    "length": 11
+  },
+  {
+    "address": "0x003ABA80",
+    "string": "Padlock",
+    "length": 7
+  },
+  {
+    "address": "0x003ABA88",
+    "string": "Car_MedalEmpty",
+    "length": 14
+  },
+  {
+    "address": "0x003ABA98",
+    "string": "Car_Medalgold",
+    "length": 13
+  },
+  {
+    "address": "0x003ABAA8",
+    "string": "Tick_MedalG",
+    "length": 11
+  },
+  {
+    "address": "0x003ABAB4",
+    "string": "Tick_MedalS",
+    "length": 11
+  },
+  {
+    "address": "0x003ABAC0",
+    "string": "Tick_MedalB",
+    "length": 11
+  },
+  {
+    "address": "0x003ABACC",
+    "string": "Tick_MedalEmpty",
+    "length": 15
+  },
+  {
+    "address": "0x003ABADC",
+    "string": "StartFlag",
+    "length": 9
+  },
+  {
+    "address": "0x003ABAE8",
+    "string": "GPPulse",
+    "length": 7
+  },
+  {
+    "address": "0x003ABAF0",
+    "string": "GPIcon",
+    "length": 6
+  },
+  {
+    "address": "0x003ABAF8",
+    "string": "CrashHollow",
+    "length": 11
+  },
+  {
+    "address": "0x003ABB04",
+    "string": "CrashPulse",
+    "length": 10
+  },
+  {
+    "address": "0x003ABB10",
+    "string": "CrashIcon",
+    "length": 9
+  },
+  {
+    "address": "0x003ABB1C",
+    "string": "RaceHollow",
+    "length": 10
+  },
+  {
+    "address": "0x003ABB28",
+    "string": "RacePulse",
+    "length": 9
+  },
+  {
+    "address": "0x003ABB34",
+    "string": "RaceIcon",
+    "length": 8
+  },
+  {
+    "address": "0x003ABB40",
+    "string": "PCSpecialGP1",
+    "length": 12
+  },
+  {
+    "address": "0x003ABB50",
+    "string": "PCSilverLake",
+    "length": 12
+  },
+  {
+    "address": "0x003ABB60",
+    "string": "PCeu-p2p2",
+    "length": 9
+  },
+  {
+    "address": "0x003ABB6C",
+    "string": "PCus-p2p2a",
+    "length": 10
+  },
+  {
+    "address": "0x003ABB78",
+    "string": "PCGoldenCity",
+    "length": 12
+  },
+  {
+    "address": "0x003ABB88",
+    "string": "PCIslandParadise",
+    "length": 16
+  },
+  {
+    "address": "0x003ABB9C",
+    "string": "PCDockside",
+    "length": 10
+  },
+  {
+    "address": "0x003ABBA8",
+    "string": "PCVineyard",
+    "length": 10
+  },
+  {
+    "address": "0x003ABBB4",
+    "string": "PCAlpine",
+    "length": 8
+  },
+  {
+    "address": "0x003ABBC0",
+    "string": "PCWinterCity",
+    "length": 12
+  },
+  {
+    "address": "0x003ABBD0",
+    "string": "driving-skills",
+    "length": 14
+  },
+  {
+    "address": "0x003ABBE0",
+    "string": "champion",
+    "length": 8
+  },
+  {
+    "address": "0x003ABBEC",
+    "string": "expert",
+    "length": 6
+  },
+  {
+    "address": "0x003ABBF4",
+    "string": "advanced",
+    "length": 8
+  },
+  {
+    "address": "0x003ABC00",
+    "string": "easy",
+    "length": 4
+  },
+  {
+    "address": "0x003ABC08",
+    "string": "SilverCup",
+    "length": 9
+  },
+  {
+    "address": "0x003ABC14",
+    "string": "HDIslandParadise",
+    "length": 16
+  },
+  {
+    "address": "0x003ABC28",
+    "string": "HDDockside",
+    "length": 10
+  },
+  {
+    "address": "0x003ABC34",
+    "string": "HDGoldenCity",
+    "length": 12
+  },
+  {
+    "address": "0x003ABC44",
+    "string": "HDVineyard",
+    "length": 10
+  },
+  {
+    "address": "0x003ABC50",
+    "string": "HDRiviera",
+    "length": 9
+  },
+  {
+    "address": "0x003ABC5C",
+    "string": "HDAlpine",
+    "length": 8
+  },
+  {
+    "address": "0x003ABC68",
+    "string": "HDWinterCity",
+    "length": 12
+  },
+  {
+    "address": "0x003ABC78",
+    "string": "HDSilverLake",
+    "length": 12
+  },
+  {
+    "address": "0x003ABC88",
+    "string": "HDDowntown",
+    "length": 10
+  },
+  {
+    "address": "0x003ABC94",
+    "string": "HDWaterfront",
+    "length": 12
+  },
+  {
+    "address": "0x003ABCA4",
+    "string": "shadow",
+    "length": 6
+  },
+  {
+    "address": "0x003ABCAC",
+    "string": "wintercity-st2",
+    "length": 14
+  },
+  {
+    "address": "0x003ABCBC",
+    "string": "wintercity-st1",
+    "length": 14
+  },
+  {
+    "address": "0x003ABCCC",
+    "string": "waterfront-st2",
+    "length": 14
+  },
+  {
+    "address": "0x003ABCDC",
+    "string": "waterfront-st1",
+    "length": 14
+  },
+  {
+    "address": "0x003ABCEC",
+    "string": "vineyard-st2",
+    "length": 12
+  },
+  {
+    "address": "0x003ABCFC",
+    "string": "vineyard-st1",
+    "length": 12
+  },
+  {
+    "address": "0x003ABD0C",
+    "string": "silverlake-ST2",
+    "length": 14
+  },
+  {
+    "address": "0x003ABD1C",
+    "string": "silverlake-ST1",
+    "length": 14
+  },
+  {
+    "address": "0x003ABD2C",
+    "string": "riviera-st2",
+    "length": 11
+  },
+  {
+    "address": "0x003ABD38",
+    "string": "riviera-st1",
+    "length": 11
+  },
+  {
+    "address": "0x003ABD44",
+    "string": "islandparadise-st2",
+    "length": 18
+  },
+  {
+    "address": "0x003ABD58",
+    "string": "islandparadise-st1",
+    "length": 18
+  },
+  {
+    "address": "0x003ABD6C",
+    "string": "goldencity-st2",
+    "length": 14
+  },
+  {
+    "address": "0x003ABD7C",
+    "string": "goldencity-st1",
+    "length": 14
+  },
+  {
+    "address": "0x003ABD8C",
+    "string": "downtown-st2",
+    "length": 12
+  },
+  {
+    "address": "0x003ABD9C",
+    "string": "downtown-st1",
+    "length": 12
+  },
+  {
+    "address": "0x003ABDAC",
+    "string": "dockside-st2",
+    "length": 12
+  },
+  {
+    "address": "0x003ABDBC",
+    "string": "dockside-st1",
+    "length": 12
+  },
+  {
+    "address": "0x003ABDCC",
+    "string": "alpine-st2",
+    "length": 10
+  },
+  {
+    "address": "0x003ABDD8",
+    "string": "alpine-st1",
+    "length": 10
+  },
+  {
+    "address": "0x003AC234",
+    "string": "PS2.en",
+    "length": 6
+  },
+  {
+    "address": "0x003AC23C",
+    "string": "Movie Gain",
+    "length": 10
+  },
+  {
+    "address": "0x003AC248",
+    "string": "Intro Gain",
+    "length": 10
+  },
+  {
+    "address": "0x003AC25C",
+    "string": "Pending",
+    "length": 7
+  },
+  {
+    "address": "0x003AC264",
+    "string": "%s: %02d:%02d:%02d",
+    "length": 18
+  },
+  {
+    "address": "0x003AC278",
+    "string": "%s: %s",
+    "length": 6
+  },
+  {
+    "address": "0x003AC288",
+    "string": "%s: %d",
+    "length": 6
+  },
+  {
+    "address": "0x003AC290",
+    "string": "LT. CRASH",
+    "length": 9
+  },
+  {
+    "address": "0x003AC29C",
+    "string": "LT. MESSAGES",
+    "length": 12
+  },
+  {
+    "address": "0x003AC2AC",
+    "string": "SHOW POSITION",
+    "length": 13
+  },
+  {
+    "address": "0x003AC2BC",
+    "string": "R.RAGE INVINCIBLE",
+    "length": 17
+  },
+  {
+    "address": "0x003AC2D0",
+    "string": "FIN. TIME",
+    "length": 9
+  },
+  {
+    "address": "0x003AC2DC",
+    "string": "FIN. TAKEDOWNS",
+    "length": 14
+  },
+  {
+    "address": "0x003AC2EC",
+    "string": "FIN. CASH",
+    "length": 9
+  },
+  {
+    "address": "0x003AC2F8",
+    "string": "FIN. SCORE",
+    "length": 10
+  },
+  {
+    "address": "0x003AC304",
+    "string": "FIN. POSITION",
+    "length": 13
+  },
+  {
+    "address": "0x003AC314",
+    "string": "FORCE COMPLETION",
+    "length": 16
+  },
+  {
+    "address": "0x003AC328",
+    "string": "CARS",
+    "length": 4
+  },
+  {
+    "address": "0x003AC330",
+    "string": "GNRL",
+    "length": 4
+  },
+  {
+    "address": "0x003AC338",
+    "string": "DNAS err : %u",
+    "length": 13
+  },
+  {
+    "address": "0x003AC348",
+    "string": "[%s] ",
+    "length": 5
+  },
+  {
+    "address": "0x003AC358",
+    "string": "C$s: %u",
+    "length": 7
+  },
+  {
+    "address": "0x003AC360",
+    "string": "BPs : %u",
+    "length": 8
+  },
+  {
+    "address": "0x003AC36C",
+    "string": "Show All Crash Awards",
+    "length": 21
+  },
+  {
+    "address": "0x003AC384",
+    "string": "Show All Race Awards",
+    "length": 20
+  },
+  {
+    "address": "0x003AC39C",
+    "string": "Lock All",
+    "length": 8
+  },
+  {
+    "address": "0x003AC3A8",
+    "string": "Unlock All",
+    "length": 10
+  },
+  {
+    "address": "0x003AC3B8",
+    "string": "http://msgconn.beta.ea.com/easo/cso05/pub/TOSAC.txt",
+    "length": 51
+  },
+  {
+    "address": "0x003AC3F0",
+    "string": "%4d%02d%02d",
+    "length": 11
+  },
+  {
+    "address": "0x003AC400",
+    "string": "x0.5",
+    "length": 4
+  },
+  {
+    "address": "0x003AC418",
+    "string": "password",
+    "length": 8
+  },
+  {
+    "address": "0x003AC424",
+    "string": "%d/%d",
+    "length": 5
+  },
+  {
+    "address": "0x003AC438",
+    "string": "https://msgconn.beta.ea.com/easo/cso05/pub/fifa05/tos-.txt",
+    "length": 58
+  },
+  {
+    "address": "0x003AC474",
+    "string": "0000",
+    "length": 4,
+    "referenced_from": [
+      "0x000B40BF"
+    ]
+  },
+  {
+    "address": "0x003AC47C",
+    "string": "CRASHEXTRA",
+    "length": 10
+  },
+  {
+    "address": "0x003AC488",
+    "string": "DCDP2NAME",
+    "length": 9
+  },
+  {
+    "address": "0x003AC494",
+    "string": "DCDP2VEH",
+    "length": 8
+  },
+  {
+    "address": "0x003AC4A0",
+    "string": "DCDP1VEH",
+    "length": 8
+  },
+  {
+    "address": "0x003AC4B0",
+    "string": "CDVEH",
+    "length": 5
+  },
+  {
+    "address": "0x003AC4BC",
+    "string": "CTRACK",
+    "length": 6
+  },
+  {
+    "address": "0x003AC4C4",
+    "string": "RACEEXTRA",
+    "length": 9
+  },
+  {
+    "address": "0x003AC4D0",
+    "string": "RSURVDISTVEH",
+    "length": 12
+  },
+  {
+    "address": "0x003AC4E0",
+    "string": "RSURVDIST",
+    "length": 9
+  },
+  {
+    "address": "0x003AC4EC",
+    "string": "RLAPVEH",
+    "length": 7
+  },
+  {
+    "address": "0x003AC4F4",
+    "string": "RLAPTIME",
+    "length": 8
+  },
+  {
+    "address": "0x003AC500",
+    "string": "RTRACK",
+    "length": 6
+  },
+  {
+    "address": "0x003AC508",
+    "string": "DISC",
+    "length": 4
+  },
+  {
+    "address": "0x003AC510",
+    "string": "MISC",
+    "length": 4
+  },
+  {
+    "address": "0x003AC518",
+    "string": "COMPLETED",
+    "length": 9
+  },
+  {
+    "address": "0x003AC524",
+    "string": "COMPLETEN",
+    "length": 9
+  },
+  {
+    "address": "0x003AC530",
+    "string": "TROPHIES",
+    "length": 8
+  },
+  {
+    "address": "0x003AC53C",
+    "string": "SIGTDCOM",
+    "length": 8
+  },
+  {
+    "address": "0x003AC548",
+    "string": "GOLDS",
+    "length": 5
+  },
+  {
+    "address": "0x003AC550",
+    "string": "CRASHEVENTSCOM",
+    "length": 14
+  },
+  {
+    "address": "0x003AC560",
+    "string": "RACEEVENTSCOM",
+    "length": 13
+  },
+  {
+    "address": "0x003AC570",
+    "string": "ONLINECRASHES",
+    "length": 13
+  },
+  {
+    "address": "0x003AC580",
+    "string": "ONLINERACES",
+    "length": 11
+  },
+  {
+    "address": "0x003AC58C",
+    "string": "DRIFTCAR",
+    "length": 8
+  },
+  {
+    "address": "0x003AC598",
+    "string": "DRIFT",
+    "length": 5
+  },
+  {
+    "address": "0x003AC5A0",
+    "string": "ONCOMINGTRACK",
+    "length": 13
+  },
+  {
+    "address": "0x003AC5B0",
+    "string": "ONCOMING",
+    "length": 8
+  },
+  {
+    "address": "0x003AC5BC",
+    "string": "ONLINETAKEDOWNS",
+    "length": 15
+  },
+  {
+    "address": "0x003AC5CC",
+    "string": "FAVVEH",
+    "length": 6
+  },
+  {
+    "address": "0x003AC5D4",
+    "string": "CRASHDAMAGE",
+    "length": 11
+  },
+  {
+    "address": "0x003AC5E0",
+    "string": "POINTS",
+    "length": 6
+  },
+  {
+    "address": "0x003AC5EC",
+    "string": "BURNOUT3",
+    "length": 8
+  },
+  {
+    "address": "0x003AC5F8",
+    "string": "Message is empty",
+    "length": 16
+  },
+  {
+    "address": "0x003AC60C",
+    "string": "Unknown",
+    "length": 7
+  },
+  {
+    "address": "0x003AC614",
+    "string": "Max Speed In Boost",
+    "length": 18
+  },
+  {
+    "address": "0x003AC628",
+    "string": "Physics/Race Car/Misc",
+    "length": 21
+  },
+  {
+    "address": "0x003AC640",
+    "string": "Mass (Kg)",
+    "length": 9
+  },
+  {
+    "address": "0x003AC64C",
+    "string": "Physics/Vehicle",
+    "length": 15
+  },
+  {
+    "address": "0x003AC65C",
+    "string": "../Export/ValueDB/VehiclePhysics/%s.cfg",
+    "length": 39
+  },
+  {
+    "address": "0x003AC684",
+    "string": "Camchange5",
+    "length": 10
+  },
+  {
+    "address": "0x003AC690",
+    "string": "Camchange4",
+    "length": 10
+  },
+  {
+    "address": "0x003AC69C",
+    "string": "Camchange3",
+    "length": 10
+  },
+  {
+    "address": "0x003AC6A8",
+    "string": "Camchange2",
+    "length": 10
+  },
+  {
+    "address": "0x003AC6B4",
+    "string": "Camchange",
+    "length": 9
+  },
+  {
+    "address": "0x003AC6CC",
+    "string": "loading_bars",
+    "length": 12
+  },
+  {
+    "address": "0x003AC6DC",
+    "string": "volumebar",
+    "length": 9
+  },
+  {
+    "address": "0x003AC804",
+    "string": "%d.%d.%d.%d",
+    "length": 11
+  },
+  {
+    "address": "0x003AC818",
+    "string": "Air Ram Low Speed Multiplier",
+    "length": 28
+  },
+  {
+    "address": "0x003AC838",
+    "string": "Air Ram World",
+    "length": 13
+  },
+  {
+    "address": "0x003AC848",
+    "string": "Air Ram Back",
+    "length": 12
+  },
+  {
+    "address": "0x003AC858",
+    "string": "Air Ram Front",
+    "length": 13
+  },
+  {
+    "address": "0x003AC868",
+    "string": "Air Ram Side",
+    "length": 12
+  },
+  {
+    "address": "0x003AC878",
+    "string": "Air Ram Back Corner",
+    "length": 19
+  },
+  {
+    "address": "0x003AC88C",
+    "string": "Air Ram Front Corner",
+    "length": 20
+  },
+  {
+    "address": "0x003AC8A4",
+    "string": "CAD Properties",
+    "length": 14
+  },
+  {
+    "address": "0x003AC8B4",
+    "string": "../Export/ValueDB/Physics/cad.cfg",
+    "length": 33
+  },
+  {
+    "address": "0x003AC8DC",
+    "string": "Normal",
+    "length": 6
+  },
+  {
+    "address": "0x003AC8E4",
+    "string": "Camera Collision Only",
+    "length": 21
+  },
+  {
+    "address": "0x003AC8FC",
+    "string": "Crashing Collision Only",
+    "length": 23
+  },
+  {
+    "address": "0x003AC914",
+    "string": "Driving Collision Only",
+    "length": 22
+  },
+  {
+    "address": "0x003AC92C",
+    "string": "All Collision",
+    "length": 13
+  },
+  {
+    "address": "0x003AC93C",
+    "string": "Crane-Drop",
+    "length": 10
+  },
+  {
+    "address": "0x003AC948",
+    "string": "Rear-Ender",
+    "length": 10
+  },
+  {
+    "address": "0x003AC954",
+    "string": "T-Bone",
+    "length": 6
+  },
+  {
+    "address": "0x003AC95C",
+    "string": "Head-On",
+    "length": 7
+  },
+  {
+    "address": "0x003AC964",
+    "string": "eCS_CrashRamp",
+    "length": 13
+  },
+  {
+    "address": "0x003AC974",
+    "string": "eCS_Foliage",
+    "length": 11
+  },
+  {
+    "address": "0x003AC980",
+    "string": "eCS_DriveCollideOnly",
+    "length": 20
+  },
+  {
+    "address": "0x003AC998",
+    "string": "eCS_Shadow",
+    "length": 10
+  },
+  {
+    "address": "0x003AC9A4",
+    "string": "eCS_CameraCollisionOnly",
+    "length": 23
+  },
+  {
+    "address": "0x003AC9BC",
+    "string": "eCS_Invisible",
+    "length": 13
+  },
+  {
+    "address": "0x003AC9CC",
+    "string": "eCS_GameChevrons",
+    "length": 16
+  },
+  {
+    "address": "0x003AC9E0",
+    "string": "eCS_WallTrees",
+    "length": 13
+  },
+  {
+    "address": "0x003AC9F0",
+    "string": "eCS_WallBarriers",
+    "length": 16
+  },
+  {
+    "address": "0x003ACA04",
+    "string": "eCS_WallBillBoards",
+    "length": 18
+  },
+  {
+    "address": "0x003ACA18",
+    "string": "eCS_WallCorrMetal",
+    "length": 17
+  },
+  {
+    "address": "0x003ACA2C",
+    "string": "eCS_WallChainFence",
+    "length": 18
+  },
+  {
+    "address": "0x003ACA40",
+    "string": "eCS_WallWoodFence",
+    "length": 17
+  },
+  {
+    "address": "0x003ACA54",
+    "string": "eCS_WallHedge",
+    "length": 13
+  },
+  {
+    "address": "0x003ACA64",
+    "string": "eCS_WallStone",
+    "length": 13
+  },
+  {
+    "address": "0x003ACA74",
+    "string": "eCS_WallArmco",
+    "length": 13
+  },
+  {
+    "address": "0x003ACA84",
+    "string": "eCS_WallRailings",
+    "length": 16
+  },
+  {
+    "address": "0x003ACA98",
+    "string": "eCS_WallDirtBank",
+    "length": 16
+  },
+  {
+    "address": "0x003ACAAC",
+    "string": "eCS_OfflineRumbleStrip",
+    "length": 22
+  },
+  {
+    "address": "0x003ACAC4",
+    "string": "eCS_OfflineSnow",
+    "length": 15
+  },
+  {
+    "address": "0x003ACAD4",
+    "string": "eCS_OfflineSand",
+    "length": 15
+  },
+  {
+    "address": "0x003ACAE4",
+    "string": "eCS_OfflinePavement",
+    "length": 19
+  },
+  {
+    "address": "0x003ACAF8",
+    "string": "eCS_OfflineGravel",
+    "length": 17
+  },
+  {
+    "address": "0x003ACB0C",
+    "string": "eCS_OfflineGrass",
+    "length": 16
+  },
+  {
+    "address": "0x003ACB20",
+    "string": "eCS_OfflineDirt",
+    "length": 15
+  },
+  {
+    "address": "0x003ACB30",
+    "string": "eCS_OfflineConcrete",
+    "length": 19
+  },
+  {
+    "address": "0x003ACB44",
+    "string": "eCS_OfflineTarmac",
+    "length": 17
+  },
+  {
+    "address": "0x003ACB58",
+    "string": "eCS_RoadSnow",
+    "length": 12
+  },
+  {
+    "address": "0x003ACB68",
+    "string": "eCS_RoadMetalGrille",
+    "length": 19
+  },
+  {
+    "address": "0x003ACB7C",
+    "string": "eCS_RoadRumbleStrip",
+    "length": 19
+  },
+  {
+    "address": "0x003ACB90",
+    "string": "eCS_RoadPaving",
+    "length": 14
+  },
+  {
+    "address": "0x003ACBA0",
+    "string": "eCS_RoadSnowyCobbles",
+    "length": 20
+  },
+  {
+    "address": "0x003ACBB8",
+    "string": "eCS_RoadCobbles",
+    "length": 15
+  },
+  {
+    "address": "0x003ACBC8",
+    "string": "eCS_RoadGravel",
+    "length": 14
+  },
+  {
+    "address": "0x003ACBD8",
+    "string": "eCS_RoadDirt",
+    "length": 12
+  },
+  {
+    "address": "0x003ACBE8",
+    "string": "eCS_RoadChevrons",
+    "length": 16
+  },
+  {
+    "address": "0x003ACBFC",
+    "string": "eCS_RoadConcrete",
+    "length": 16
+  },
+  {
+    "address": "0x003ACC10",
+    "string": "eCS_RoadTarmac",
+    "length": 14
+  },
+  {
+    "address": "0x003ACC20",
+    "string": "eCS_None = 0",
+    "length": 12
+  },
+  {
+    "address": "0x003ACC30",
+    "string": "HEVYCAR6",
+    "length": 8
+  },
+  {
+    "address": "0x003ACC3C",
+    "string": "HEVYCAR5",
+    "length": 8
+  },
+  {
+    "address": "0x003ACC48",
+    "string": "HEVYCAR36",
+    "length": 9
+  },
+  {
+    "address": "0x003ACC54",
+    "string": "HEVYCAR9",
+    "length": 8
+  },
+  {
+    "address": "0x003ACC60",
+    "string": "Steering Drag Coef",
+    "length": 18
+  },
+  {
+    "address": "0x003ACC74",
+    "string": "Steering Max Velocity",
+    "length": 21
+  },
+  {
+    "address": "0x003ACC8C",
+    "string": "Steering Max Angle (degrees)",
+    "length": 28
+  },
+  {
+    "address": "0x003ACCAC",
+    "string": "Total Out-Of-Control Time (s)",
+    "length": 29
+  },
+  {
+    "address": "0x003ACCCC",
+    "string": "Steer Away Time (s)",
+    "length": 19
+  },
+  {
+    "address": "0x003ACCE0",
+    "string": "Physics/Aggressive Driving Reaction",
+    "length": 35
+  },
+  {
+    "address": "0x003ACD04",
+    "string": "Max Drift Angle",
+    "length": 15
+  },
+  {
+    "address": "0x003ACD14",
+    "string": "Max Speed Pressure",
+    "length": 18
+  },
+  {
+    "address": "0x003ACD28",
+    "string": "Min Drift Speed",
+    "length": 15
+  },
+  {
+    "address": "0x003ACD38",
+    "string": "Turn Rate",
+    "length": 9
+  },
+  {
+    "address": "0x003ACD44",
+    "string": "Auto Drift Delay",
+    "length": 16
+  },
+  {
+    "address": "0x003ACD58",
+    "string": "Turn Momentum Fast",
+    "length": 18
+  },
+  {
+    "address": "0x003ACD6C",
+    "string": "Turn Momentum Slow",
+    "length": 18
+  },
+  {
+    "address": "0x003ACD80",
+    "string": "Slide Min",
+    "length": 9
+  },
+  {
+    "address": "0x003ACD8C",
+    "string": "Slide Max",
+    "length": 9
+  },
+  {
+    "address": "0x003ACD98",
+    "string": "Physics/Drift",
+    "length": 13
+  },
+  {
+    "address": "0x003ACDA8",
+    "string": "Response",
+    "length": 8
+  },
+  {
+    "address": "0x003ACDB4",
+    "string": "Max Velocity",
+    "length": 12
+  },
+  {
+    "address": "0x003ACDC4",
+    "string": "Min Velocity",
+    "length": 12
+  },
+  {
+    "address": "0x003ACDD4",
+    "string": "Max Angle (degrees)",
+    "length": 19
+  },
+  {
+    "address": "0x003ACDE8",
+    "string": "Min Angle (degrees)",
+    "length": 19
+  },
+  {
+    "address": "0x003ACDFC",
+    "string": "Physics/Steering",
+    "length": 16
+  },
+  {
+    "address": "0x003ACE10",
+    "string": "Boost Kick Time",
+    "length": 15
+  },
+  {
+    "address": "0x003ACE20",
+    "string": "Boost Kick Torque",
+    "length": 17
+  },
+  {
+    "address": "0x003ACE34",
+    "string": "Physics/Transmission/Boost Kick",
+    "length": 31
+  },
+  {
+    "address": "0x003ACE54",
+    "string": "Final Gear",
+    "length": 10
+  },
+  {
+    "address": "0x003ACE60",
+    "string": "6th Gear",
+    "length": 8
+  },
+  {
+    "address": "0x003ACE6C",
+    "string": "5th Gear",
+    "length": 8
+  },
+  {
+    "address": "0x003ACE78",
+    "string": "4th Gear",
+    "length": 8
+  },
+  {
+    "address": "0x003ACE84",
+    "string": "3rd Gear",
+    "length": 8
+  },
+  {
+    "address": "0x003ACE90",
+    "string": "2nd Gear",
+    "length": 8
+  },
+  {
+    "address": "0x003ACE9C",
+    "string": "1st Gear",
+    "length": 8
+  },
+  {
+    "address": "0x003ACEA8",
+    "string": "Neutral",
+    "length": 7
+  },
+  {
+    "address": "0x003ACEB0",
+    "string": "Reverse",
+    "length": 7
+  },
+  {
+    "address": "0x003ACEB8",
+    "string": "Physics/Transmission/Gear Ratios",
+    "length": 32
+  },
+  {
+    "address": "0x003ACEDC",
+    "string": "Change Up RPM",
+    "length": 13
+  },
+  {
+    "address": "0x003ACEEC",
+    "string": "Change Down RPM",
+    "length": 15
+  },
+  {
+    "address": "0x003ACEFC",
+    "string": "Max RPM",
+    "length": 7
+  },
+  {
+    "address": "0x003ACF04",
+    "string": "Idle RPM",
+    "length": 8
+  },
+  {
+    "address": "0x003ACF10",
+    "string": "Fall Off Torque Revs",
+    "length": 20
+  },
+  {
+    "address": "0x003ACF28",
+    "string": "Peak Torque Revs",
+    "length": 16
+  },
+  {
+    "address": "0x003ACF3C",
+    "string": "Torque",
+    "length": 6
+  },
+  {
+    "address": "0x003ACF44",
+    "string": "Physics/Transmission/Engine",
+    "length": 27
+  },
+  {
+    "address": "0x003ACF60",
+    "string": "In Air Corkscrew Damping",
+    "length": 24
+  },
+  {
+    "address": "0x003ACF7C",
+    "string": "Min Drift Angle In Air",
+    "length": 22
+  },
+  {
+    "address": "0x003ACF94",
+    "string": "Engine Braking Factor",
+    "length": 21
+  },
+  {
+    "address": "0x003ACFAC",
+    "string": "Braking Factor",
+    "length": 14
+  },
+  {
+    "address": "0x003ACFBC",
+    "string": "Accel Multiplier",
+    "length": 16
+  },
+  {
+    "address": "0x003ACFD0",
+    "string": "Wall Collsion Penalty",
+    "length": 21
+  },
+  {
+    "address": "0x003ACFE8",
+    "string": "Downforce Coef",
+    "length": 14
+  },
+  {
+    "address": "0x003ACFF8",
+    "string": "Drag Coef",
+    "length": 9
+  },
+  {
+    "address": "0x003AD004",
+    "string": "Torque 2",
+    "length": 8
+  },
+  {
+    "address": "0x003AD010",
+    "string": "Torque 1",
+    "length": 8
+  },
+  {
+    "address": "0x003AD01C",
+    "string": "Steering Angle",
+    "length": 14
+  },
+  {
+    "address": "0x003AD02C",
+    "string": "Speed Limit",
+    "length": 11
+  },
+  {
+    "address": "0x003AD038",
+    "string": "Physics/Race Car/LSDM",
+    "length": 21
+  },
+  {
+    "address": "0x003AD050",
+    "string": "Drift Force Height",
+    "length": 18
+  },
+  {
+    "address": "0x003AD064",
+    "string": "Steer Force Height",
+    "length": 18
+  },
+  {
+    "address": "0x003AD078",
+    "string": "Accel Force Height",
+    "length": 18
+  },
+  {
+    "address": "0x003AD08C",
+    "string": "Brake Force Height",
+    "length": 18
+  },
+  {
+    "address": "0x003AD0A0",
+    "string": "Physics/Race Car/Body Roll",
+    "length": 26
+  },
+  {
+    "address": "0x003AD0BC",
+    "string": "Physics/Suspension/Rear",
+    "length": 23
+  },
+  {
+    "address": "0x003AD0D4",
+    "string": "Spring Damping",
+    "length": 14
+  },
+  {
+    "address": "0x003AD0E4",
+    "string": "Spring Force",
+    "length": 12
+  },
+  {
+    "address": "0x003AD0F4",
+    "string": "Spring Length",
+    "length": 13
+  },
+  {
+    "address": "0x003AD104",
+    "string": "Attatch Height",
+    "length": 14
+  },
+  {
+    "address": "0x003AD114",
+    "string": "Physics/Suspension/Front",
+    "length": 24
+  },
+  {
+    "address": "0x003AD1A4",
+    "string": "Master Sfx Volume",
+    "length": 17
+  },
+  {
+    "address": "0x003AD1B8",
+    "string": "Sound/Voice",
+    "length": 11
+  },
+  {
+    "address": "0x003AD1C4",
+    "string": "../export/ValueDB/Sound/Voice.cfg",
+    "length": 33
+  },
+  {
+    "address": "0x003AD1E8",
+    "string": "sound\\generic.awd",
+    "length": 17
+  },
+  {
+    "address": "0x003AD1FC",
+    "string": "Car Volume",
+    "length": 10
+  },
+  {
+    "address": "0x003AD208",
+    "string": "VehicleAudioAI",
+    "length": 14
+  },
+  {
+    "address": "0x003AD218",
+    "string": "../Export/ValueDB/VehicleAudioAI/%s.cfg",
+    "length": 39
+  },
+  {
+    "address": "0x003AD240",
+    "string": "crashescap",
+    "length": 10
+  },
+  {
+    "address": "0x003AD24C",
+    "string": "[%s]",
+    "length": 4
+  },
+  {
+    "address": "0x003AD254",
+    "string": "Gear Change Volume",
+    "length": 18
+  },
+  {
+    "address": "0x003AD268",
+    "string": "Dump Valve Volume Max",
+    "length": 21
+  },
+  {
+    "address": "0x003AD280",
+    "string": "Dump Valve Volume Min",
+    "length": 21
+  },
+  {
+    "address": "0x003AD298",
+    "string": "Dump Valve Kick-in Max Falloff",
+    "length": 30
+  },
+  {
+    "address": "0x003AD2B8",
+    "string": "Dump Valve Kick-in Min Falloff",
+    "length": 30
+  },
+  {
+    "address": "0x003AD2D8",
+    "string": "Rpm to Turbo Max Rpm Volume",
+    "length": 27
+  },
+  {
+    "address": "0x003AD2F4",
+    "string": "Rpm to Turbo Min Rpm",
+    "length": 20
+  },
+  {
+    "address": "0x003AD30C",
+    "string": "Rpm to Turbo Rising Lag",
+    "length": 23
+  },
+  {
+    "address": "0x003AD324",
+    "string": "Rpm to Turbo Falloff Lag",
+    "length": 24
+  },
+  {
+    "address": "0x003AD340",
+    "string": "Wave Attack Offset",
+    "length": 18
+  },
+  {
+    "address": "0x003AD354",
+    "string": "VehicleAudio/Turbo",
+    "length": 18
+  },
+  {
+    "address": "0x003AD368",
+    "string": "VehicleAudio",
+    "length": 12
+  },
+  {
+    "address": "0x003AD378",
+    "string": "../Export/ValueDB/VehicleAudio/%s.cfg",
+    "length": 37
+  },
+  {
+    "address": "0x003AD3A0",
+    "string": "Sound/Misc",
+    "length": 10
+  },
+  {
+    "address": "0x003AD3AC",
+    "string": "../export/ValueDB/Sound/Misc.cfg",
+    "length": 32
+  },
+  {
+    "address": "0x003AD3D0",
+    "string": "BoostBig",
+    "length": 8
+  },
+  {
+    "address": "0x003AD3DC",
+    "string": "BoostSml",
+    "length": 8
+  },
+  {
+    "address": "0x003AD3E8",
+    "string": "BoostOut",
+    "length": 8
+  },
+  {
+    "address": "0x003AD3F4",
+    "string": "BoostIn",
+    "length": 7
+  },
+  {
+    "address": "0x003AD3FC",
+    "string": "fire",
+    "length": 4
+  },
+  {
+    "address": "0x003AD404",
+    "string": "BoostLoop",
+    "length": 9
+  },
+  {
+    "address": "0x003AD410",
+    "string": "AI Boost Loop Volume",
+    "length": 20
+  },
+  {
+    "address": "0x003AD428",
+    "string": "AI Boost Out Volume",
+    "length": 19
+  },
+  {
+    "address": "0x003AD43C",
+    "string": "AI Boost In Volume",
+    "length": 18
+  },
+  {
+    "address": "0x003AD450",
+    "string": "Boost Loop Volume",
+    "length": 17
+  },
+  {
+    "address": "0x003AD464",
+    "string": "Boost Chain Volume",
+    "length": 18
+  },
+  {
+    "address": "0x003AD478",
+    "string": "Boost Out Volume",
+    "length": 16
+  },
+  {
+    "address": "0x003AD48C",
+    "string": "Boost In Volume",
+    "length": 15
+  },
+  {
+    "address": "0x003AD49C",
+    "string": "Boost Ready Volume",
+    "length": 18
+  },
+  {
+    "address": "0x003AD4B0",
+    "string": "Boost Volume",
+    "length": 12
+  },
+  {
+    "address": "0x003AD4C0",
+    "string": "Sound/Boost",
+    "length": 11
+  },
+  {
+    "address": "0x003AD4CC",
+    "string": "Max Pitch",
+    "length": 9
+  },
+  {
+    "address": "0x003AD4D8",
+    "string": "Min Pitch",
+    "length": 9
+  },
+  {
+    "address": "0x003AD4E4",
+    "string": "Max Vol",
+    "length": 7
+  },
+  {
+    "address": "0x003AD4EC",
+    "string": "Min Vol",
+    "length": 7
+  },
+  {
+    "address": "0x003AD4F4",
+    "string": "Max Speed",
+    "length": 9
+  },
+  {
+    "address": "0x003AD500",
+    "string": "Min Speed",
+    "length": 9
+  },
+  {
+    "address": "0x003AD50C",
+    "string": "Tarmac Max Pitch",
+    "length": 16
+  },
+  {
+    "address": "0x003AD520",
+    "string": "Tarmac Min Pitch",
+    "length": 16
+  },
+  {
+    "address": "0x003AD534",
+    "string": "Tarmac Max Vol",
+    "length": 14
+  },
+  {
+    "address": "0x003AD544",
+    "string": "Tarmac Min Vol",
+    "length": 14
+  },
+  {
+    "address": "0x003AD554",
+    "string": "Tarmac Max Speed",
+    "length": 16
+  },
+  {
+    "address": "0x003AD568",
+    "string": "Tarmac Min Speed",
+    "length": 16
+  },
+  {
+    "address": "0x003AD57C",
+    "string": "Low Detail ESM 2 player gain",
+    "length": 28
+  },
+  {
+    "address": "0x003AD59C",
+    "string": "High Detail ESM 2 player gain",
+    "length": 29
+  },
+  {
+    "address": "0x003AD5BC",
+    "string": "Race Car Master Gain",
+    "length": 20
+  },
+  {
+    "address": "0x003AD5D4",
+    "string": "End Volume",
+    "length": 10
+  },
+  {
+    "address": "0x003AD5E0",
+    "string": "End Speed (Percent of MaxSpeed)",
+    "length": 31
+  },
+  {
+    "address": "0x003AD600",
+    "string": "Start Speed (Percent of MaxSpeed)",
+    "length": 33
+  },
+  {
+    "address": "0x003AD624",
+    "string": "Concrete",
+    "length": 8
+  },
+  {
+    "address": "0x003AD630",
+    "string": "Wood",
+    "length": 4
+  },
+  {
+    "address": "0x003AD638",
+    "string": "Metal",
+    "length": 5
+  },
+  {
+    "address": "0x003AD640",
+    "string": "Offline Gravel",
+    "length": 14
+  },
+  {
+    "address": "0x003AD650",
+    "string": "Snow",
+    "length": 4
+  },
+  {
+    "address": "0x003AD658",
+    "string": "Pavement",
+    "length": 8
+  },
+  {
+    "address": "0x003AD664",
+    "string": "Gravel",
+    "length": 6
+  },
+  {
+    "address": "0x003AD66C",
+    "string": "Offline Tarmac",
+    "length": 14
+  },
+  {
+    "address": "0x003AD67C",
+    "string": "Tarmac",
+    "length": 6
+  },
+  {
+    "address": "0x003AD684",
+    "string": "../export/ValueDB/Sound/Surface.cfg",
+    "length": 35
+  },
+  {
+    "address": "0x003AD6A8",
+    "string": "Sound/Misc/Vehicle Volume Tailoff",
+    "length": 33
+  },
+  {
+    "address": "0x003AD6CC",
+    "string": "Sample 3 Spin Frequency Output Point 1 (Y)",
+    "length": 42
+  },
+  {
+    "address": "0x003AD6F8",
+    "string": "Sample 3 Spin Frequency Input Point  1 (X)",
+    "length": 42
+  },
+  {
+    "address": "0x003AD724",
+    "string": "Sample 3 Spin Frequency Output Point 0 (Y)",
+    "length": 42
+  },
+  {
+    "address": "0x003AD750",
+    "string": "Sample 3 Spin Frequency Input Point  0 (X)",
+    "length": 42
+  },
+  {
+    "address": "0x003AD77C",
+    "string": "Sample 3 Spin Volume Output Point 1 (Y)",
+    "length": 39
+  },
+  {
+    "address": "0x003AD7A4",
+    "string": "Sample 3 Spin Volume Input Point  1 (X)",
+    "length": 39
+  },
+  {
+    "address": "0x003AD7CC",
+    "string": "Sample 3 Spin Volume Output Point 0 (Y)",
+    "length": 39
+  },
+  {
+    "address": "0x003AD7F4",
+    "string": "Sample 3 Spin Volume Input Point  0 (X)",
+    "length": 39
+  },
+  {
+    "address": "0x003AD81C",
+    "string": "Sample 3 Slip Frequency Output Point 1 (Y)",
+    "length": 42
+  },
+  {
+    "address": "0x003AD848",
+    "string": "Sample 3 Slip Frequency Input Point  1 (X)",
+    "length": 42
+  },
+  {
+    "address": "0x003AD874",
+    "string": "Sample 3 Slip Frequency Output Point 0 (Y)",
+    "length": 42
+  },
+  {
+    "address": "0x003AD8A0",
+    "string": "Sample 3 Slip Frequency Input Point  0 (X)",
+    "length": 42
+  },
+  {
+    "address": "0x003AD8CC",
+    "string": "Sample 3 Slip Volume Output Point 1 (Y)",
+    "length": 39
+  },
+  {
+    "address": "0x003AD8F4",
+    "string": "Sample 3 Slip Volume Input Point  1 (X)",
+    "length": 39
+  },
+  {
+    "address": "0x003AD91C",
+    "string": "Sample 3 Slip Volume Output Point 0 (Y)",
+    "length": 39
+  },
+  {
+    "address": "0x003AD944",
+    "string": "Sample 3 Slip Volume Input Point  0 (X)",
+    "length": 39
+  },
+  {
+    "address": "0x003AD96C",
+    "string": "Sample 2 Spin Frequency Output Point 1 (Y)",
+    "length": 42
+  },
+  {
+    "address": "0x003AD998",
+    "string": "Sample 2 Spin Frequency Input Point  1 (X)",
+    "length": 42
+  },
+  {
+    "address": "0x003AD9C4",
+    "string": "Sample 2 Spin Frequency Output Point 0 (Y)",
+    "length": 42
+  },
+  {
+    "address": "0x003AD9F0",
+    "string": "Sample 2 Spin Frequency Input Point  0 (X)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADA1C",
+    "string": "Sample 2 Spin Volume Output Point 1 (Y)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADA44",
+    "string": "Sample 2 Spin Volume Input Point  1 (X)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADA6C",
+    "string": "Sample 2 Spin Volume Output Point 0 (Y)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADA94",
+    "string": "Sample 2 Spin Volume Input Point  0 (X)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADABC",
+    "string": "Sample 2 Slip Frequency Output Point 1 (Y)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADAE8",
+    "string": "Sample 2 Slip Frequency Input Point  1 (X)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADB14",
+    "string": "Sample 2 Slip Frequency Output Point 0 (Y)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADB40",
+    "string": "Sample 2 Slip Frequency Input Point  0 (X)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADB6C",
+    "string": "Sample 2 Slip Volume Output Point 1 (Y)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADB94",
+    "string": "Sample 2 Slip Volume Input Point  1 (X)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADBBC",
+    "string": "Sample 2 Slip Volume Output Point 0 (Y)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADBE4",
+    "string": "Sample 2 Slip Volume Input Point  0 (X)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADC0C",
+    "string": "Sample 1 Spin Frequency Output Point 1 (Y)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADC38",
+    "string": "Sample 1 Spin Frequency Input Point  1 (X)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADC64",
+    "string": "Sample 1 Spin Frequency Output Point 0 (Y)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADC90",
+    "string": "Sample 1 Spin Frequency Input Point  0 (X)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADCBC",
+    "string": "Sample 1 Spin Volume Output Point 1 (Y)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADCE4",
+    "string": "Sample 1 Spin Volume Input Point  1 (X)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADD0C",
+    "string": "Sample 1 Spin Volume Output Point 0 (Y)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADD34",
+    "string": "Sample 1 Spin Volume Input Point  0 (X)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADD5C",
+    "string": "Sample 1 Slip Frequency Output Point 1 (Y)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADD88",
+    "string": "Sample 1 Slip Frequency Input Point  1 (X)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADDB4",
+    "string": "Sample 1 Slip Frequency Output Point 0 (Y)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADDE0",
+    "string": "Sample 1 Slip Frequency Input Point  0 (X)",
+    "length": 42
+  },
+  {
+    "address": "0x003ADE0C",
+    "string": "Sample 1 Slip Volume Output Point 1 (Y)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADE34",
+    "string": "Sample 1 Slip Volume Input Point  1 (X)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADE5C",
+    "string": "Sample 1 Slip Volume Output Point 0 (Y)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADE84",
+    "string": "Sample 1 Slip Volume Input Point  0 (X)",
+    "length": 39
+  },
+  {
+    "address": "0x003ADEAC",
+    "string": "Slip Speed Multipler",
+    "length": 20
+  },
+  {
+    "address": "0x003ADEC4",
+    "string": "Crash Volume Multipler",
+    "length": 22
+  },
+  {
+    "address": "0x003ADEDC",
+    "string": "Right Pitch Offset",
+    "length": 18
+  },
+  {
+    "address": "0x003ADEF0",
+    "string": "Left Pitch Offset",
+    "length": 17
+  },
+  {
+    "address": "0x003ADF04",
+    "string": "Wheel Mode 'OutOfControl' Multipler",
+    "length": 35
+  },
+  {
+    "address": "0x003ADF28",
+    "string": "Wheel Mode 'LockUp' Multipler",
+    "length": 29
+  },
+  {
+    "address": "0x003ADF48",
+    "string": "Wheel Mode 'Skid' Multipler",
+    "length": 27
+  },
+  {
+    "address": "0x003ADF64",
+    "string": "Wheel Mode 'Drift' Multipler",
+    "length": 28
+  },
+  {
+    "address": "0x003ADF84",
+    "string": "Wheel Mode 'Donuts' Multipler",
+    "length": 29
+  },
+  {
+    "address": "0x003ADFA4",
+    "string": "Wheel Mode 'StartLine' Multipler",
+    "length": 32
+  },
+  {
+    "address": "0x003ADFC8",
+    "string": "Wheel Mode 'Driving' Multipler",
+    "length": 30
+  },
+  {
+    "address": "0x003ADFE8",
+    "string": "SlipSpin Lag Max",
+    "length": 16
+  },
+  {
+    "address": "0x003ADFFC",
+    "string": "SlipSpin Lag Min",
+    "length": 16
+  },
+  {
+    "address": "0x003AE010",
+    "string": "Emitter Distance RIGHT",
+    "length": 22
+  },
+  {
+    "address": "0x003AE028",
+    "string": "Emitter Distance AT",
+    "length": 19
+  },
+  {
+    "address": "0x003AE03C",
+    "string": "Maximum Spin",
+    "length": 12
+  },
+  {
+    "address": "0x003AE04C",
+    "string": "Maximum Slip",
+    "length": 12
+  },
+  {
+    "address": "0x003AE05C",
+    "string": "Sound/Skids/Sample3/Variant1",
+    "length": 28
+  },
+  {
+    "address": "0x003AE07C",
+    "string": "Sound/Skids/Sample3",
+    "length": 19
+  },
+  {
+    "address": "0x003AE090",
+    "string": "Sound/Skids/Sample2/Variant1",
+    "length": 28
+  },
+  {
+    "address": "0x003AE0B0",
+    "string": "Sound/Skids/Sample2",
+    "length": 19
+  },
+  {
+    "address": "0x003AE0C4",
+    "string": "Sound/Skids/Sample1/Variant1",
+    "length": 28
+  },
+  {
+    "address": "0x003AE0E4",
+    "string": "Sound/Skids/Sample1",
+    "length": 19
+  },
+  {
+    "address": "0x003AE0F8",
+    "string": "Sound/Skids",
+    "length": 11
+  },
+  {
+    "address": "0x003AE104",
+    "string": "../export/ValueDB/Sound/Skids.cfg",
+    "length": 33
+  },
+  {
+    "address": "0x003AE128",
+    "string": "Sound/Turbo",
+    "length": 11
+  },
+  {
+    "address": "0x003AE134",
+    "string": "../export/ValueDB/Sound/Turbo.cfg",
+    "length": 33
+  },
+  {
+    "address": "0x003AE158",
+    "string": "%ssound.awd",
+    "length": 11
+  },
+  {
+    "address": "0x003AE170",
+    "string": "tracks\\",
+    "length": 7,
+    "referenced_from": [
+      "0x0013ECBA",
+      "0x001513E6",
+      "0x001550B3"
+    ]
+  },
+  {
+    "address": "0x003AE178",
+    "string": "sound\\elim.awd",
+    "length": 14
+  },
+  {
+    "address": "0x003AE188",
+    "string": "sound\\crash.awd",
+    "length": 15
+  },
+  {
+    "address": "0x003AE198",
+    "string": "sound\\roadrage.awd",
+    "length": 18
+  },
+  {
+    "address": "0x003AE1AC",
+    "string": "sound\\single.awd",
+    "length": 16
+  },
+  {
+    "address": "0x003AE1C0",
+    "string": "3d Slam Vol",
+    "length": 11
+  },
+  {
+    "address": "0x003AE1CC",
+    "string": "3d Shunt Vol",
+    "length": 12
+  },
+  {
+    "address": "0x003AE1DC",
+    "string": "Gained Boost Segment Gain",
+    "length": 25
+  },
+  {
+    "address": "0x003AE1F8",
+    "string": "Lost Boost Segment Gain",
+    "length": 23
+  },
+  {
+    "address": "0x003AE210",
+    "string": "Crash Bonus Message Volume",
+    "length": 26
+  },
+  {
+    "address": "0x003AE22C",
+    "string": "Crash Escape Message Volume",
+    "length": 27
+  },
+  {
+    "address": "0x003AE248",
+    "string": "Taken out Message Volume",
+    "length": 24
+  },
+  {
+    "address": "0x003AE264",
+    "string": "Taken down Message Volume",
+    "length": 25
+  },
+  {
+    "address": "0x003AE280",
+    "string": "Slammed Message Volume",
+    "length": 22
+  },
+  {
+    "address": "0x003AE298",
+    "string": "Slam Message Volume",
+    "length": 19
+  },
+  {
+    "address": "0x003AE2AC",
+    "string": "Touch Message Volume",
+    "length": 20
+  },
+  {
+    "address": "0x003AE2C4",
+    "string": "Lap Message Volume",
+    "length": 18
+  },
+  {
+    "address": "0x003AE2D8",
+    "string": "Position Message Volume",
+    "length": 23
+  },
+  {
+    "address": "0x003AE2F0",
+    "string": "Popup Message Volume",
+    "length": 20
+  },
+  {
+    "address": "0x003AE308",
+    "string": "sound\\fe.awd",
+    "length": 12
+  },
+  {
+    "address": "0x003AE318",
+    "string": "Sound/Hud/General",
+    "length": 17
+  },
+  {
+    "address": "0x003AE32C",
+    "string": "Sound/Hud/Aggressive Driving",
+    "length": 28
+  },
+  {
+    "address": "0x003AE34C",
+    "string": "../export/ValueDB/Sound/HUD.cfg",
+    "length": 31
+  },
+  {
+    "address": "0x003AE36C",
+    "string": "lrgtrafskd",
+    "length": 10
+  },
+  {
+    "address": "0x003AE378",
+    "string": "smltrafskd22",
+    "length": 12
+  },
+  {
+    "address": "0x003AE388",
+    "string": "smltrafskd12",
+    "length": 12
+  },
+  {
+    "address": "0x003AE398",
+    "string": "Base Pitch",
+    "length": 10
+  },
+  {
+    "address": "0x003AE3A4",
+    "string": "Point Scalar",
+    "length": 12
+  },
+  {
+    "address": "0x003AE3B4",
+    "string": "Point Distances",
+    "length": 15
+  },
+  {
+    "address": "0x003AE3C4",
+    "string": "Small Crashing Traffic Max Pitch",
+    "length": 32
+  },
+  {
+    "address": "0x003AE3E8",
+    "string": "Small Crashing Traffic Min Pitch",
+    "length": 32
+  },
+  {
+    "address": "0x003AE40C",
+    "string": "Small Crashing Traffic Max Vol",
+    "length": 30
+  },
+  {
+    "address": "0x003AE42C",
+    "string": "Small Crashing Traffic Min Vol",
+    "length": 30
+  },
+  {
+    "address": "0x003AE44C",
+    "string": "Small Crashing Traffic Max Speed",
+    "length": 32
+  },
+  {
+    "address": "0x003AE470",
+    "string": "Small Crashing Traffic Min Speed",
+    "length": 32
+  },
+  {
+    "address": "0x003AE494",
+    "string": "Large Crashing Traffic Max Pitch",
+    "length": 32
+  },
+  {
+    "address": "0x003AE4B8",
+    "string": "Large Crashing Traffic Min Pitch",
+    "length": 32
+  },
+  {
+    "address": "0x003AE4DC",
+    "string": "Large Crashing Traffic Max Vol",
+    "length": 30
+  },
+  {
+    "address": "0x003AE4FC",
+    "string": "Large Crashing Traffic Min Vol",
+    "length": 30
+  },
+  {
+    "address": "0x003AE51C",
+    "string": "Large Crashing Traffic Max Speed",
+    "length": 32
+  },
+  {
+    "address": "0x003AE540",
+    "string": "Large Crashing Traffic Min Speed",
+    "length": 32
+  },
+  {
+    "address": "0x003AE564",
+    "string": "Horn Linear Scalar",
+    "length": 18
+  },
+  {
+    "address": "0x003AE578",
+    "string": "Car Horn Volume",
+    "length": 15
+  },
+  {
+    "address": "0x003AE588",
+    "string": "Truck Horn Volume",
+    "length": 17
+  },
+  {
+    "address": "0x003AE59C",
+    "string": "Horn Pitch Variance",
+    "length": 19
+  },
+  {
+    "address": "0x003AE5B0",
+    "string": "Horn Max Distance",
+    "length": 17
+  },
+  {
+    "address": "0x003AE5C4",
+    "string": "Horn Speed of Sound",
+    "length": 19
+  },
+  {
+    "address": "0x003AE5D8",
+    "string": "Horn Max Off Time",
+    "length": 17
+  },
+  {
+    "address": "0x003AE5EC",
+    "string": "Horn Max On Time",
+    "length": 16
+  },
+  {
+    "address": "0x003AE600",
+    "string": "Horn Min Off Time",
+    "length": 17
+  },
+  {
+    "address": "0x003AE614",
+    "string": "Horn Min On Time",
+    "length": 16
+  },
+  {
+    "address": "0x003AE628",
+    "string": "Big Pass Scalar",
+    "length": 15
+  },
+  {
+    "address": "0x003AE638",
+    "string": "Little Pass Scalar",
+    "length": 18
+  },
+  {
+    "address": "0x003AE64C",
+    "string": "Edge Pitch",
+    "length": 10
+  },
+  {
+    "address": "0x003AE658",
+    "string": "Centre Pitch",
+    "length": 12
+  },
+  {
+    "address": "0x003AE668",
+    "string": "Plane Width",
+    "length": 11
+  },
+  {
+    "address": "0x003AE674",
+    "string": "Max Volume",
+    "length": 10
+  },
+  {
+    "address": "0x003AE680",
+    "string": "Min Volume",
+    "length": 10
+  },
+  {
+    "address": "0x003AE68C",
+    "string": "DampTime",
+    "length": 8
+  },
+  {
+    "address": "0x003AE698",
+    "string": "Car Length",
+    "length": 10
+  },
+  {
+    "address": "0x003AE6A4",
+    "string": "Sample Midpoint",
+    "length": 15
+  },
+  {
+    "address": "0x003AE6B4",
+    "string": "Lorry Engine Volume",
+    "length": 19
+  },
+  {
+    "address": "0x003AE6C8",
+    "string": "Lorry Engine Pitch",
+    "length": 18
+  },
+  {
+    "address": "0x003AE6DC",
+    "string": "Bus Engine Volume",
+    "length": 17
+  },
+  {
+    "address": "0x003AE6F0",
+    "string": "Bus Engine Pitch",
+    "length": 16
+  },
+  {
+    "address": "0x003AE704",
+    "string": "Car Pitch",
+    "length": 9
+  },
+  {
+    "address": "0x003AE710",
+    "string": "Van Pitch",
+    "length": 9
+  },
+  {
+    "address": "0x003AE71C",
+    "string": "Lorry Pitch",
+    "length": 11
+  },
+  {
+    "address": "0x003AE728",
+    "string": "Bus Pitch",
+    "length": 9
+  },
+  {
+    "address": "0x003AE734",
+    "string": "Car volume",
+    "length": 10
+  },
+  {
+    "address": "0x003AE740",
+    "string": "Van volume",
+    "length": 10
+  },
+  {
+    "address": "0x003AE74C",
+    "string": "Lorry volume",
+    "length": 12
+  },
+  {
+    "address": "0x003AE75C",
+    "string": "Bus volume",
+    "length": 10
+  },
+  {
+    "address": "0x003AE768",
+    "string": "Sound/Doppler",
+    "length": 13
+  },
+  {
+    "address": "0x003AE778",
+    "string": "../export/ValueDB/Sound/Boost.cfg",
+    "length": 33
+  },
+  {
+    "address": "0x003AE79C",
+    "string": "Sound/CrashingTraffic/Skids/Small",
+    "length": 33
+  },
+  {
+    "address": "0x003AE7C0",
+    "string": "Sound/CrashingTraffic/Skids/Large",
+    "length": 33
+  },
+  {
+    "address": "0x003AE7E4",
+    "string": "Sound/Traffic",
+    "length": 13
+  },
+  {
+    "address": "0x003AE7F4",
+    "string": "../export/ValueDB/Sound/Traffic.cfg",
+    "length": 35
+  },
+  {
+    "address": "0x003AE818",
+    "string": "bstpss01",
+    "length": 8
+  },
+  {
+    "address": "0x003AE824",
+    "string": "bstpsl0%i",
+    "length": 9
+  },
+  {
+    "address": "0x003AE830",
+    "string": "bstpss0%i",
+    "length": 9
+  },
+  {
+    "address": "0x003AE83C",
+    "string": "cardry1",
+    "length": 7
+  },
+  {
+    "address": "0x003AE844",
+    "string": "trkeng01",
+    "length": 8
+  },
+  {
+    "address": "0x003AE850",
+    "string": "buseng01",
+    "length": 8
+  },
+  {
+    "address": "0x003AE85C",
+    "string": "cartar0%i",
+    "length": 9
+  },
+  {
+    "address": "0x003AE868",
+    "string": "Squeak volume range",
+    "length": 19
+  },
+  {
+    "address": "0x003AE87C",
+    "string": "Squeak base volume",
+    "length": 18
+  },
+  {
+    "address": "0x003AE890",
+    "string": "Rails volume",
+    "length": 12
+  },
+  {
+    "address": "0x003AE8A0",
+    "string": "Time between squeaks variation (frames)",
+    "length": 39
+  },
+  {
+    "address": "0x003AE8C8",
+    "string": "Squeak duration variation (frames)",
+    "length": 34
+  },
+  {
+    "address": "0x003AE8EC",
+    "string": "Frames between squeaks",
+    "length": 22
+  },
+  {
+    "address": "0x003AE904",
+    "string": "Length of squeak (frames)",
+    "length": 25
+  },
+  {
+    "address": "0x003AE920",
+    "string": "Squeak pitch range",
+    "length": 18
+  },
+  {
+    "address": "0x003AE934",
+    "string": "Squeak base pitch",
+    "length": 17
+  },
+  {
+    "address": "0x003AE948",
+    "string": "Pitch gain step",
+    "length": 15
+  },
+  {
+    "address": "0x003AE958",
+    "string": "Min pitch gain",
+    "length": 14
+  },
+  {
+    "address": "0x003AE968",
+    "string": "Max pitch gain",
+    "length": 14
+  },
+  {
+    "address": "0x003AE978",
+    "string": "Min distance",
+    "length": 12
+  },
+  {
+    "address": "0x003AE988",
+    "string": "Max distance",
+    "length": 12
+  },
+  {
+    "address": "0x003AE998",
+    "string": "../export/ValueDB/Sound/LTrain.cfg",
+    "length": 34
+  },
+  {
+    "address": "0x003AE9BC",
+    "string": "Sound/L Train/",
+    "length": 14
+  },
+  {
+    "address": "0x003AE9CC",
+    "string": "%s%s",
+    "length": 4
+  },
+  {
+    "address": "0x003AE9D4",
+    "string": "%swd",
+    "length": 4
+  },
+  {
+    "address": "0x003AE9DC",
+    "string": "Offroad Lerp time",
+    "length": 17
+  },
+  {
+    "address": "0x003AE9F0",
+    "string": "Offroad Modulation Period Max",
+    "length": 29
+  },
+  {
+    "address": "0x003AEA10",
+    "string": "Offroad Modulation Period Min",
+    "length": 29
+  },
+  {
+    "address": "0x003AEA30",
+    "string": "Offroad Modulation End Speed (percent of top)",
+    "length": 45
+  },
+  {
+    "address": "0x003AEA60",
+    "string": "Offroad Modulation Start Speed (percent of top)",
+    "length": 47
+  },
+  {
+    "address": "0x003AEA90",
+    "string": "Offroad Max Amplitude",
+    "length": 21
+  },
+  {
+    "address": "0x003AEAA8",
+    "string": "Offroad Oscillator period",
+    "length": 25
+  },
+  {
+    "address": "0x003AEAC4",
+    "string": "Time Till Full Offroad Saturation",
+    "length": 33
+  },
+  {
+    "address": "0x003AEAE8",
+    "string": "Time to modulate on landing",
+    "length": 27
+  },
+  {
+    "address": "0x003AEB04",
+    "string": "Full Air Saturation Scalar",
+    "length": 26
+  },
+  {
+    "address": "0x003AEB20",
+    "string": "Time Till Full Air Saturation",
+    "length": 29
+  },
+  {
+    "address": "0x003AEB40",
+    "string": "Total Modulation Time (seconds)",
+    "length": 31
+  },
+  {
+    "address": "0x003AEB60",
+    "string": "Oscillator period",
+    "length": 17
+  },
+  {
+    "address": "0x003AEB74",
+    "string": "Rpm Modulation Max Amplitude",
+    "length": 28
+  },
+  {
+    "address": "0x003AEB94",
+    "string": "Sound/Esm",
+    "length": 9
+  },
+  {
+    "address": "0x003AEBA0",
+    "string": "../export/ValueDB/Sound/Esm.cfg",
+    "length": 31
+  },
+  {
+    "address": "0x003AEBC8",
+    "string": "Sound/DSP/B3XboxFx.bin",
+    "length": 22
+  },
+  {
+    "address": "0x003AEBE0",
+    "string": "crash%d.rws",
+    "length": 11
+  },
+  {
+    "address": "0x003AEBEC",
+    "string": "AS_m1_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AEBF8",
+    "string": "AS_m1_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC04",
+    "string": "AS_c3_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC10",
+    "string": "AS_c3_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC1C",
+    "string": "AS_c2_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC28",
+    "string": "AS_c2_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC34",
+    "string": "AS_c1_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC40",
+    "string": "AS_c1_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC4C",
+    "string": "eu_p1_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC58",
+    "string": "eu_p1_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC64",
+    "string": "eu_m2_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC70",
+    "string": "eu_m2_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC7C",
+    "string": "eu_m1_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC88",
+    "string": "eu_m1_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AEC94",
+    "string": "eu_c4_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AECA0",
+    "string": "eu_c4_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AECAC",
+    "string": "eu_c3_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AECB8",
+    "string": "eu_c3_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AECC4",
+    "string": "eu_c2_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AECD0",
+    "string": "eu_c2_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AECDC",
+    "string": "eu_c1_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AECE8",
+    "string": "eu_c1_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AECF4",
+    "string": "us_p1_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AED00",
+    "string": "us_p1_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AED0C",
+    "string": "us_m2_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AED18",
+    "string": "us_m2_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AED24",
+    "string": "us_m1_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AED30",
+    "string": "us_m1_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AED3C",
+    "string": "us_c3_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AED48",
+    "string": "us_c3_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AED54",
+    "string": "us_c2_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AED60",
+    "string": "us_c2_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AED6C",
+    "string": "us_c1_v2",
+    "length": 8
+  },
+  {
+    "address": "0x003AED78",
+    "string": "us_c1_v1",
+    "length": 8
+  },
+  {
+    "address": "0x003AED84",
+    "string": "tracks\\crash%d.rws",
+    "length": 18
+  },
+  {
+    "address": "0x003AED98",
+    "string": "../export/ValueDB/Sound/Tracks/%s.cfg",
+    "length": 37
+  },
+  {
+    "address": "0x003AEDC0",
+    "string": "sound\\",
+    "length": 6
+  },
+  {
+    "address": "0x003AEDC8",
+    "string": "g_crsh04",
+    "length": 8
+  },
+  {
+    "address": "0x003AEDD4",
+    "string": ".awd",
+    "length": 4
+  },
+  {
+    "address": "0x003AEDDC",
+    "string": "sound\\crashmod.awd",
+    "length": 18,
+    "referenced_from": [
+      "0x0014B656"
+    ]
+  },
+  {
+    "address": "0x003AEDF0",
+    "string": "Min Impulse",
+    "length": 11
+  },
+  {
+    "address": "0x003AEDFC",
+    "string": "Max Impulse",
+    "length": 11
+  },
+  {
+    "address": "0x003AEE08",
+    "string": "crash3.rws",
+    "length": 10
+  },
+  {
+    "address": "0x003AEE14",
+    "string": "Sound/Crash Stream/",
+    "length": 19
+  },
+  {
+    "address": "0x003AEE28",
+    "string": "Sound/Prop/Log/",
+    "length": 15
+  },
+  {
+    "address": "0x003AEE38",
+    "string": "Sound/Prop/Container/",
+    "length": 21
+  },
+  {
+    "address": "0x003AEE50",
+    "string": "Sound/Prop/Cable Drum/",
+    "length": 22
+  },
+  {
+    "address": "0x003AEE68",
+    "string": "Sound/Prop/Hay Drum/",
+    "length": 20
+  },
+  {
+    "address": "0x003AEE80",
+    "string": "Sound/Prop/Hay Bale/",
+    "length": 20
+  },
+  {
+    "address": "0x003AEE98",
+    "string": "Sound/Prop/Boat/",
+    "length": 16
+  },
+  {
+    "address": "0x003AEEAC",
+    "string": "Sound/Prop/Crate/",
+    "length": 17
+  },
+  {
+    "address": "0x003AEEC0",
+    "string": "Sound/Prop/Barrel/",
+    "length": 18
+  },
+  {
+    "address": "0x003AEED4",
+    "string": "Sound/Prop/Metal Barrier/",
+    "length": 25
+  },
+  {
+    "address": "0x003AEEF0",
+    "string": "Sound/Prop/Barrier/",
+    "length": 19
+  },
+  {
+    "address": "0x003AEF04",
+    "string": "Sound/Prop/Signpost/",
+    "length": 20
+  },
+  {
+    "address": "0x003AEF1C",
+    "string": "Sound/Prop/Woodbox/",
+    "length": 19
+  },
+  {
+    "address": "0x003AEF30",
+    "string": "Sound/Prop/Metal Box/",
+    "length": 21
+  },
+  {
+    "address": "0x003AEF48",
+    "string": "Sound/Prop/Card Box/",
+    "length": 20
+  },
+  {
+    "address": "0x003AEF60",
+    "string": "Sound/Prop/Cone/",
+    "length": 16
+  },
+  {
+    "address": "0x003AEF74",
+    "string": "Sound/Explosion/",
+    "length": 16
+  },
+  {
+    "address": "0x003AEF88",
+    "string": "Sound/Crash Extra/",
+    "length": 18
+  },
+  {
+    "address": "0x003AEF9C",
+    "string": "Sound/Kerb/",
+    "length": 11
+  },
+  {
+    "address": "0x003AEFA8",
+    "string": "Sound/Particulate Glass/",
+    "length": 24
+  },
+  {
+    "address": "0x003AEFC4",
+    "string": "Sound/Prop/BodyPart/Wheel",
+    "length": 25
+  },
+  {
+    "address": "0x003AEFE0",
+    "string": "Sound/Prop/BodyPart/Small",
+    "length": 25
+  },
+  {
+    "address": "0x003AEFFC",
+    "string": "Sound/Prop/BodyPart/Large",
+    "length": 25
+  },
+  {
+    "address": "0x003AF018",
+    "string": "Sound/Car/Crash",
+    "length": 15
+  },
+  {
+    "address": "0x003AF028",
+    "string": "Sound/World/Crash",
+    "length": 17
+  },
+  {
+    "address": "0x003AF03C",
+    "string": "Sound/Car/Nudge",
+    "length": 15
+  },
+  {
+    "address": "0x003AF04C",
+    "string": "Sound/Traffic/World",
+    "length": 19
+  },
+  {
+    "address": "0x003AF060",
+    "string": "Sound/World/Nudge",
+    "length": 17
+  },
+  {
+    "address": "0x003AF074",
+    "string": "Sound/Component/Small/Remove",
+    "length": 28
+  },
+  {
+    "address": "0x003AF094",
+    "string": "Sound/Component/Large/Remove",
+    "length": 28
+  },
+  {
+    "address": "0x003AF0B4",
+    "string": "Sound/Component/Small/Deform",
+    "length": 28
+  },
+  {
+    "address": "0x003AF0D4",
+    "string": "Sound/Component/Large/Deform",
+    "length": 28
+  },
+  {
+    "address": "0x003AF0F4",
+    "string": "Sound/Component/Glass",
+    "length": 21
+  },
+  {
+    "address": "0x003AF10C",
+    "string": "Sound/Crash",
+    "length": 11
+  },
+  {
+    "address": "0x003AF118",
+    "string": "Sound/Scrape",
+    "length": 12
+  },
+  {
+    "address": "0x003AF128",
+    "string": "Sound/Scrape/High",
+    "length": 17
+  },
+  {
+    "address": "0x003AF13C",
+    "string": "Sound/Scrape/Low",
+    "length": 16
+  },
+  {
+    "address": "0x003AF150",
+    "string": "Sound",
+    "length": 5
+  },
+  {
+    "address": "0x003AF158",
+    "string": "../export/ValueDB/Sound/Payload.cfg",
+    "length": 35
+  },
+  {
+    "address": "0x003AF17C",
+    "string": "../export/ValueDB/Sound/Crash.cfg",
+    "length": 33
+  },
+  {
+    "address": "0x003AF1A0",
+    "string": "%s%s%s%s",
+    "length": 8
+  },
+  {
+    "address": "0x003AF1AC",
+    "string": "Sound/Radio",
+    "length": 11
+  },
+  {
+    "address": "0x003AF1B8",
+    "string": "../export/ValueDB/Sound/Radio.cfg",
+    "length": 33
+  },
+  {
+    "address": "0x003AF1DC",
+    "string": ".xwb",
+    "length": 4
+  },
+  {
+    "address": "0x003AF1E8",
+    "string": "EATraxD",
+    "length": 7
+  },
+  {
+    "address": "0x003AF1F0",
+    "string": "_EATrax",
+    "length": 7
+  },
+  {
+    "address": "0x003AF1F8",
+    "string": "djmcr",
+    "length": 5
+  },
+  {
+    "address": "0x003AF200",
+    "string": "djmbl",
+    "length": 5
+  },
+  {
+    "address": "0x003AF208",
+    "string": "djmrr",
+    "length": 5
+  },
+  {
+    "address": "0x003AF210",
+    "string": "djmel",
+    "length": 5
+  },
+  {
+    "address": "0x003AF218",
+    "string": "djmra",
+    "length": 5
+  },
+  {
+    "address": "0x003AF220",
+    "string": "djmgp",
+    "length": 5
+  },
+  {
+    "address": "0x003AF228",
+    "string": "djmfo",
+    "length": 5
+  },
+  {
+    "address": "0x003AF230",
+    "string": "%s%s%d.awd",
+    "length": 10
+  },
+  {
+    "address": "0x003AF254",
+    "string": "DJAS",
+    "length": 4
+  },
+  {
+    "address": "0x003AF25C",
+    "string": "DJEU",
+    "length": 4
+  },
+  {
+    "address": "0x003AF264",
+    "string": "DJUS",
+    "length": 4
+  },
+  {
+    "address": "0x003AF26C",
+    "string": "djrace",
+    "length": 6
+  },
+  {
+    "address": "0x003AF274",
+    "string": "djgen",
+    "length": 5
+  },
+  {
+    "address": "0x003AF27C",
+    "string": "djwww",
+    "length": 5
+  },
+  {
+    "address": "0x003AF284",
+    "string": "ident",
+    "length": 5
+  },
+  {
+    "address": "0x003AF28C",
+    "string": "tracks/",
+    "length": 7,
+    "referenced_from": [
+      "0x001574FA"
+    ]
+  },
+  {
+    "address": "0x003AF298",
+    "string": "pveh/",
+    "length": 5,
+    "referenced_from": [
+      "0x00157210"
+    ]
+  },
+  {
+    "address": "0x003AF2A0",
+    "string": "/Stage",
+    "length": 6
+  },
+  {
+    "address": "0x003AF2A8",
+    "string": "/Chall",
+    "length": 6
+  },
+  {
+    "address": "0x003AF2B0",
+    "string": "/Series",
+    "length": 7
+  },
+  {
+    "address": "0x003AF2B8",
+    "string": "/Champ",
+    "length": 6
+  },
+  {
+    "address": "0x003AF2C0",
+    "string": "/ProgData",
+    "length": 9
+  },
+  {
+    "address": "0x003AF2CC",
+    "string": "Player 2",
+    "length": 8,
+    "referenced_from": [
+      "0x0015C033"
+    ]
+  },
+  {
+    "address": "0x003AF2D8",
+    "string": "Player 1",
+    "length": 8,
+    "referenced_from": [
+      "0x0015C01A"
+    ]
+  },
+  {
+    "address": "0x003AF2E4",
+    "string": "InGame/Effect/Shake/Angular/",
+    "length": 28
+  },
+  {
+    "address": "0x003AF304",
+    "string": "InGame/Effect/Shake/Position/",
+    "length": 29
+  },
+  {
+    "address": "0x003AF324",
+    "string": "InGame/Effect/Slam/Angular/",
+    "length": 27
+  },
+  {
+    "address": "0x003AF340",
+    "string": "InGame/Effect/Slam/Position/",
+    "length": 28
+  },
+  {
+    "address": "0x003AF360",
+    "string": "InGame/Effect/Shunted/Angular/",
+    "length": 30
+  },
+  {
+    "address": "0x003AF380",
+    "string": "InGame/Effect/Shunted/Position/",
+    "length": 31
+  },
+  {
+    "address": "0x003AF3A0",
+    "string": "InGame/Effect/Shunt/Angular/",
+    "length": 28
+  },
+  {
+    "address": "0x003AF3C0",
+    "string": "InGame/Effect/Shunt/Position/",
+    "length": 29
+  },
+  {
+    "address": "0x003AF3E0",
+    "string": "InGame/Effect/Burnout/Angular/",
+    "length": 30
+  },
+  {
+    "address": "0x003AF400",
+    "string": "Force",
+    "length": 5
+  },
+  {
+    "address": "0x003AF408",
+    "string": "InGame/Effect/Burnout/Position/",
+    "length": 31
+  },
+  {
+    "address": "0x003AF428",
+    "string": "Safe FOV Vert",
+    "length": 13
+  },
+  {
+    "address": "0x003AF438",
+    "string": "Safe FOV Horiz",
+    "length": 14
+  },
+  {
+    "address": "0x003AF448",
+    "string": "Damping",
+    "length": 7
+  },
+  {
+    "address": "0x003AF450",
+    "string": "Crash/HandyCam/",
+    "length": 15
+  },
+  {
+    "address": "0x003AF460",
+    "string": "Camera.cfg",
+    "length": 10,
+    "referenced_from": [
+      "0x00160BBC"
+    ]
+  },
+  {
+    "address": "0x003AF46C",
+    "string": "Down Angle",
+    "length": 10
+  },
+  {
+    "address": "0x003AF478",
+    "string": "Spring Coeff",
+    "length": 12
+  },
+  {
+    "address": "0x003AF488",
+    "string": "Focus Offset",
+    "length": 12
+  },
+  {
+    "address": "0x003AF498",
+    "string": "Camera/Follow/",
+    "length": 14
+  },
+  {
+    "address": "0x003AF4A8",
+    "string": "Camera/Look Back/",
+    "length": 17
+  },
+  {
+    "address": "0x003AF4BC",
+    "string": "Camera Offset",
+    "length": 13
+  },
+  {
+    "address": "0x003AF4CC",
+    "string": "Camera/Bumper/",
+    "length": 14
+  },
+  {
+    "address": "0x003AF4DC",
+    "string": "%012d",
+    "length": 5
+  },
+  {
+    "address": "0x003AF4E4",
+    "string": "Data\\Replay.kfs",
+    "length": 15,
+    "referenced_from": [
+      "0x00161EA9"
+    ]
+  },
+  {
+    "address": "0x003AF4F4",
+    "string": "Data\\After.kfs",
+    "length": 14,
+    "referenced_from": [
+      "0x00161E75"
+    ]
+  },
+  {
+    "address": "0x003AF504",
+    "string": "Data\\Intro.kfs",
+    "length": 14,
+    "referenced_from": [
+      "0x00161E3B"
+    ]
+  },
+  {
+    "address": "0x003AF514",
+    "string": "KeyFrames.dat",
+    "length": 13
+  },
+  {
+    "address": "0x003AF524",
+    "string": "Aftermath",
+    "length": 9
+  },
+  {
+    "address": "0x003AF530",
+    "string": "Video",
+    "length": 5
+  },
+  {
+    "address": "0x003AF538",
+    "string": "Intro",
+    "length": 5
+  },
+  {
+    "address": "0x003AF540",
+    "string": "Replay",
+    "length": 6
+  },
+  {
+    "address": "0x003AF548",
+    "string": "Recording End",
+    "length": 13
+  },
+  {
+    "address": "0x003AF558",
+    "string": "Recording Start",
+    "length": 15
+  },
+  {
+    "address": "0x003AF568",
+    "string": "World Unfreeze",
+    "length": 14
+  },
+  {
+    "address": "0x003AF578",
+    "string": "World Freeze",
+    "length": 12
+  },
+  {
+    "address": "0x003AF588",
+    "string": "Catmull",
+    "length": 7
+  },
+  {
+    "address": "0x003AF590",
+    "string": "Smooth In/Out",
+    "length": 13
+  },
+  {
+    "address": "0x003AF5A0",
+    "string": "Linear",
+    "length": 6
+  },
+  {
+    "address": "0x003AF5AC",
+    "string": "Rig Orientation",
+    "length": 15
+  },
+  {
+    "address": "0x003AF5BC",
+    "string": "Rig Position",
+    "length": 12
+  },
+  {
+    "address": "0x003AF5CC",
+    "string": "Static",
+    "length": 6
+  },
+  {
+    "address": "0x003AF5D4",
+    "string": "How long a rubbed AI car goes blind for (seconds)",
+    "length": 49
+  },
+  {
+    "address": "0x003AF608",
+    "string": "How soon after starting to slam is the AI car committed and can't stop",
+    "length": 70
+  },
+  {
+    "address": "0x003AF650",
+    "string": "Max. cos angle off lane to stop attack",
+    "length": 38
+  },
+  {
+    "address": "0x003AF678",
+    "string": "Slam time (seconds)",
+    "length": 19
+  },
+  {
+    "address": "0x003AF68C",
+    "string": "Steer out time (seconds)",
+    "length": 24
+  },
+  {
+    "address": "0x003AF6A8",
+    "string": "Steer out distance (meters)",
+    "length": 27
+  },
+  {
+    "address": "0x003AF6C4",
+    "string": "Max. difference in speeds (MPH)",
+    "length": 31
+  },
+  {
+    "address": "0x003AF6E4",
+    "string": "Max. distance between cars, when ahead (meters)",
+    "length": 47
+  },
+  {
+    "address": "0x003AF714",
+    "string": "Max. time to try and get into slamming position (seconds)",
+    "length": 57
+  },
+  {
+    "address": "0x003AF750",
+    "string": "Preferred car separation when getting into slam position (meters)",
+    "length": 65
+  },
+  {
+    "address": "0x003AF794",
+    "string": "Max distance ahead to start blocking you (meters)",
+    "length": 49
+  },
+  {
+    "address": "0x003AF7C8",
+    "string": "Max time to try and block you for (seconds)",
+    "length": 43
+  },
+  {
+    "address": "0x003AF7F4",
+    "string": "Min time to try and block you for (seconds)",
+    "length": 43
+  },
+  {
+    "address": "0x003AF820",
+    "string": "How long after hitting something to disable immunity (seconds)",
+    "length": 62
+  },
+  {
+    "address": "0x003AF860",
+    "string": "How long to wait at the start of the race before doing aggressive driving (seconds)",
+    "length": 83
+  },
+  {
+    "address": "0x003AF8B8",
+    "string": "Extra distance in front to boost relative to aggression (meters)",
+    "length": 64
+  },
+  {
+    "address": "0x003AF8FC",
+    "string": "How far in front to boost when speed matching the player",
+    "length": 56
+  },
+  {
+    "address": "0x003AF938",
+    "string": "How much slower than the player to drive while speed matching to attack position",
+    "length": 80
+  },
+  {
+    "address": "0x003AF98C",
+    "string": "Min. target speed to consider attacking (mph)",
+    "length": 45
+  },
+  {
+    "address": "0x003AF9C0",
+    "string": "Max. distance apart to begin attacking when behind of target (meters)",
+    "length": 69
+  },
+  {
+    "address": "0x003AFA08",
+    "string": "Max. distance apart to begin attacking when ahead of target (meters)",
+    "length": 68
+  },
+  {
+    "address": "0x003AFA50",
+    "string": "Max. time to wait between attacks (seconds)",
+    "length": 43
+  },
+  {
+    "address": "0x003AFA7C",
+    "string": "Min. time to wait between attacks (seconds)",
+    "length": 43
+  },
+  {
+    "address": "0x003AFAA8",
+    "string": "Min. aggression before we start attacking",
+    "length": 41
+  },
+  {
+    "address": "0x003AFAD4",
+    "string": "Maximum diffence in speeds for sticky speed matching (MPH)",
+    "length": 58
+  },
+  {
+    "address": "0x003AFB10",
+    "string": "Maximum distance from player to start doing sticky speed matching (metres)",
+    "length": 74
+  },
+  {
+    "address": "0x003AFB60",
+    "string": "How close the target car must be to start proper speed matching (meters)",
+    "length": 72
+  },
+  {
+    "address": "0x003AFBB0",
+    "string": "How far away from the true apex to move the apex point of a corner when drifting (meters)",
+    "length": 89
+  },
+  {
+    "address": "0x003AFC10",
+    "string": "Max. number of extra segments to extend the corner based on your speed (when drifting)",
+    "length": 86
+  },
+  {
+    "address": "0x003AFC68",
+    "string": "Number of segments to extend the start of any corner (when drifting)",
+    "length": 68
+  },
+  {
+    "address": "0x003AFCB0",
+    "string": "Max. number of extra segments to extend the corner based on your speed",
+    "length": 70
+  },
+  {
+    "address": "0x003AFCF8",
+    "string": "Number of segments to extend the start of any corner",
+    "length": 52
+  },
+  {
+    "address": "0x003AFD30",
+    "string": "Time until we hit the apex at which to start drifting (seconds)",
+    "length": 63
+  },
+  {
+    "address": "0x003AFD70",
+    "string": "Corner radius to give max offset pos",
+    "length": 36
+  },
+  {
+    "address": "0x003AFD98",
+    "string": "Perp dist to update target pos",
+    "length": 30
+  },
+  {
+    "address": "0x003AFDB8",
+    "string": "Dist to update target pos",
+    "length": 25
+  },
+  {
+    "address": "0x003AFDD4",
+    "string": "Drift speed threshold",
+    "length": 21
+  },
+  {
+    "address": "0x003AFDEC",
+    "string": "Dist to brake speed factor big=>fast",
+    "length": 36
+  },
+  {
+    "address": "0x003AFE14",
+    "string": "Aggression dist variation offset",
+    "length": 32
+  },
+  {
+    "address": "0x003AFE38",
+    "string": "Aggression time variation offset",
+    "length": 32
+  },
+  {
+    "address": "0x003AFE5C",
+    "string": "Aggression dist variation factor",
+    "length": 32
+  },
+  {
+    "address": "0x003AFE80",
+    "string": "Aggression time variation factor",
+    "length": 32
+  },
+  {
+    "address": "0x003AFEA4",
+    "string": "Steering factor big=>extreme",
+    "length": 28
+  },
+  {
+    "address": "0x003AFEC4",
+    "string": "Speed when risk is >0.9",
+    "length": 23
+  },
+  {
+    "address": "0x003AFEDC",
+    "string": "Speed when risk is >0.95",
+    "length": 24
+  },
+  {
+    "address": "0x003AFEF8",
+    "string": "Speed when car is <30m away",
+    "length": 27
+  },
+  {
+    "address": "0x003AFF14",
+    "string": "Speed when car is <20m away",
+    "length": 27
+  },
+  {
+    "address": "0x003AFF30",
+    "string": "Speed when car is <10m away",
+    "length": 27
+  },
+  {
+    "address": "0x003AFF4C",
+    "string": "dt between start and end vehicle",
+    "length": 32
+  },
+  {
+    "address": "0x003AFF70",
+    "string": "Vert dist to discard traffic and racecars",
+    "length": 41
+  },
+  {
+    "address": "0x003AFF9C",
+    "string": "Distance to discard fatally colliding racecar",
+    "length": 45
+  },
+  {
+    "address": "0x003AFFCC",
+    "string": "Hard No Go offset distance",
+    "length": 26
+  },
+  {
+    "address": "0x003AFFE8",
+    "string": "Hard No Go offset time",
+    "length": 22
+  },
+  {
+    "address": "0x003B0000",
+    "string": "Extra softNoGo offset time for future",
+    "length": 37
+  },
+  {
+    "address": "0x003B0028",
+    "string": "Extra softNoGo offset dist for future",
+    "length": 37
+  },
+  {
+    "address": "0x003B0050",
+    "string": "AVOID: Soft No Go offset distance",
+    "length": 33
+  },
+  {
+    "address": "0x003B0074",
+    "string": "AVOID: Soft No Go offset time",
+    "length": 29
+  },
+  {
+    "address": "0x003B0094",
+    "string": "AVOID: LookAhead dist racecars",
+    "length": 30
+  },
+  {
+    "address": "0x003B00B4",
+    "string": "Current corner risk threshold",
+    "length": 29
+  },
+  {
+    "address": "0x003B00D4",
+    "string": "Total corner risk threshold",
+    "length": 27
+  },
+  {
+    "address": "0x003B00F0",
+    "string": "Corner Risk threshold",
+    "length": 21
+  },
+  {
+    "address": "0x003B0108",
+    "string": "Current risk threshold",
+    "length": 22
+  },
+  {
+    "address": "0x003B0120",
+    "string": "Total risk threshold",
+    "length": 20
+  },
+  {
+    "address": "0x003B0138",
+    "string": "Risk threshold",
+    "length": 14
+  },
+  {
+    "address": "0x003B0148",
+    "string": "Drift Max lock at 180 x degrees",
+    "length": 31
+  },
+  {
+    "address": "0x003B0168",
+    "string": "Max lock at 180 x degrees",
+    "length": 25
+  },
+  {
+    "address": "0x003B0184",
+    "string": "Angle at which drift is started",
+    "length": 31
+  },
+  {
+    "address": "0x003B01A4",
+    "string": "How much carAt affects steering",
+    "length": 31
+  },
+  {
+    "address": "0x003B01C4",
+    "string": "Min speed mps",
+    "length": 13
+  },
+  {
+    "address": "0x003B01D4",
+    "string": "Top speed mps",
+    "length": 13
+  },
+  {
+    "address": "0x003B01E4",
+    "string": "Angle you want min spd at",
+    "length": 25
+  },
+  {
+    "address": "0x003B0200",
+    "string": "Max desDir angle change OOR",
+    "length": 27
+  },
+  {
+    "address": "0x003B021C",
+    "string": "Out of range speed decrease rate",
+    "length": 32
+  },
+  {
+    "address": "0x003B0240",
+    "string": "../Export/ValueDB/AI/defaults.cfg",
+    "length": 33
+  },
+  {
+    "address": "0x003B0264",
+    "string": "AI/Aggressive Driving/Reactions",
+    "length": 31
+  },
+  {
+    "address": "0x003B0284",
+    "string": "AI/Aggressive Driving/Slam",
+    "length": 26
+  },
+  {
+    "address": "0x003B02A0",
+    "string": "AI/Aggressive Driving",
+    "length": 21
+  },
+  {
+    "address": "0x003B02B8",
+    "string": "AI/Driver",
+    "length": 9
+  },
+  {
+    "address": "0x003B02C4",
+    "string": "AI/Tracks",
+    "length": 9
+  },
+  {
+    "address": "0x003B02D0",
+    "string": "AI/Cars",
+    "length": 7
+  },
+  {
+    "address": "0x003B02D8",
+    "string": "AI/Car",
+    "length": 6
+  },
+  {
+    "address": "0x003B02E0",
+    "string": "AI/Target",
+    "length": 9
+  },
+  {
+    "address": "0x003B02EC",
+    "string": "AI/Avoidance",
+    "length": 12
+  },
+  {
+    "address": "0x003B02FC",
+    "string": "AI/Arbitrator",
+    "length": 13
+  },
+  {
+    "address": "0x003B030C",
+    "string": "Boost Rate (Boost Units per Second)",
+    "length": 35
+  },
+  {
+    "address": "0x003B0330",
+    "string": "Boost Earning Multiplier",
+    "length": 24
+  },
+  {
+    "address": "0x003B034C",
+    "string": "Boost Bar sizes (Boost Units)",
+    "length": 29
+  },
+  {
+    "address": "0x003B036C",
+    "string": "Minimum Boost Recovery Time (seconds)",
+    "length": 37
+  },
+  {
+    "address": "0x003B0394",
+    "string": "Minimum Boost Time (seconds)",
+    "length": 28
+  },
+  {
+    "address": "0x003B03B4",
+    "string": "Boost Bar",
+    "length": 9
+  },
+  {
+    "address": "0x003B03DC",
+    "string": "%.1f",
+    "length": 4
+  },
+  {
+    "address": "0x003B040B",
+    "string": "Acoronaboostred",
+    "length": 15
+  },
+  {
+    "address": "0x003B041C",
+    "string": "coronaboost",
+    "length": 11
+  },
+  {
+    "address": "0x003B0428",
+    "string": "coronaglow",
+    "length": 10
+  },
+  {
+    "address": "0x003B043A",
+    "string": "xAsunblob",
+    "length": 9
+  },
+  {
+    "address": "0x003B0444",
+    "string": "enviro.dat",
+    "length": 10,
+    "referenced_from": [
+      "0x001889B8"
+    ]
+  },
+  {
+    "address": "0x003B0450",
+    "string": "ramp",
+    "length": 4
+  },
+  {
+    "address": "0x003B0458",
+    "string": "pickup_stealer",
+    "length": 14
+  },
+  {
+    "address": "0x003B0468",
+    "string": "pickup_gamebreaker",
+    "length": 18
+  },
+  {
+    "address": "0x003B047C",
+    "string": "pickup_multiplierx4",
+    "length": 19
+  },
+  {
+    "address": "0x003B0490",
+    "string": "pickup_multiplierx2",
+    "length": 19
+  },
+  {
+    "address": "0x003B04A4",
+    "string": "pickup_multiplier_skull",
+    "length": 23
+  },
+  {
+    "address": "0x003B04BC",
+    "string": "pickup_score03",
+    "length": 14
+  },
+  {
+    "address": "0x003B04CC",
+    "string": "pickup_score02",
+    "length": 14
+  },
+  {
+    "address": "0x003B04DC",
+    "string": "pickup_score01",
+    "length": 14
+  },
+  {
+    "address": "0x003B04EC",
+    "string": "pickup_boost",
+    "length": 12
+  },
+  {
+    "address": "0x003B04FC",
+    "string": ".bgv",
+    "length": 4,
+    "referenced_from": [
+      "0x0018D23C"
+    ]
+  },
+  {
+    "address": "0x003B0504",
+    "string": "Distance Travelled Medals (Miles)",
+    "length": 33
+  },
+  {
+    "address": "0x003B0528",
+    "string": "Score/Distance Travelled",
+    "length": 24
+  },
+  {
+    "address": "0x003B0544",
+    "string": "Minimum time to grind before scoring (Seconds)",
+    "length": 46
+  },
+  {
+    "address": "0x003B0574",
+    "string": "Score/Grinding",
+    "length": 14
+  },
+  {
+    "address": "0x003B0584",
+    "string": "Minimum tailgating time to count as tailgating (Seconds)",
+    "length": 56
+  },
+  {
+    "address": "0x003B05C0",
+    "string": "Extra boost per second",
+    "length": 22
+  },
+  {
+    "address": "0x003B05D8",
+    "string": "Cone angle behind for tailgating (Degrees)",
+    "length": 42
+  },
+  {
+    "address": "0x003B0604",
+    "string": "Min distance behind for psyche-out when tailgating (Metres)",
+    "length": 59
+  },
+  {
+    "address": "0x003B0640",
+    "string": "Max distance behind for tailgating (Metres)",
+    "length": 43
+  },
+  {
+    "address": "0x003B066C",
+    "string": "Score/Tailgating",
+    "length": 16
+  },
+  {
+    "address": "0x003B0680",
+    "string": "Near Miss Category Minima (Counts)",
+    "length": 34
+  },
+  {
+    "address": "0x003B06A4",
+    "string": "Grinding Category Minima (Seconds)",
+    "length": 34
+  },
+  {
+    "address": "0x003B06C8",
+    "string": "Rubbing Category Minima (Seconds)",
+    "length": 33
+  },
+  {
+    "address": "0x003B06EC",
+    "string": "Tailgate Category Minima (Seconds)",
+    "length": 34
+  },
+  {
+    "address": "0x003B0710",
+    "string": "Drift Category Minima (Metres)",
+    "length": 30
+  },
+  {
+    "address": "0x003B0730",
+    "string": "Oncoming Category Minima (Metres)",
+    "length": 33
+  },
+  {
+    "address": "0x003B0754",
+    "string": "Air Category Minima (Metres)",
+    "length": 28
+  },
+  {
+    "address": "0x003B0774",
+    "string": "Score/BP Categories",
+    "length": 19
+  },
+  {
+    "address": "0x003B0788",
+    "string": "Road Rage Takedown BP",
+    "length": 21
+  },
+  {
+    "address": "0x003B07A0",
+    "string": "Double Revenge BP",
+    "length": 17
+  },
+  {
+    "address": "0x003B07B4",
+    "string": "Takedown Spree BP",
+    "length": 17
+  },
+  {
+    "address": "0x003B07C8",
+    "string": "Double Takedown BP",
+    "length": 18
+  },
+  {
+    "address": "0x003B07DC",
+    "string": "Take Race Position BP",
+    "length": 21
+  },
+  {
+    "address": "0x003B07F4",
+    "string": "Near Miss Category BP",
+    "length": 21
+  },
+  {
+    "address": "0x003B080C",
+    "string": "Grinding Category BP",
+    "length": 20
+  },
+  {
+    "address": "0x003B0824",
+    "string": "Rubbing Category BP",
+    "length": 19
+  },
+  {
+    "address": "0x003B0838",
+    "string": "Tailgate Category BP",
+    "length": 20
+  },
+  {
+    "address": "0x003B0850",
+    "string": "Drift Category BP",
+    "length": 17
+  },
+  {
+    "address": "0x003B0864",
+    "string": "Oncoming Category BP",
+    "length": 20
+  },
+  {
+    "address": "0x003B087C",
+    "string": "Super Slam Type BP",
+    "length": 18
+  },
+  {
+    "address": "0x003B0890",
+    "string": "Slam Type BP",
+    "length": 12
+  },
+  {
+    "address": "0x003B08A0",
+    "string": "Air Category BP",
+    "length": 15
+  },
+  {
+    "address": "0x003B08B0",
+    "string": "Leading Race At End Of Lap BP",
+    "length": 29
+  },
+  {
+    "address": "0x003B08D0",
+    "string": "Near Miss BP",
+    "length": 12
+  },
+  {
+    "address": "0x003B08E0",
+    "string": "Burnout Lap BP",
+    "length": 14
+  },
+  {
+    "address": "0x003B08F0",
+    "string": "Denied (Takedown Denied) BP",
+    "length": 27
+  },
+  {
+    "address": "0x003B090C",
+    "string": "Denied (You Were Lucky) BP",
+    "length": 26
+  },
+  {
+    "address": "0x003B0928",
+    "string": "No Mercy BP",
+    "length": 11
+  },
+  {
+    "address": "0x003B0934",
+    "string": "Aftertouch Takedown BP",
+    "length": 22
+  },
+  {
+    "address": "0x003B094C",
+    "string": "Psyche Out BP",
+    "length": 13
+  },
+  {
+    "address": "0x003B095C",
+    "string": "Revenge Takedown Bonus BP",
+    "length": 25
+  },
+  {
+    "address": "0x003B0978",
+    "string": "Takedown BP",
+    "length": 11
+  },
+  {
+    "address": "0x003B0984",
+    "string": "Perfect Lap BP",
+    "length": 14
+  },
+  {
+    "address": "0x003B0994",
+    "string": "Burning Slam Extra BP",
+    "length": 21
+  },
+  {
+    "address": "0x003B09AC",
+    "string": "Crash Escape BP",
+    "length": 15
+  },
+  {
+    "address": "0x003B09BC",
+    "string": "Boost Start BP",
+    "length": 14
+  },
+  {
+    "address": "0x003B09CC",
+    "string": "Tradin' Paint BP",
+    "length": 16
+  },
+  {
+    "address": "0x003B09E0",
+    "string": "Rubbing BP",
+    "length": 10
+  },
+  {
+    "address": "0x003B09EC",
+    "string": "Prop Hit BP",
+    "length": 11
+  },
+  {
+    "address": "0x003B09F8",
+    "string": "Score/Burnout Points",
+    "length": 20
+  },
+  {
+    "address": "0x003B0A10",
+    "string": "Ratio of Boost Lost After Crash",
+    "length": 31
+  },
+  {
+    "address": "0x003B0A30",
+    "string": "Score/Boost/Crashing",
+    "length": 20
+  },
+  {
+    "address": "0x003B0A48",
+    "string": "Burnout Lap Boost value (Boost units)",
+    "length": 37
+  },
+  {
+    "address": "0x003B0A70",
+    "string": "Perfect Lap Boost value (Boost units)",
+    "length": 37
+  },
+  {
+    "address": "0x003B0A98",
+    "string": "Score/Boost/Lap",
+    "length": 15
+  },
+  {
+    "address": "0x003B0AA8",
+    "string": "Prop Hit Boost value (Boost units)",
+    "length": 34
+  },
+  {
+    "address": "0x003B0ACC",
+    "string": "Prop Hit Chain time (Seconds)",
+    "length": 29
+  },
+  {
+    "address": "0x003B0AEC",
+    "string": "Score/Boost/Props",
+    "length": 17
+  },
+  {
+    "address": "0x003B0B00",
+    "string": "Time window for getting a double revenge takedown (Seconds)",
+    "length": 59
+  },
+  {
+    "address": "0x003B0B3C",
+    "string": "Time window for getting a takedown spree (Seconds)",
+    "length": 50
+  },
+  {
+    "address": "0x003B0B70",
+    "string": "Time window for getting a double takedown(Seconds)",
+    "length": 50
+  },
+  {
+    "address": "0x003B0BA4",
+    "string": "Race Car Clear Wait Time (Seconds)",
+    "length": 34
+  },
+  {
+    "address": "0x003B0BC8",
+    "string": "Minimum Collide Time to enable Takedown - No Slam (Seconds)",
+    "length": 59
+  },
+  {
+    "address": "0x003B0C04",
+    "string": "Maximum Crash Wait Time - No Slam (Seconds)",
+    "length": 43
+  },
+  {
+    "address": "0x003B0C30",
+    "string": "Maximum Crash Wait Time (Seconds)",
+    "length": 33
+  },
+  {
+    "address": "0x003B0C54",
+    "string": "Takedown Boost value (Boost units)",
+    "length": 34
+  },
+  {
+    "address": "0x003B0C78",
+    "string": "Score/Boost/Takedowns",
+    "length": 21
+  },
+  {
+    "address": "0x003B0C90",
+    "string": "Boost Start Boost value (Boost units)",
+    "length": 37
+  },
+  {
+    "address": "0x003B0CB8",
+    "string": "Score/Boost/Boost Start",
+    "length": 23
+  },
+  {
+    "address": "0x003B0CD0",
+    "string": "Trading Paint Boost value (Boost units)",
+    "length": 39
+  },
+  {
+    "address": "0x003B0CF8",
+    "string": "Min Contact Time For Rubbing (Seconds)",
+    "length": 38
+  },
+  {
+    "address": "0x003B0D20",
+    "string": "Boost value for rubbing (Boost units)",
+    "length": 37
+  },
+  {
+    "address": "0x003B0D48",
+    "string": "Boost value lost or gained per Slam (Boost units)",
+    "length": 49
+  },
+  {
+    "address": "0x003B0D7C",
+    "string": "Score/Boost/Aggressive",
+    "length": 22
+  },
+  {
+    "address": "0x003B0D94",
+    "string": "Boost value per Crash Escape (Boost units)",
+    "length": 42
+  },
+  {
+    "address": "0x003B0DC0",
+    "string": "Minimum Crash Escape Speed (MPH)",
+    "length": 32
+  },
+  {
+    "address": "0x003B0DE4",
+    "string": "Minimum Time Clear After Crash Escape",
+    "length": 37
+  },
+  {
+    "address": "0x003B0E0C",
+    "string": "Time Between Crashing Near Misses (Seconds)",
+    "length": 43
+  },
+  {
+    "address": "0x003B0E38",
+    "string": "Crash Escape Radius",
+    "length": 19
+  },
+  {
+    "address": "0x003B0E4C",
+    "string": "Score/Boost/Crash Escape",
+    "length": 24
+  },
+  {
+    "address": "0x003B0E68",
+    "string": "Near Miss Chain Time (Seconds)",
+    "length": 30
+  },
+  {
+    "address": "0x003B0E88",
+    "string": "Boost value per Near Miss (Boost units)",
+    "length": 39
+  },
+  {
+    "address": "0x003B0EB0",
+    "string": "Minimum Near Miss Chain Speed (MPH)",
+    "length": 35
+  },
+  {
+    "address": "0x003B0ED4",
+    "string": "Minimum Near Miss Speed (MPH)",
+    "length": 29
+  },
+  {
+    "address": "0x003B0EF4",
+    "string": "Near Miss Distance (Metres)",
+    "length": 27
+  },
+  {
+    "address": "0x003B0F10",
+    "string": "Score/Boost/Near Miss",
+    "length": 21
+  },
+  {
+    "address": "0x003B0F28",
+    "string": "Boost value per Drift metre (Boost units)",
+    "length": 41
+  },
+  {
+    "address": "0x003B0F54",
+    "string": "Minimum Drift Distance (Metres)",
+    "length": 31
+  },
+  {
+    "address": "0x003B0F74",
+    "string": "Minimum Drift Speed (MPH)",
+    "length": 25
+  },
+  {
+    "address": "0x003B0F90",
+    "string": "Score/Boost/Drift",
+    "length": 17
+  },
+  {
+    "address": "0x003B0FA4",
+    "string": "Boost value per Oncoming metre (Boost units)",
+    "length": 44
+  },
+  {
+    "address": "0x003B0FD4",
+    "string": "Minimum Oncoming Distance (Metres)",
+    "length": 34
+  },
+  {
+    "address": "0x003B0FF8",
+    "string": "Minimum Oncoming Speed (MPH)",
+    "length": 28
+  },
+  {
+    "address": "0x003B1018",
+    "string": "Score/Boost/Oncoming",
+    "length": 20
+  },
+  {
+    "address": "0x003B1030",
+    "string": "Boost value per Air metre (Boost units)",
+    "length": 39
+  },
+  {
+    "address": "0x003B1058",
+    "string": "Minimum Air Distance (Metres)",
+    "length": 29
+  },
+  {
+    "address": "0x003B1078",
+    "string": "Score/Boost/Air",
+    "length": 15
+  },
+  {
+    "address": "0x003B1088",
+    "string": "check",
+    "length": 5
+  },
+  {
+    "address": "0x003B1090",
+    "string": "finish",
+    "length": 6
+  },
+  {
+    "address": "0x003B1098",
+    "string": "static.dat",
+    "length": 10,
+    "referenced_from": [
+      "0x0019AFD8"
+    ]
+  },
+  {
+    "address": "0x003B10A4",
+    "string": "Intensity",
+    "length": 9
+  },
+  {
+    "address": "0x003B10B0",
+    "string": "Threshold",
+    "length": 9
+  },
+  {
+    "address": "0x003B10BC",
+    "string": "Bloom Parameters",
+    "length": 16
+  },
+  {
+    "address": "0x003B10D0",
+    "string": "../export/ValueDB/TrackBloom/",
+    "length": 29
+  },
+  {
+    "address": "0x003B10F0",
+    "string": "streamed.dat",
+    "length": 12,
+    "referenced_from": [
+      "0x0019D92D"
+    ]
+  },
+  {
+    "address": "0x003B1100",
+    "string": ".btv",
+    "length": 4,
+    "referenced_from": [
+      "0x001A4318"
+    ]
+  },
+  {
+    "address": "0x003B1268",
+    "string": "Ghost car",
+    "length": 9
+  },
+  {
+    "address": "0x003B1278",
+    "string": " -/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_",
+    "length": 67
+  },
+  {
+    "address": "0x003B12C0",
+    "string": "GtCommVa%04d",
+    "length": 12
+  },
+  {
+    "address": "0x003B12F0",
+    "string": "0.0.0.0",
+    "length": 7
+  },
+  {
+    "address": "0x003B12FC",
+    "string": "PASSCODE",
+    "length": 8
+  },
+  {
+    "address": "0x003B1308",
+    "string": "SERVICEID",
+    "length": 9
+  },
+  {
+    "address": "0x003B1314",
+    "string": "prod",
+    "length": 4
+  },
+  {
+    "address": "0x003B131C",
+    "string": "NETCFG",
+    "length": 6
+  },
+  {
+    "address": "0x003B1324",
+    "string": "GAMERTAG",
+    "length": 8
+  },
+  {
+    "address": "0x003B1330",
+    "string": "USRPTR",
+    "length": 6
+  },
+  {
+    "address": "0x003B1338",
+    "string": "NUMUSR",
+    "length": 6
+  },
+  {
+    "address": "0x003B1340",
+    "string": "CONTENT-LENGTH",
+    "length": 14
+  },
+  {
+    "address": "0x003B1350",
+    "string": "serviceType",
+    "length": 11
+  },
+  {
+    "address": "0x003B135C",
+    "string": "errorDescription",
+    "length": 16
+  },
+  {
+    "address": "0x003B1370",
+    "string": "errorCode",
+    "length": 9
+  },
+  {
+    "address": "0x003B137C",
+    "string": "<html>",
+    "length": 6
+  },
+  {
+    "address": "0x003B1384",
+    "string": "<!DOCTYPE",
+    "length": 9
+  },
+  {
+    "address": "0x003B1390",
+    "string": "TYPE",
+    "length": 4
+  },
+  {
+    "address": "0x003B1398",
+    "string": "harassment",
+    "length": 10
+  },
+  {
+    "address": "0x003B13A4",
+    "string": "screaming",
+    "length": 9
+  },
+  {
+    "address": "0x003B13B0",
+    "string": "cheating",
+    "length": 8
+  },
+  {
+    "address": "0x003B13BC",
+    "string": "language",
+    "length": 8
+  },
+  {
+    "address": "0x003B13C8",
+    "string": "badname",
+    "length": 7
+  },
+  {
+    "address": "0x003B13D0",
+    "string": "goodsession",
+    "length": 11
+  },
+  {
+    "address": "0x003B13DC",
+    "string": "honest",
+    "length": 6
+  },
+  {
+    "address": "0x003B13E4",
+    "string": "WEIGHT%d",
+    "length": 8
+  },
+  {
+    "address": "0x003B13F0",
+    "string": "TEAM%d",
+    "length": 6
+  },
+  {
+    "address": "0x003B13F8",
+    "string": "NAME%d",
+    "length": 6
+  },
+  {
+    "address": "0x003B1400",
+    "string": "VENUE",
+    "length": 5
+  },
+  {
+    "address": "0x003B1408",
+    "string": "AUTH",
+    "length": 4
+  },
+  {
+    "address": "0x003B1410",
+    "string": "REPT",
+    "length": 4
+  },
+  {
+    "address": "0x003B1418",
+    "string": "WHEN",
+    "length": 4
+  },
+  {
+    "address": "0x003B1420",
+    "string": "KICK",
+    "length": 4
+  },
+  {
+    "address": "0x003B1428",
+    "string": "PRIV",
+    "length": 4
+  },
+  {
+    "address": "0x003B143C",
+    "string": "PERS",
+    "length": 4
+  },
+  {
+    "address": "0x003B1444",
+    "string": "ATTR",
+    "length": 4
+  },
+  {
+    "address": "0x003B144C",
+    "string": "TEXT",
+    "length": 4
+  },
+  {
+    "address": "0x003B1458",
+    "string": "ASYNC",
+    "length": 5
+  },
+  {
+    "address": "0x003B1460",
+    "string": "COUNT",
+    "length": 5
+  },
+  {
+    "address": "0x003B1468",
+    "string": "START",
+    "length": 5
+  },
+  {
+    "address": "0x003B1470",
+    "string": "FORCE_LOCK",
+    "length": 10
+  },
+  {
+    "address": "0x003B147C",
+    "string": "USERPARAMS",
+    "length": 10
+  },
+  {
+    "address": "0x003B1488",
+    "string": "SYSFLAGS",
+    "length": 8
+  },
+  {
+    "address": "0x003B1494",
+    "string": "MAXSIZE",
+    "length": 7
+  },
+  {
+    "address": "0x003B149C",
+    "string": "MINSIZE",
+    "length": 7
+  },
+  {
+    "address": "0x003B14A4",
+    "string": "PARAMS",
+    "length": 6
+  },
+  {
+    "address": "0x003B14AC",
+    "string": "TIME",
+    "length": 4
+  },
+  {
+    "address": "0x003B14B4",
+    "string": "PORT",
+    "length": 4
+  },
+  {
+    "address": "0x003B14BC",
+    "string": "MYGAME=1 GAMES=1 ROOMS=1 USERS=1 MESGS=1 STATS=1 RANKS=0",
+    "length": 56
+  },
+  {
+    "address": "0x003B14F8",
+    "string": "GTAG",
+    "length": 4
+  },
+  {
+    "address": "0x003B1500",
+    "string": "CPAT",
+    "length": 4
+  },
+  {
+    "address": "0x003B1508",
+    "string": "BUDDY_SERVER",
+    "length": 12
+  },
+  {
+    "address": "0x003B1518",
+    "string": "NEWS_URL",
+    "length": 8
+  },
+  {
+    "address": "0x003B1524",
+    "string": "TOSAC_URL",
+    "length": 9
+  },
+  {
+    "address": "0x003B1538",
+    "string": "LKEY",
+    "length": 4
+  },
+  {
+    "address": "0x003B1540",
+    "string": "ROOM",
+    "length": 4
+  },
+  {
+    "address": "0x003B1548",
+    "string": "ALTS",
+    "length": 4
+  },
+  {
+    "address": "0x003B1550",
+    "string": "SPAM",
+    "length": 4
+  },
+  {
+    "address": "0x003B1558",
+    "string": "DEFPER",
+    "length": 6
+  },
+  {
+    "address": "0x003B1560",
+    "string": "GEND",
+    "length": 4
+  },
+  {
+    "address": "0x003B1568",
+    "string": "BORN",
+    "length": 4
+  },
+  {
+    "address": "0x003B1570",
+    "string": "PMAIL",
+    "length": 5
+  },
+  {
+    "address": "0x003B1578",
+    "string": "MAIL",
+    "length": 4
+  },
+  {
+    "address": "0x003B1580",
+    "string": "PASS",
+    "length": 4
+  },
+  {
+    "address": "0x003B1588",
+    "string": "unknown%d",
+    "length": 9
+  },
+  {
+    "address": "0x003B1594",
+    "string": "OPTS",
+    "length": 4
+  },
+  {
+    "address": "0x003B159C",
+    "string": "IDENT",
+    "length": 5
+  },
+  {
+    "address": "0x003B15A4",
+    "string": "FORCE",
+    "length": 5
+  },
+  {
+    "address": "0x003B15AC",
+    "string": "NAME",
+    "length": 4
+  },
+  {
+    "address": "0x003B15B8",
+    "string": "FROM",
+    "length": 4
+  },
+  {
+    "address": "0x003B15C0",
+    "string": "LANG",
+    "length": 4
+  },
+  {
+    "address": "0x003B15C8",
+    "string": "SLUS",
+    "length": 4
+  },
+  {
+    "address": "0x003B15D0",
+    "string": "SLUS-FLAME",
+    "length": 10
+  },
+  {
+    "address": "0x003B15DC",
+    "string": "FLAME",
+    "length": 5
+  },
+  {
+    "address": "0x003B15E4",
+    "string": "VERS",
+    "length": 4
+  },
+  {
+    "address": "0x003B15EC",
+    "string": "FLM/A1",
+    "length": 6
+  },
+  {
+    "address": "0x003B15FC",
+    "string": "BUDDY_PORT",
+    "length": 10
+  },
+  {
+    "address": "0x003B1608",
+    "string": "BUDDY_URL",
+    "length": 9
+  },
+  {
+    "address": "0x003B1614",
+    "string": "REASON",
+    "length": 6
+  },
+  {
+    "address": "0x003B1620",
+    "string": "BODY",
+    "length": 4
+  },
+  {
+    "address": "0x003B1628",
+    "string": "Not Present",
+    "length": 11
+  },
+  {
+    "address": "0x003B1634",
+    "string": "%02d/%02d/%04d",
+    "length": 14
+  },
+  {
+    "address": "0x003B1644",
+    "string": "DUPL",
+    "length": 4
+  },
+  {
+    "address": "0x003B164C",
+    "string": "SECS",
+    "length": 4
+  },
+  {
+    "address": "0x003B1654",
+    "string": "Offline",
+    "length": 7
+  },
+  {
+    "address": "0x003B165C",
+    "string": "%s:%s",
+    "length": 5
+  },
+  {
+    "address": "0x003B1664",
+    "string": "Burnout3",
+    "length": 8
+  },
+  {
+    "address": "0x003B1674",
+    "string": "%s%s%s",
+    "length": 6
+  },
+  {
+    "address": "0x003B167C",
+    "string": "unknown",
+    "length": 7
+  },
+  {
+    "address": "0x003B17DE",
+    "string": "l?fff>",
+    "length": 6
+  },
+  {
+    "address": "0x003B186A",
+    "string": "*?UUU?",
+    "length": 6
+  },
+  {
+    "address": "0x003B18A2",
+    "string": "gCfff@",
+    "length": 6
+  },
+  {
+    "address": "0x003B1AFB",
+    "string": "9Y>)F",
+    "length": 5
+  },
+  {
+    "address": "0x003B20AB",
+    "string": ">q=\n>",
+    "length": 5
+  },
+  {
+    "address": "0x003B228B",
+    "string": "C333C",
+    "length": 5
+  },
+  {
+    "address": "0x003B22C7",
+    "string": "Cgff?",
+    "length": 5
+  }
+]
