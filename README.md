@@ -108,10 +108,11 @@ The main executable (`default.xbe`) contains:
 
 ### Phase 3: Core Recompilation
 - [x] Replace Xbox kernel calls with Win32 equivalents (all 147)
-- [x] Replace D3D8 (Xbox) with D3D11 (skeleton: 63 API entry points mapped)
-- [x] Replace DirectSound (Xbox) with XAudio2 (skeleton: 40 entry points)
+- [x] Replace D3D8 (Xbox) with D3D11 (resource layer: VB/IB/texture creation, Lock/Unlock, shaders, states)
+- [x] Replace DirectSound (Xbox) with XAudio2 (buffer objects: Play/Stop/Volume/Lock)
 - [x] Replace Xbox input with XInput (functional: controller state + vibration)
 - [x] Handle memory layout differences (VirtualAlloc maps data sections to Xbox VAs)
+- [x] Fixed-function pipeline emulation (HLSL shaders, FVF input layouts, render state translation)
 
 ### Phase 4: Asset Pipeline
 - [x] Asset catalog and format identification (716 files, 16 categories)
@@ -123,7 +124,8 @@ The main executable (`default.xbe`) contains:
 - [ ] Video player replacement (XMV → standard format)
 
 ### Phase 5: Integration & Testing
-- [ ] Link recompiled code into Windows executable
+- [x] Game executable scaffold (WinMain, window, subsystem init, game loop)
+- [ ] D3D8 device initialization from game code
 - [ ] Asset loading and rendering pipeline
 - [ ] Input mapping (Xbox controller → PC gamepad/keyboard)
 - [ ] Performance profiling and optimization

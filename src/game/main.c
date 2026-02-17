@@ -46,6 +46,9 @@ static HWND g_hwnd = NULL;
 static BOOL g_running = TRUE;
 static void *g_xbe_data = NULL;
 static size_t g_xbe_size = 0;
+static IDirect3D8 *g_d3d8 = NULL;
+static IDirect3DDevice8 *g_d3d_device = NULL;
+static IDirectSound8 *g_dsound = NULL;
 
 /* ── XBE loading ────────────────────────────────────────────── */
 
@@ -178,15 +181,42 @@ static BOOL init_subsystems(void)
 
     /* 2. Xbox kernel replacement layer */
     fprintf(stderr, "[2/4] Kernel layer...\n");
-    /* kernel_init() would go here once we have one */
+    /* Kernel thunks are resolved at link time via the static library */
 
     /* 3. Graphics (D3D8→D3D11) */
     fprintf(stderr, "[3/4] Graphics (D3D8→D3D11)...\n");
-    /* d3d8_init(g_hwnd) would go here */
+    {
+        D3DPRESENT_PARAMETERS pp;
+        HRESULT hr;
+
+        g_d3d8 = xbox_Direct3DCreate8(0);
+        if (!g_d3d8) {
+            fprintf(stderr, "FATAL: Direct3DCreate8 failed\n");
+            return FALSE;
+        }
+
+        memset(&pp, 0, sizeof(pp));
+        pp.BackBufferWidth = DEFAULT_WIDTH;
+        pp.BackBufferHeight = DEFAULT_HEIGHT;
+        pp.BackBufferFormat = D3DFMT_X8R8G8B8;
+        pp.BackBufferCount = 1;
+        pp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+        pp.hDeviceWindow = g_hwnd;
+        pp.Windowed = TRUE;
+        pp.EnableAutoDepthStencil = TRUE;
+        pp.AutoDepthStencilFormat = D3DFMT_D24S8;
+
+        hr = g_d3d8->lpVtbl->CreateDevice(g_d3d8, 0, 0, g_hwnd, 0, &pp, &g_d3d_device);
+        if (FAILED(hr)) {
+            fprintf(stderr, "FATAL: CreateDevice failed: 0x%08lX\n", hr);
+            return FALSE;
+        }
+    }
 
     /* 4. Audio + Input */
     fprintf(stderr, "[4/4] Audio + Input...\n");
-    /* dsound_init() and xinput_init() would go here */
+    xbox_DirectSoundCreate(NULL, &g_dsound, NULL);
+    xbox_InputInit();
 
     fprintf(stderr, "=== All subsystems initialized ===\n\n");
     return TRUE;
@@ -197,10 +227,18 @@ static void shutdown_subsystems(void)
     fprintf(stderr, "\n=== Shutting down ===\n");
 
     /* Reverse order of initialization */
-    /* xinput_shutdown(); */
-    /* dsound_shutdown(); */
-    /* d3d8_shutdown(); */
-    /* kernel_shutdown(); */
+    if (g_dsound) {
+        g_dsound->lpVtbl->Release(g_dsound);
+        g_dsound = NULL;
+    }
+    if (g_d3d_device) {
+        g_d3d_device->lpVtbl->Release(g_d3d_device);
+        g_d3d_device = NULL;
+    }
+    if (g_d3d8) {
+        g_d3d8->lpVtbl->Release(g_d3d8);
+        g_d3d8 = NULL;
+    }
     xbox_MemoryLayoutShutdown();
 
     if (g_xbe_data) {
@@ -234,12 +272,20 @@ static void game_loop(void)
             break;
 
         /*
-         * TODO: Call recompiled game frame function here.
+         * Frame rendering.
          *
-         * The game's main loop (originally at the XBE entry point)
-         * would be translated to a C function that we call each frame.
-         * For now, just sleep to avoid burning CPU.
+         * Eventually the recompiled game code will drive this.
+         * For now, clear to dark blue and present to verify D3D works.
          */
+        if (g_d3d_device) {
+            g_d3d_device->lpVtbl->BeginScene(g_d3d_device);
+            g_d3d_device->lpVtbl->Clear(g_d3d_device, 0, NULL,
+                D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
+                0xFF001030,  /* Dark blue */
+                1.0f, 0);
+            g_d3d_device->lpVtbl->EndScene(g_d3d_device);
+            g_d3d_device->lpVtbl->Present(g_d3d_device, NULL, NULL, NULL, NULL);
+        }
         Sleep(16); /* ~60 FPS target */
     }
 }
