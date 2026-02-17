@@ -111,7 +111,7 @@ The main executable (`default.xbe`) contains:
 - [x] Replace D3D8 (Xbox) with D3D11 (skeleton: 63 API entry points mapped)
 - [x] Replace DirectSound (Xbox) with XAudio2 (skeleton: 40 entry points)
 - [x] Replace Xbox input with XInput (functional: controller state + vibration)
-- [ ] Handle memory layout differences (64MB unified → virtual memory)
+- [x] Handle memory layout differences (VirtualAlloc maps data sections to Xbox VAs)
 
 ### Phase 4: Asset Pipeline
 - [ ] RenderWare stream loader (PC-compatible)
