@@ -108,9 +108,9 @@ The main executable (`default.xbe`) contains:
 
 ### Phase 3: Core Recompilation
 - [x] Replace Xbox kernel calls with Win32 equivalents (all 147)
-- [ ] Replace D3D8 (Xbox) with D3D11 or Vulkan
-- [ ] Replace DirectSound (Xbox) with XAudio2
-- [ ] Replace Xbox input with XInput
+- [x] Replace D3D8 (Xbox) with D3D11 (skeleton: 63 API entry points mapped)
+- [x] Replace DirectSound (Xbox) with XAudio2 (skeleton: 40 entry points)
+- [x] Replace Xbox input with XInput (functional: controller state + vibration)
 - [ ] Handle memory layout differences (64MB unified → virtual memory)
 
 ### Phase 4: Asset Pipeline
