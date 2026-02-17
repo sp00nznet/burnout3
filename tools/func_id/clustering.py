@@ -228,9 +228,17 @@ def _rw_region_propagation(sorted_addrs, labels, propagated, callees, callers):
 
 def _proximity_propagation(sorted_addrs, labels, propagated):
     """
-    If an unlabeled function is between two functions with the same
-    RW category and the gap is small, inherit that label.
+    Propagate labels based on address proximity.
+
+    Globally: requires BOTH neighbors to be labeled (high confidence).
+    Within the RW code region: single-sided propagation (if ONE adjacent
+    neighbor is RW and the gap is small, propagate). This handles chains
+    of unknowns within the contiguous RW code block.
     """
+    rw_addrs = [a for a in sorted_addrs if a in labels and labels[a].startswith("rw_")]
+    rw_code_lo = min(rw_addrs) if rw_addrs else 0
+    rw_code_hi = max(rw_addrs) if rw_addrs else 0
+
     count = 0
     for i in range(1, len(sorted_addrs) - 1):
         addr = sorted_addrs[i]
@@ -239,25 +247,45 @@ def _proximity_propagation(sorted_addrs, labels, propagated):
 
         prev_addr = sorted_addrs[i - 1]
         next_addr = sorted_addrs[i + 1]
-
-        if (addr - prev_addr) > config.PROXIMITY_GAP:
-            continue
-        if (next_addr - addr) > config.PROXIMITY_GAP:
-            continue
-
         prev_lbl = labels.get(prev_addr)
         next_lbl = labels.get(next_addr)
 
-        if prev_lbl and next_lbl:
-            if prev_lbl.startswith("rw_") and next_lbl.startswith("rw_"):
-                labels[addr] = prev_lbl
+        in_rw_region = rw_code_lo <= addr <= rw_code_hi
+
+        if in_rw_region:
+            # Within RW region: single-sided propagation with wider gap
+            rw_neighbor = None
+            if prev_lbl and prev_lbl.startswith("rw_") and (addr - prev_addr) <= 0x2000:
+                rw_neighbor = prev_lbl
+            elif next_lbl and next_lbl.startswith("rw_") and (next_addr - addr) <= 0x2000:
+                rw_neighbor = next_lbl
+
+            if rw_neighbor:
+                labels[addr] = rw_neighbor
                 propagated[addr] = {
-                    "category": prev_lbl,
+                    "category": rw_neighbor,
                     "subcategory": None,
-                    "confidence": config.CONFIDENCE_CLUSTER_PROXIMITY,
+                    "confidence": 0.60,
                     "method": "cluster_proximity",
                 }
                 count += 1
+        else:
+            # Outside RW region: require both neighbors
+            if (addr - prev_addr) > config.PROXIMITY_GAP:
+                continue
+            if (next_addr - addr) > config.PROXIMITY_GAP:
+                continue
+
+            if prev_lbl and next_lbl:
+                if prev_lbl.startswith("rw_") and next_lbl.startswith("rw_"):
+                    labels[addr] = prev_lbl
+                    propagated[addr] = {
+                        "category": prev_lbl,
+                        "subcategory": None,
+                        "confidence": config.CONFIDENCE_CLUSTER_PROXIMITY,
+                        "method": "cluster_proximity",
+                    }
+                    count += 1
 
     return count
 
