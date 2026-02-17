@@ -27,5 +27,5 @@ add_subdirectory(src/audio)
 # Xbox input → XInput controller abstraction
 add_subdirectory(src/input)
 
-# ── Recompiled game executable (future) ──────────────────────
-# add_subdirectory(src/game)
+# ── Recompiled game executable ─────────────────────────────────
+add_subdirectory(src/game)
