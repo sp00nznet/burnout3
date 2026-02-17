@@ -53,10 +53,13 @@ def _print_batch_stats(stats, prefix=""):
           f"{failed} failed, {lines} lines, {size_kb:.1f} KB -> {out_file}")
 
 
-def generate_header(func_list, output_path):
+def generate_header(func_list, output_path, abi_db=None):
     """
     Generate a C header with forward declarations for all translated functions.
+    Uses ABI data for proper signatures when available.
     """
+    abi_db = abi_db or {}
+
     lines = [
         "/**",
         " * Burnout 3: Takedown - Recompiled Function Declarations",
@@ -72,7 +75,29 @@ def generate_header(func_list, output_path):
 
     for addr, func_info in sorted(func_list):
         name = func_info.get("name", f"sub_{addr:08X}")
-        lines.append(f"void {name}(void);")
+        abi_info = abi_db.get(addr, {})
+        cc = abi_info.get("calling_convention", "cdecl")
+        num_params = abi_info.get("estimated_params", 0)
+        return_hint = abi_info.get("return_hint", "int_or_void")
+
+        if return_hint in ("float_sse", "float"):
+            ret_type = "float"
+        elif return_hint == "int_zero":
+            ret_type = "int"
+        elif num_params == 0 and return_hint == "int_or_void":
+            ret_type = "void"
+        else:
+            ret_type = "uint32_t"
+
+        is_thiscall = cc in ("thiscall", "thiscall_cdecl")
+        params = []
+        if is_thiscall:
+            params.append("void *this_ptr")
+        for i in range(num_params):
+            params.append(f"uint32_t a{i+1}")
+        param_str = ", ".join(params) if params else "void"
+
+        lines.append(f"{ret_type} {name}({param_str});")
 
     lines.extend(["", "#endif /* RECOMP_FUNCTIONS_H */", ""])
 

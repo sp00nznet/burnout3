@@ -34,6 +34,7 @@ def find_data_files():
         "functions": os.path.join(base, "disasm", "output", "functions.json"),
         "labels": os.path.join(base, "disasm", "output", "labels.json"),
         "identified": os.path.join(base, "func_id", "output", "identified_functions.json"),
+        "abi": os.path.join(base, "abi_analysis", "output", "abi_functions.json"),
     }
 
     for key, path in paths.items():
@@ -99,13 +100,15 @@ def main():
         func_json_path=data_files["functions"],
         labels_json_path=data_files.get("labels"),
         identified_json_path=data_files.get("identified"),
+        abi_json_path=data_files.get("abi"),
         output_dir=args.output_dir,
     )
 
     t_load = time.time() - t0
     print(f"Loaded {len(translator.func_db)} functions, "
           f"{len(translator.label_db)} labels, "
-          f"{len(translator.classification_db)} classifications "
+          f"{len(translator.classification_db)} classifications, "
+          f"{len(translator.abi_db)} ABI entries "
           f"in {t_load:.1f}s", file=sys.stderr)
 
     # List categories mode
@@ -141,7 +144,7 @@ def main():
             funcs = translator.get_functions_by_category()
 
         header_path = os.path.join(output_dir, "recomp_functions.h")
-        generate_header(funcs, header_path)
+        generate_header(funcs, header_path, abi_db=translator.abi_db)
         print(f"Generated header: {header_path} ({len(funcs)} declarations)")
         return
 

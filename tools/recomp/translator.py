@@ -22,17 +22,20 @@ from .lifter import Lifter, lift_basic_block
 class FunctionTranslator:
     """Translates individual x86 functions to C source code."""
 
-    def __init__(self, xbe_data, func_db, label_db=None, classification_db=None):
+    def __init__(self, xbe_data, func_db, label_db=None, classification_db=None,
+                 abi_db=None):
         """
         xbe_data: bytes - raw XBE file contents
         func_db: dict - addr → function info from functions.json
         label_db: dict - addr → name from labels.json
         classification_db: dict - addr → classification from identified_functions.json
+        abi_db: dict - addr → ABI info from abi_functions.json
         """
         self.xbe_data = xbe_data
         self.func_db = func_db
         self.label_db = label_db or {}
         self.classification_db = classification_db or {}
+        self.abi_db = abi_db or {}
         self.disasm = Disassembler()
         self.lifter = Lifter(func_db=func_db, label_db=label_db)
 
@@ -93,11 +96,19 @@ class FunctionTranslator:
         if not blocks:
             return None
 
-        # Get classification info
+        # Get classification and ABI info
         cls_info = self.classification_db.get(start, {})
         category = cls_info.get("category", "unknown")
         module = cls_info.get("module", "")
         source_file = cls_info.get("source_file", "")
+        abi_info = self.abi_db.get(start, {})
+
+        # ABI-derived info
+        cc = abi_info.get("calling_convention", "cdecl")
+        num_params = abi_info.get("estimated_params", 0)
+        return_hint = abi_info.get("return_hint", "int_or_void")
+        frame_type = abi_info.get("frame_type", "fpo_leaf")
+        stack_frame_size = abi_info.get("stack_frame_size", 0)
 
         # Determine which registers are used
         used_regs = self._find_used_registers(instructions)
@@ -111,6 +122,25 @@ class FunctionTranslator:
             if insn.call_target and is_code_address(insn.call_target):
                 call_targets.add(insn.call_target)
 
+        # Determine return type
+        if return_hint == "float_sse" or return_hint == "float":
+            ret_type = "float"
+        elif return_hint == "int_zero":
+            ret_type = "int"
+        elif num_params == 0 and return_hint == "int_or_void":
+            ret_type = "void"
+        else:
+            ret_type = "uint32_t"
+
+        # Build parameter list
+        is_thiscall = cc in ("thiscall", "thiscall_cdecl")
+        params = []
+        if is_thiscall:
+            params.append("void *this_ptr")
+        for i in range(num_params):
+            params.append(f"uint32_t a{i+1}")
+        param_str = ", ".join(params) if params else "void"
+
         # Generate C code
         lines = []
 
@@ -122,23 +152,30 @@ class FunctionTranslator:
             lines.append(f" * Category: {category}")
         if source_file:
             lines.append(f" * Source: {source_file}")
-        if has_prologue:
-            lines.append(f" * Frame: EBP-based")
+        lines.append(f" * CC: {cc}, {num_params} params, returns {return_hint}")
+        if frame_type == "ebp_frame":
+            lines.append(f" * Frame: EBP-based ({stack_frame_size} bytes locals)")
         else:
-            lines.append(f" * Frame: FPO (no frame pointer)")
+            lines.append(f" * Frame: {frame_type}")
         lines.append(f" */")
 
         # Function signature
-        lines.append(f"void {name}(void)")
+        lines.append(f"{ret_type} {name}({param_str})")
         lines.append(f"{{")
 
-        # Register declarations
+        # Register declarations (exclude params)
         reg_decls = []
         for reg in ["eax", "ebx", "ecx", "edx", "esi", "edi", "ebp", "esp"]:
             if reg in used_regs:
                 reg_decls.append(reg)
         if reg_decls:
             lines.append(f"    uint32_t {', '.join(reg_decls)};")
+
+        # Map parameters to registers/stack locations
+        if is_thiscall:
+            lines.append(f"    ecx = (uint32_t)(uintptr_t)this_ptr;")
+        if num_params > 0:
+            lines.append(f"    /* Parameters: {', '.join(f'a{i+1}' for i in range(num_params))} */")
 
         # SSE register declarations
         if used_xmm:
@@ -231,7 +268,8 @@ class BatchTranslator:
     """Translates multiple functions and writes C source files."""
 
     def __init__(self, xbe_path, func_json_path, labels_json_path=None,
-                 identified_json_path=None, output_dir=None):
+                 identified_json_path=None, abi_json_path=None,
+                 output_dir=None):
         self.xbe_path = xbe_path
         self.output_dir = output_dir or os.path.join(
             os.path.dirname(__file__), "output")
@@ -270,9 +308,19 @@ class BatchTranslator:
                 addr = int(entry["start"], 16)
                 self.classification_db[addr] = entry
 
+        # Load ABI data
+        self.abi_db = {}
+        if abi_json_path and os.path.exists(abi_json_path):
+            with open(abi_json_path, "r") as f:
+                abi_list = json.load(f)
+            for entry in abi_list:
+                addr = int(entry["address"], 16)
+                self.abi_db[addr] = entry
+
         # Create translator
         self.translator = FunctionTranslator(
-            self.xbe_data, self.func_db, self.label_db, self.classification_db)
+            self.xbe_data, self.func_db, self.label_db,
+            self.classification_db, self.abi_db)
 
     def get_functions_by_category(self, categories=None, exclude_categories=None):
         """
@@ -291,6 +339,32 @@ class BatchTranslator:
 
             result.append((addr, func_info))
         return result
+
+    def _make_declaration(self, addr, name):
+        """Generate a function declaration string using ABI data."""
+        abi_info = self.abi_db.get(addr, {})
+        cc = abi_info.get("calling_convention", "cdecl")
+        num_params = abi_info.get("estimated_params", 0)
+        return_hint = abi_info.get("return_hint", "int_or_void")
+
+        if return_hint in ("float_sse", "float"):
+            ret_type = "float"
+        elif return_hint == "int_zero":
+            ret_type = "int"
+        elif num_params == 0 and return_hint == "int_or_void":
+            ret_type = "void"
+        else:
+            ret_type = "uint32_t"
+
+        is_thiscall = cc in ("thiscall", "thiscall_cdecl")
+        params = []
+        if is_thiscall:
+            params.append("void *this_ptr")
+        for i in range(num_params):
+            params.append(f"uint32_t a{i+1}")
+        param_str = ", ".join(params) if params else "void"
+
+        return f"{ret_type} {name}({param_str})"
 
     def translate_single(self, addr):
         """Translate a single function by address. Returns C code string."""
@@ -339,7 +413,8 @@ class BatchTranslator:
         # Forward declarations
         for addr, func_info in func_list:
             name = func_info.get("name", f"sub_{addr:08X}")
-            c_chunks.append(f"void {name}(void);")
+            decl = self._make_declaration(addr, name)
+            c_chunks.append(f"{decl};")
         c_chunks.append("")
         c_chunks.append("/* ═══════════════════════════════════════════════════ */")
         c_chunks.append("")
