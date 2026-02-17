@@ -46,6 +46,9 @@ venv/
 # Disassembly tool generated output (regenerate with: py -3 -m tools.disasm)
 tools/disasm/output/
 
+# Function ID tool generated output (regenerate with: py -3 -m tools.func_id)
+tools/func_id/output/
+
 # Claude Code auto memory
 .claude/
 
