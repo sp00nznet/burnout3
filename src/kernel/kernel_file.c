@@ -740,12 +740,15 @@ NTSTATUS __stdcall xbox_NtQueryDirectoryFile(
     entry->FileAttributes = ctx->find_data.dwFileAttributes;
     entry->FileNameLength = name_len;
 
-    if (name_len > 0 && (ULONG)(offsetof(XBOX_FILE_DIRECTORY_INFORMATION, FileName) + name_len) <= Length) {
-        memcpy(entry->FileName, filename_ansi, name_len);
-    }
+    {
+        ULONG header_size = (ULONG)((ULONG_PTR)&((PXBOX_FILE_DIRECTORY_INFORMATION)0)->FileName);
+        if (name_len > 0 && (header_size + name_len) <= Length) {
+            memcpy(entry->FileName, filename_ansi, name_len);
+        }
 
-    IoStatusBlock->Status = STATUS_SUCCESS;
-    IoStatusBlock->Information = offsetof(XBOX_FILE_DIRECTORY_INFORMATION, FileName) + name_len;
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = header_size + name_len;
+    }
     return STATUS_SUCCESS;
 }
 

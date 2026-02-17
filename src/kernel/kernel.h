@@ -15,7 +15,9 @@
 #ifndef XBOX_KERNEL_H
 #define XBOX_KERNEL_H
 
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -42,27 +44,79 @@ typedef LONG KPRIORITY;
 #define APC_LEVEL       1
 #define DISPATCH_LEVEL  2
 
-/* NTSTATUS codes */
+/*
+ * NTSTATUS codes - guard each against Windows SDK redefinition.
+ * winnt.h defines a few of these (STATUS_PENDING, STATUS_INVALID_HANDLE, etc.)
+ */
+#ifndef STATUS_SUCCESS
 #define STATUS_SUCCESS                  ((NTSTATUS)0x00000000L)
+#endif
+#ifndef STATUS_ABANDONED
+#define STATUS_ABANDONED                ((NTSTATUS)0x00000080L)
+#endif
+#ifndef STATUS_ALERTED
+#define STATUS_ALERTED                  ((NTSTATUS)0x00000101L)
+#endif
+#ifndef STATUS_TIMEOUT
+#define STATUS_TIMEOUT                  ((NTSTATUS)0x00000102L)
+#endif
+#ifndef STATUS_PENDING
 #define STATUS_PENDING                  ((NTSTATUS)0x00000103L)
+#endif
+#ifndef STATUS_BUFFER_OVERFLOW
 #define STATUS_BUFFER_OVERFLOW          ((NTSTATUS)0x80000005L)
+#endif
+#ifndef STATUS_NO_MORE_FILES
 #define STATUS_NO_MORE_FILES            ((NTSTATUS)0x80000006L)
+#endif
+#ifndef STATUS_UNSUCCESSFUL
 #define STATUS_UNSUCCESSFUL             ((NTSTATUS)0xC0000001L)
+#endif
+#ifndef STATUS_NOT_IMPLEMENTED
 #define STATUS_NOT_IMPLEMENTED          ((NTSTATUS)0xC0000002L)
+#endif
+#ifndef STATUS_INVALID_HANDLE
 #define STATUS_INVALID_HANDLE           ((NTSTATUS)0xC0000008L)
+#endif
+#ifndef STATUS_INVALID_PARAMETER
 #define STATUS_INVALID_PARAMETER        ((NTSTATUS)0xC000000DL)
+#endif
+#ifndef STATUS_NO_SUCH_FILE
 #define STATUS_NO_SUCH_FILE             ((NTSTATUS)0xC000000FL)
+#endif
+#ifndef STATUS_END_OF_FILE
 #define STATUS_END_OF_FILE              ((NTSTATUS)0xC0000011L)
+#endif
+#ifndef STATUS_NO_MEMORY
 #define STATUS_NO_MEMORY                ((NTSTATUS)0xC0000017L)
+#endif
+#ifndef STATUS_ALREADY_COMMITTED
 #define STATUS_ALREADY_COMMITTED        ((NTSTATUS)0xC0000021L)
+#endif
+#ifndef STATUS_ACCESS_DENIED
 #define STATUS_ACCESS_DENIED            ((NTSTATUS)0xC0000022L)
+#endif
+#ifndef STATUS_OBJECT_NAME_NOT_FOUND
 #define STATUS_OBJECT_NAME_NOT_FOUND    ((NTSTATUS)0xC0000034L)
+#endif
+#ifndef STATUS_OBJECT_NAME_COLLISION
 #define STATUS_OBJECT_NAME_COLLISION    ((NTSTATUS)0xC0000035L)
+#endif
+#ifndef STATUS_OBJECT_PATH_NOT_FOUND
 #define STATUS_OBJECT_PATH_NOT_FOUND    ((NTSTATUS)0xC000003AL)
+#endif
+#ifndef STATUS_INSUFFICIENT_RESOURCES
 #define STATUS_INSUFFICIENT_RESOURCES   ((NTSTATUS)0xC000009AL)
+#endif
+#ifndef STATUS_NOT_SUPPORTED
 #define STATUS_NOT_SUPPORTED            ((NTSTATUS)0xC00000BBL)
+#endif
+#ifndef STATUS_INTERNAL_ERROR
 #define STATUS_INTERNAL_ERROR           ((NTSTATUS)0xC00000E5L)
+#endif
+#ifndef STATUS_CANCELLED
 #define STATUS_CANCELLED                ((NTSTATUS)0xC0000120L)
+#endif
 
 #define NT_SUCCESS(Status)  (((NTSTATUS)(Status)) >= 0)
 
