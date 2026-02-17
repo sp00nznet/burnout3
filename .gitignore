@@ -52,6 +52,9 @@ tools/func_id/output/
 # Global map tool generated output (regenerate with: py -3 -m tools.global_map)
 tools/global_map/output/
 
+# ABI analysis tool generated output (regenerate with: py -3 -m tools.abi_analysis)
+tools/abi_analysis/output/
+
 # Claude Code auto memory
 .claude/
 

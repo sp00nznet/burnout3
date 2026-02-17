@@ -103,8 +103,8 @@ The main executable (`default.xbe`) contains:
 - [x] Match CRT/MSVC runtime functions (13 identified via byte signatures)
 - [x] Identify RenderWare engine functions (2,758 classified across 67 source modules)
 - [x] C++ vtable analysis (121 vtables, 517 virtual methods + constructors)
-- [ ] Map global variables and data structures
-- [ ] Document calling conventions and ABI
+- [x] Map global variables and data structures (22,587 globals, 1,836 structures)
+- [x] Document calling conventions and ABI (76% FPO, 1,182 thiscall methods)
 
 ### Phase 3: Core Recompilation
 - [x] Replace Xbox kernel calls with Win32 equivalents (all 147)
