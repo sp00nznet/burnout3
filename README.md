@@ -114,8 +114,11 @@ The main executable (`default.xbe`) contains:
 - [x] Handle memory layout differences (VirtualAlloc maps data sections to Xbox VAs)
 
 ### Phase 4: Asset Pipeline
-- [ ] RenderWare stream loader (PC-compatible)
-- [ ] Texture format converter (Xbox swizzled → standard)
+- [x] Asset catalog and format identification (716 files, 16 categories)
+- [x] Criterion TXD texture parser (409 textures across 2 dictionaries)
+- [x] Texture format converter (DXT1/DXT3/DXT5/P8 → PNG, Xbox unswizzle)
+- [x] Criterion arena (.rws) chunk parser (track/scene structure)
+- [x] Criterion audio (.awd) format analyzer
 - [ ] Audio bank converter (Xbox ADPCM → standard PCM/Vorbis)
 - [ ] Video player replacement (XMV → standard format)
 

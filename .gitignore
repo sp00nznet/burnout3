@@ -55,6 +55,9 @@ tools/global_map/output/
 # ABI analysis tool generated output (regenerate with: py -3 -m tools.abi_analysis)
 tools/abi_analysis/output/
 
+# Asset tools generated output (regenerate with: py -3 -m tools.asset_tools)
+tools/asset_tools/output/
+
 # Claude Code auto memory
 .claude/
 
