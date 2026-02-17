@@ -43,8 +43,8 @@ __pycache__/
 .venv/
 venv/
 
-# Disassembly tool cache
-tools/disasm/output/.disasm_cache.json
+# Disassembly tool generated output (regenerate with: py -3 -m tools.disasm)
+tools/disasm/output/
 
 # Claude Code auto memory
 .claude/
