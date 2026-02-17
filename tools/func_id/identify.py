@@ -15,6 +15,7 @@ from .imm_scanner import scan_immediate_refs
 from .rw_identifier import identify_rw_functions
 from .crt_identifier import identify_crt_functions
 from .stub_classifier import classify_stubs
+from .vtable_scanner import scan_vtables
 from .clustering import propagate_labels
 from .output import write_results
 
@@ -118,9 +119,26 @@ def run(xbe_path, functions_path=None, strings_path=None, xrefs_path=None,
     if verbose:
         print(f"  Done in {time.time() - t4:.1f}s")
 
-    # ── Phase 5: Write output ────────────────────────────────
+    # ── Phase 5: Vtable scanning ──────────────────────────────
     if verbose:
-        print("\nPhase 5: Writing output...")
+        print("\nPhase 5: Vtable scanning...")
+    t5 = time.time()
+    vtable_results, vtables = scan_vtables(
+        xbe_data, functions, imm_refs, verbose=verbose
+    )
+    # Only classify functions not already labeled by earlier phases
+    already_labeled = set(rw_results) | set(crt_results) | set(propagated) | set(stub_results)
+    vtable_new = {a: v for a, v in vtable_results.items() if a not in already_labeled}
+    if verbose:
+        print(f"  New classifications from vtable: {len(vtable_new)}")
+        print(f"  Done in {time.time() - t5:.1f}s")
+
+    # Merge vtable results into propagated for output
+    propagated.update(vtable_new)
+
+    # ── Phase 6: Write output ────────────────────────────────
+    if verbose:
+        print("\nPhase 6: Writing output...")
 
     summary = write_results(
         functions, rw_results, crt_results, propagated, rw_modules,

@@ -80,6 +80,9 @@ def _build_enriched_db(functions, rw_results, crt_results, propagated,
             entry["subcategory"] = info.get("subcategory")
             entry["confidence"] = info["confidence"]
             entry["method"] = info["method"]
+            if "vtable_addr" in info:
+                entry["vtable_addr"] = f"0x{info['vtable_addr']:08X}"
+                entry["vtable_index"] = info["vtable_index"]
         elif addr in stub_results:
             info = stub_results[addr]
             entry["category"] = info["category"]
@@ -109,6 +112,9 @@ def _build_summary(enriched, rw_results, crt_results, propagated, rw_modules):
     data_init_total = cat_counts.get("data_init", 0)
     unknown_total = cat_counts.get("unknown", 0)
 
+    # Count vtable functions specifically
+    vtable_total = sum(1 for e in enriched if e.get("method") in ("vtable_scan", "vtable_ctor"))
+
     # RW modules with function counts
     rw_module_summary = {}
     for name, mod in rw_modules.items():
@@ -125,6 +131,7 @@ def _build_summary(enriched, rw_results, crt_results, propagated, rw_modules):
             "crt": crt_total,
             "data_init": data_init_total,
             "game_classified": game_total,
+            "vtable_methods": vtable_total,
             "unknown": unknown_total,
         },
         "percentages": {
@@ -182,6 +189,9 @@ def _print_summary(summary):
     print(f"  CRT/MSVC:           {cls['crt']:,}  ({pct['crt']}%)")
     print(f"  Data init stubs:    {cls['data_init']:,}  ({pct['data_init']}%)")
     print(f"  Game (classified):  {cls['game_classified']:,}  ({pct['game_classified']}%)")
+    vtable_count = cls.get('vtable_methods', 0)
+    if vtable_count:
+        print(f"    (vtable methods): {vtable_count:,}")
     print(f"  Unknown:            {cls['unknown']:,}  ({pct['unknown']}%)")
 
     print(f"\n  RW source modules:  {summary['rw_module_count']}")

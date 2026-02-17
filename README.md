@@ -90,22 +90,24 @@ The main executable (`default.xbe`) contains:
 
 ## Recompilation Strategy
 
-### Phase 1: Toolchain (Current)
+### Phase 1: Toolchain (Complete)
 - [x] XBE header parser
-- [ ] XBE section extractor
-- [ ] Disassembler integration (Capstone)
-- [ ] Function boundary detection
-- [ ] Xbox kernel import resolver
+- [x] Disassembler with function detection (20,816 functions, 920K instructions)
+- [x] Cross-reference analysis (163,787 xrefs, 315 kernel call sites)
+- [x] String extraction (1,988 strings)
+- [x] Xbox kernel replacement layer (147/147 imports, builds as static lib)
+- [x] Function identification tool (85.3% classified: RW, CRT, vtables, stubs)
 
 ### Phase 2: Analysis
-- [ ] Identify all function boundaries in `.text`
-- [ ] Match XDK library functions using signatures
-- [ ] Identify RenderWare engine functions
+- [x] Identify all function boundaries in `.text` (20,816 detected)
+- [x] Match CRT/MSVC runtime functions (13 identified via byte signatures)
+- [x] Identify RenderWare engine functions (2,758 classified across 67 source modules)
+- [x] C++ vtable analysis (121 vtables, 517 virtual methods + constructors)
 - [ ] Map global variables and data structures
 - [ ] Document calling conventions and ABI
 
 ### Phase 3: Core Recompilation
-- [ ] Replace Xbox kernel calls with Win32 equivalents
+- [x] Replace Xbox kernel calls with Win32 equivalents (all 147)
 - [ ] Replace D3D8 (Xbox) with D3D11 or Vulkan
 - [ ] Replace DirectSound (Xbox) with XAudio2
 - [ ] Replace Xbox input with XInput

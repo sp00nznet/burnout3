@@ -156,6 +156,13 @@ def propagate_labels(functions, rw_results, crt_results, imm_refs, strings,
     if verbose:
         print(f"  RW API consumers: {rw_consumer_count} functions")
 
+    # XDK library section caller detection
+    xdk_caller_count = _classify_xdk_callers(
+        sorted_addrs, labels, propagated, callees
+    )
+    if verbose:
+        print(f"  XDK section callers: {xdk_caller_count} functions")
+
     # Game sub-classification via string references
     game_sub_count = _classify_game_subcategories(
         sorted_addrs, labels, propagated, string_refs
@@ -320,6 +327,46 @@ def _classify_rw_consumers(sorted_addrs, labels, propagated, callees):
                 "subcategory": "engine",
                 "confidence": 0.65,
                 "method": "rw_consumer",
+            }
+            count += 1
+
+    return count
+
+
+def _classify_xdk_callers(sorted_addrs, labels, propagated, callees):
+    """
+    Classify unlabeled functions by which XDK library sections they call.
+
+    Functions that call into D3D → game_render, DSOUND/WMADEC → game_audio,
+    XMV → game_video, XONLINE/XNET → game_network, XPP → game_input.
+    """
+    count = 0
+    xdk_sections = config.XDK_SECTIONS
+
+    for addr in sorted_addrs:
+        if addr in labels:
+            continue
+
+        callee_set = callees.get(addr, set())
+        if not callee_set:
+            continue
+
+        # Check which XDK sections this function calls
+        xdk_cats = {}
+        for target in callee_set:
+            for sec_name, (lo, hi, cat) in xdk_sections.items():
+                if lo <= target < hi:
+                    xdk_cats[cat] = xdk_cats.get(cat, 0) + 1
+
+        if xdk_cats:
+            # Pick the most-called XDK category
+            best_cat = max(xdk_cats, key=xdk_cats.get)
+            labels[addr] = best_cat
+            propagated[addr] = {
+                "category": best_cat,
+                "subcategory": best_cat.replace("game_", ""),
+                "confidence": 0.70,
+                "method": "xdk_caller",
             }
             count += 1
 

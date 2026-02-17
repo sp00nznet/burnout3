@@ -62,6 +62,23 @@ def va_to_file_offset(va):
 
 
 # ============================================================
+# XDK Library Section Ranges (statically linked Xbox SDK libs)
+# ============================================================
+# Maps section name -> (va_start, va_end, game_category)
+# Functions calling into these sections get classified accordingly.
+
+XDK_SECTIONS = {
+    "D3D":     (0x0034C2E0, 0x0034C2E0 + 83828,  "game_render"),
+    "DSOUND":  (0x002F3F40, 0x002F3F40 + 52668,  "game_audio"),
+    "WMADEC":  (0x00300D00, 0x00300D00 + 105828, "game_audio"),
+    "XMV":     (0x002CC200, 0x002CC200 + 163124, "game_video"),
+    "XONLINE": (0x0031AA80, 0x0031AA80 + 124764, "game_network"),
+    "XNET":    (0x003391E0, 0x003391E0 + 78056,  "game_network"),
+    "XGRPH":   (0x00360A60, 0x00360A60 + 8300,   "game_render"),
+    "XPP":     (0x00362AE0, 0x00362AE0 + 36052,  "game_input"),
+}
+
+# ============================================================
 # CRT Byte Signatures
 # ============================================================
 # Each entry: (name, pattern_bytes, mask_bytes_or_None, max_func_size)
