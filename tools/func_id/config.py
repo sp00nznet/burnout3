@@ -235,13 +235,23 @@ RW_CATEGORIES = {
 # ============================================================
 
 GAME_SUBCATEGORIES = {
-    "audio":    ["sound", "audio", "music", "sfx", "voice", "wma", "dsp"],
-    "io":       ["file", "save", "load", "stream", "disk", "read", "write", "fopen"],
-    "ui":       ["menu", "hud", "font", "text", "screen", "ui_", "button"],
-    "network":  ["online", "xnet", "socket", "http", "xbox live"],
-    "physics":  ["collid", "collisi", "physics", "rigid", "force", "velocity"],
-    "gameplay": ["race", "boost", "takedown", "crash", "vehicle", "car", "speed"],
-    "render":   ["render", "draw", "shader", "vertex", "texture", "material"],
+    "vehicle":  ["vehicle", "car ", "wheel", "engine", "gear", "throttle", "brake",
+                 "steer", "turbo", "boost", "rpm", "speed", "crash", "takedown",
+                 "jolt", "wreck", "drift"],
+    "audio":    ["sound", "audio", "music", "sfx", "voice", "wma", "dsp",
+                 "volume", "pitch", "reverb", "impulse", "speaker", "channel"],
+    "camera":   ["camera", "cam_", "look back", "bumper", "follow"],
+    "physics":  ["collid", "collisi", "physics", "rigid", "force", "velocity",
+                 "mass", "angular", "gravity", "friction", "momentum"],
+    "ui":       ["menu", "hud", "font", "screen", "button", "press", "select",
+                 "gamertag", "profile"],
+    "network":  ["online", "xbox live", "session", "host", "join", "rank",
+                 "sign in", "sign out", "matchmak"],
+    "io":       ["save", "load", "partition", "device\\", "\\tdata", "content",
+                 "savemeta", "saveimage"],
+    "render":   ["render", "draw", "shader", "vertex", "texture", "material",
+                 "d3d", "pixel"],
+    "debug":    ["assert", "error", "warning", "debug"],
 }
 
 # ============================================================

@@ -149,6 +149,13 @@ def propagate_labels(functions, rw_results, crt_results, imm_refs, strings,
     if verbose:
         print(f"  Proximity propagation: {total_prox} new labels ({prox_pass + 1} passes)")
 
+    # RW API consumer detection: game functions that call RW functions
+    rw_consumer_count = _classify_rw_consumers(
+        sorted_addrs, labels, propagated, callees
+    )
+    if verbose:
+        print(f"  RW API consumers: {rw_consumer_count} functions")
+
     # Game sub-classification via string references
     game_sub_count = _classify_game_subcategories(
         sorted_addrs, labels, propagated, string_refs
@@ -251,6 +258,42 @@ def _proximity_propagation(sorted_addrs, labels, propagated):
                     "method": "cluster_proximity",
                 }
                 count += 1
+
+    return count
+
+
+def _classify_rw_consumers(sorted_addrs, labels, propagated, callees):
+    """
+    Classify unlabeled functions that call RW functions as 'game_engine'.
+    These are the game's interface to the RenderWare engine (rendering,
+    world management, asset loading, etc.).
+    """
+    count = 0
+    # Get the RW code region bounds
+    rw_addrs = [a for a in sorted_addrs if a in labels and labels[a].startswith("rw_")]
+    if not rw_addrs:
+        return 0
+    rw_code_lo = min(rw_addrs)
+
+    for addr in sorted_addrs:
+        if addr in labels:
+            continue
+        # Only classify functions BEFORE the RW region (game code calling RW)
+        if addr >= rw_code_lo:
+            continue
+
+        callee_set = callees.get(addr, set())
+        rw_calls = sum(1 for c in callee_set
+                       if c in labels and labels[c].startswith("rw_"))
+        if rw_calls >= 1:
+            labels[addr] = "game_engine"
+            propagated[addr] = {
+                "category": "game_engine",
+                "subcategory": "engine",
+                "confidence": 0.65,
+                "method": "rw_consumer",
+            }
+            count += 1
 
     return count
 
