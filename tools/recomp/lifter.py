@@ -25,6 +25,10 @@ def _fmt_reg(name, size=4):
     if not name:
         return "0"
 
+    # Segment registers → constants
+    if name in ("fs", "gs", "cs", "ds", "es", "ss"):
+        return f"0 /* seg:{name} */"
+
     # Map sub-registers to expressions on 32-bit locals
     SUB_REGS = {
         "al": "LO8(eax)", "ah": "HI8(eax)", "ax": "LO16(eax)",
@@ -41,6 +45,10 @@ def _fmt_reg(name, size=4):
 
 def _fmt_set_reg(name, value_expr):
     """Format assignment to a register, handling sub-register writes."""
+    # Segment registers → no-op
+    if name in ("fs", "gs", "cs", "ds", "es", "ss"):
+        return f"/* mov {name}, {value_expr} - segment register */;"
+
     SET_MAP = {
         "al": f"SET_LO8(eax, {value_expr})",
         "ah": f"SET_HI8(eax, {value_expr})",
@@ -173,12 +181,224 @@ COND_MAP = {
     "jns":  (None,       None,      "not sign (positive)"),
     "jo":   (None,       None,      "overflow"),
     "jno":  (None,       None,      "not overflow"),
+    "jp":   (None,       None,      "parity"),
+    "jnp":  (None,       None,      "not parity"),
+    "jecxz": (None,      None,      "ecx is zero"),
+    "jcxz":  (None,      None,      "cx is zero"),
 }
 
+# Instructions that set arithmetic flags
+FLAG_SETTERS = frozenset({
+    "cmp", "test", "sub", "add", "and", "or", "xor",
+    "inc", "dec", "neg", "shl", "shr", "sar", "imul", "adc", "sbb",
+    "comiss", "comisd", "ucomiss", "ucomisd",  # SSE float compare
+})
 
-# ── Pattern matching for cmp/test + jcc ──────────────────────
 
-def try_match_cmp_jcc(insns, idx):
+def _make_condition(jcc, flag_setter, flag_ops):
+    """
+    Generate a C condition expression for a jcc based on what set the flags.
+    Returns (cond_expr, description) or None.
+    """
+    cond_info = COND_MAP.get(jcc)
+    if not cond_info:
+        return None
+    cmp_macro, test_macro, desc = cond_info
+
+    if len(flag_ops) >= 2:
+        lhs = _fmt_operand_read(flag_ops[0])
+        rhs = _fmt_operand_read(flag_ops[1])
+    elif len(flag_ops) == 1:
+        lhs = _fmt_operand_read(flag_ops[0])
+        rhs = None
+    else:
+        return None
+
+    # ── comiss/ucomiss: float comparison, sets CF/ZF/PF ──
+    if flag_setter in ("comiss", "comisd", "ucomiss", "ucomisd"):
+        def _sse_op(op):
+            if op.type == "reg":
+                return op.reg
+            elif op.type == "mem":
+                if op.mem_size == 8:
+                    return f"MEMD({_fmt_mem(op)})"
+                return f"MEMF({_fmt_mem(op)})"
+            return _fmt_operand_read(op)
+        a = _sse_op(flag_ops[0]) if len(flag_ops) >= 1 else "0.0f"
+        b = _sse_op(flag_ops[1]) if len(flag_ops) >= 2 else "0.0f"
+        # comiss uses unsigned condition codes (CF, ZF)
+        if jcc in ("ja", "jnbe"):
+            return f"({a} > {b})", desc
+        if jcc in ("jae", "jnb", "jnc"):
+            return f"({a} >= {b})", desc
+        if jcc in ("jb", "jnae", "jc"):
+            return f"({a} < {b})", desc
+        if jcc in ("jbe", "jna"):
+            return f"({a} <= {b})", desc
+        if jcc in ("je", "jz"):
+            return f"({a} == {b})", desc
+        if jcc in ("jne", "jnz"):
+            return f"({a} != {b})", desc
+        if jcc == "jp":
+            return f"0 /* {jcc}: unordered/NaN */", desc
+        if jcc == "jnp":
+            return f"1 /* {jcc}: ordered */", desc
+        return None
+
+    # ── cmp: flags from (a - b), operands unchanged ──
+    if flag_setter == "cmp":
+        if cmp_macro:
+            return f"{cmp_macro}({lhs}, {rhs})", desc
+        if jcc == "js":
+            return f"((int32_t)({lhs} - {rhs}) < 0)", desc
+        if jcc == "jns":
+            return f"((int32_t)({lhs} - {rhs}) >= 0)", desc
+        if jcc in ("jp", "jnp"):
+            return f"1 /* {jcc} after cmp - parity */", desc
+        return None
+
+    # ── test: flags from (a & b), operands unchanged ──
+    if flag_setter == "test":
+        if test_macro:
+            return f"{test_macro}({lhs}, {rhs})", desc
+        if cmp_macro:
+            return f"{cmp_macro}({lhs} & {rhs}, 0)", desc
+        if jcc in ("jp", "jnp"):
+            return f"1 /* {jcc} after test - parity */", desc
+        return None
+
+    # ── sub: a = a - b, flags from (a_orig - b) ──
+    if flag_setter == "sub":
+        if jcc in ("je", "jz"):
+            return f"({lhs} == 0)", desc
+        if jcc in ("jne", "jnz"):
+            return f"({lhs} != 0)", desc
+        if jcc == "js":
+            return f"((int32_t){lhs} < 0)", desc
+        if jcc == "jns":
+            return f"((int32_t){lhs} >= 0)", desc
+        # Ordered: reconstruct original a = result + b
+        if cmp_macro and rhs:
+            return f"{cmp_macro}((uint32_t){lhs} + (uint32_t){rhs}, (uint32_t){rhs})", desc
+        if jcc in ("jb", "jnae"):
+            return f"((uint32_t){lhs} + (uint32_t){rhs} < (uint32_t){rhs})", desc
+        if jcc in ("jae", "jnb"):
+            return f"((uint32_t){lhs} + (uint32_t){rhs} >= (uint32_t){rhs})", desc
+        return None
+
+    # ── add: a = a + b, flags from result ──
+    if flag_setter == "add":
+        if jcc in ("je", "jz"):
+            return f"({lhs} == 0)", desc
+        if jcc in ("jne", "jnz"):
+            return f"({lhs} != 0)", desc
+        if jcc == "js":
+            return f"((int32_t){lhs} < 0)", desc
+        if jcc == "jns":
+            return f"((int32_t){lhs} >= 0)", desc
+        if jcc in ("jb", "jnae", "jc"):
+            return f"({lhs} < (uint32_t){rhs})", desc
+        if jcc in ("jae", "jnb", "jnc"):
+            return f"({lhs} >= (uint32_t){rhs})", desc
+        return None
+
+    # ── and/or/xor: result-based, CF=0, OF=0 ──
+    if flag_setter in ("and", "or", "xor"):
+        if jcc in ("je", "jz"):
+            return f"({lhs} == 0)", desc
+        if jcc in ("jne", "jnz"):
+            return f"({lhs} != 0)", desc
+        if jcc in ("js", "jl"):
+            return f"((int32_t){lhs} < 0)", desc
+        if jcc in ("jns", "jge"):
+            return f"((int32_t){lhs} >= 0)", desc
+        if jcc == "jle":
+            return f"((int32_t){lhs} <= 0)", desc
+        if jcc == "jg":
+            return f"((int32_t){lhs} > 0)", desc
+        if jcc in ("jb", "jnae", "jbe", "jna"):
+            return "0", desc  # CF=0 after and/or/xor
+        if jcc in ("jae", "jnb", "ja", "jnbe"):
+            return "1", desc
+        return None
+
+    # ── dec/inc: result-based, CF unchanged ──
+    if flag_setter in ("dec", "inc"):
+        if jcc in ("je", "jz"):
+            return f"({lhs} == 0)", desc
+        if jcc in ("jne", "jnz"):
+            return f"({lhs} != 0)", desc
+        if jcc == "js":
+            return f"((int32_t){lhs} < 0)", desc
+        if jcc == "jns":
+            return f"((int32_t){lhs} >= 0)", desc
+        if jcc in ("jl", "jle", "jg", "jge"):
+            cast = "(int32_t)" + lhs
+            op = {"jl": "<", "jle": "<=", "jg": ">", "jge": ">="}[jcc]
+            return f"({cast} {op} 0)", desc
+        return None
+
+    # ── neg: flags from (0 - a_orig), result is -a ──
+    if flag_setter == "neg":
+        if jcc in ("je", "jz"):
+            return f"({lhs} == 0)", desc
+        if jcc in ("jne", "jnz"):
+            return f"({lhs} != 0)", desc
+        if jcc in ("jb", "jnae", "jc"):
+            # CF=1 unless original was 0
+            return f"({lhs} != 0)", desc
+        return None
+
+    # ── shift: result-based ──
+    if flag_setter in ("shl", "shr", "sar"):
+        if jcc in ("je", "jz"):
+            return f"({lhs} == 0)", desc
+        if jcc in ("jne", "jnz"):
+            return f"({lhs} != 0)", desc
+        if jcc == "js":
+            return f"((int32_t){lhs} < 0)", desc
+        if jcc == "jns":
+            return f"((int32_t){lhs} >= 0)", desc
+        return None
+
+    return None
+
+
+def _make_setcc_value(setcc_mnemonic, flag_setter, flag_ops):
+    """Generate the condition expression for a SETcc instruction."""
+    cc = setcc_mnemonic[3:]
+    jcc = "j" + cc
+    result = _make_condition(jcc, flag_setter, flag_ops)
+    if result:
+        return result[0]
+    return None
+
+
+def _make_cmovcc_cond(cmov_mnemonic, flag_setter, flag_ops):
+    """Generate the condition expression for a CMOVcc instruction."""
+    cc = cmov_mnemonic[4:]
+    jcc = "j" + cc
+    result = _make_condition(jcc, flag_setter, flag_ops)
+    if result:
+        return result[0]
+    return None
+
+
+# ── Pattern matching for flag-setter + jcc ────────────────────
+
+def _emit_cond_goto(cond_expr, jcc, desc, target, lifter):
+    """Emit a conditional goto or call for a jump target."""
+    if target is None:
+        return f"if ({cond_expr}) {{ /* {jcc}: {desc} - indirect */ }}"
+    if lifter and lifter._is_external_target(target):
+        name = lifter._call_target_name(target)
+        args = lifter._build_call_args(target)
+        return (f"if ({cond_expr}) {{ {name}({args}); return; }}"
+                f" /* {jcc}: {desc} */")
+    return f"if ({cond_expr}) goto loc_{target:08X}; /* {jcc}: {desc} */"
+
+
+def try_match_cmp_jcc(insns, idx, lifter=None):
     """
     Try to match a cmp/test + jcc pattern starting at insns[idx].
     Returns (c_statement, num_consumed) or None.
@@ -195,35 +415,13 @@ def try_match_cmp_jcc(insns, idx):
     if len(first.operands) < 2:
         return None
 
-    lhs = _fmt_operand_read(first.operands[0])
-    rhs = _fmt_operand_read(first.operands[1])
-    jcc = second.mnemonic
-
-    cond_info = COND_MAP.get(jcc)
-    if not cond_info:
+    result = _make_condition(second.mnemonic, first.mnemonic, first.operands)
+    if not result:
         return None
 
-    cmp_macro, test_macro, desc = cond_info
-
-    if first.mnemonic == "cmp" and cmp_macro:
-        cond_expr = f"{cmp_macro}({lhs}, {rhs})"
-    elif first.mnemonic == "test" and test_macro:
-        cond_expr = f"{test_macro}({lhs}, {rhs})"
-    elif first.mnemonic == "test" and cmp_macro:
-        # Fallback: test a, a with cmp-style macro
-        cond_expr = f"{cmp_macro}({lhs} & {rhs}, 0)"
-    elif first.mnemonic == "cmp" and not cmp_macro:
-        # Rare jcc types (jo, jno, js, jns) after cmp
-        return None
-    else:
-        return None
-
+    cond_expr, desc = result
     target = second.jump_target
-    if target:
-        stmt = f"if ({cond_expr}) goto loc_{target:08X}; /* {jcc}: {desc} */"
-    else:
-        stmt = f"if ({cond_expr}) goto /* indirect */; /* {jcc}: {desc} */"
-
+    stmt = _emit_cond_goto(cond_expr, second.mnemonic, desc, target, lifter)
     return (stmt, 2)
 
 
@@ -232,14 +430,18 @@ def try_match_cmp_jcc(insns, idx):
 class Lifter:
     """Translates x86 instructions to C statements."""
 
-    def __init__(self, func_db=None, label_db=None):
+    def __init__(self, func_db=None, label_db=None, abi_db=None):
         """
         func_db: dict of func_addr → func_info (for naming call targets)
         label_db: dict of addr → name (for kernel imports, etc.)
+        abi_db: dict of addr → ABI info (for calling conventions)
         """
         self.func_db = func_db or {}
         self.label_db = label_db or {}
+        self.abi_db = abi_db or {}
         self._fp_top = 0  # FPU stack top index
+        self.func_start = 0  # Set per-function by translator
+        self.func_end = 0
 
     def _call_target_name(self, addr):
         """Get the name for a call target address."""
@@ -492,11 +694,14 @@ class Lifter:
         if len(ops) < 1:
             return [f"/* {m}: no operand */"]
         val = _fmt_operand_read(ops[0])
-        op = "++" if m == "inc" else "--"
-        if ops[0].type == "reg":
-            return [f"{val}{op};"]
+        delta = "1"
+        op_char = "+" if m == "inc" else "-"
+        # For sub-registers (al, cl, etc.), use the SET macro instead of ++
+        if ops[0].type == "reg" and ops[0].reg in (
+                "eax", "ebx", "ecx", "edx", "esi", "edi", "ebp", "esp"):
+            return [f"{val}{'++' if m == 'inc' else '--'};"]
         else:
-            return [_fmt_operand_write(ops[0], f"{val} {op[0]} 1")]
+            return [_fmt_operand_write(ops[0], f"{val} {op_char} {delta}")]
 
     def _lift_neg(self, insn, ops):
         if len(ops) < 1:
@@ -633,13 +838,27 @@ class Lifter:
 
     # ── Control flow ──
 
+    def _build_call_args(self, target_addr):
+        """Build argument list for a function call based on ABI data."""
+        abi_info = self.abi_db.get(target_addr, {})
+        cc = abi_info.get("calling_convention", "cdecl")
+        num_params = abi_info.get("estimated_params", 0)
+
+        args = []
+        if cc in ("thiscall", "thiscall_cdecl"):
+            args.append("(void*)(uintptr_t)ecx")
+        for i in range(num_params):
+            args.append(f"0 /* a{i+1} */")
+        return ", ".join(args)
+
     def _lift_call(self, insn, ops):
         if insn.call_target:
             name = self._call_target_name(insn.call_target)
-            return [f"{name}(); /* call 0x{insn.call_target:08X} */"]
+            args = self._build_call_args(insn.call_target)
+            return [f"{name}({args}); /* call 0x{insn.call_target:08X} */"]
         elif len(ops) >= 1:
             target = _fmt_operand_read(ops[0])
-            return [f"((void (*)(void)){target})(); /* indirect call */"]
+            return [f"((void (*)(void))(uintptr_t){target})(); /* indirect call */"]
         return ["/* call: no target */"]
 
     def _lift_ret(self, insn, ops):
@@ -648,34 +867,61 @@ class Lifter:
             return [f"return; /* ret {ops[0].imm} */"]
         return ["return;"]
 
+    def _is_external_target(self, addr):
+        """Check if a jump target is outside the current function."""
+        return not (self.func_start <= addr < self.func_end)
+
     def _lift_jmp(self, insn, ops):
         if insn.jump_target:
+            if self._is_external_target(insn.jump_target):
+                # Tail call to another function
+                name = self._call_target_name(insn.jump_target)
+                args = self._build_call_args(insn.jump_target)
+                return [f"{name}({args}); return; /* tail jmp 0x{insn.jump_target:08X} */"]
             return [f"goto loc_{insn.jump_target:08X};"]
         elif len(ops) >= 1:
             target = _fmt_operand_read(ops[0])
-            return [f"goto *{target}; /* indirect jmp - needs jump table */"]
+            return [f"((void (*)(void))(uintptr_t){target})(); return; /* indirect tail jmp */"]
         return ["/* jmp: no target */"]
 
     def _lift_jcc(self, insn):
-        """Standalone conditional jump (not matched as cmp+jcc pattern)."""
+        """Standalone conditional jump (no flag-setter tracked)."""
         target = insn.jump_target
         jcc = insn.mnemonic
+
+        # jecxz/jcxz: jump if ecx/cx is zero (not flag-based)
+        if jcc in ("jecxz", "jcxz"):
+            cond = "ecx == 0" if jcc == "jecxz" else "LO16(ecx) == 0"
+            if target:
+                if self._is_external_target(target):
+                    name = self._call_target_name(target)
+                    args = self._build_call_args(target)
+                    return [f"if ({cond}) {{ {name}({args}); return; }} /* {jcc} */"]
+                return [f"if ({cond}) goto loc_{target:08X}; /* {jcc} */"]
+            return [f"/* {jcc} - no target */"]
+
+        cond_info = COND_MAP.get(jcc)
+        desc = cond_info[2] if cond_info else jcc
         if target:
-            return [f"if (/* {jcc} condition */) goto loc_{target:08X}; /* {jcc} */"]
-        return [f"/* {jcc}: no target */"]
+            if self._is_external_target(target):
+                name = self._call_target_name(target)
+                args = self._build_call_args(target)
+                return [f"if (_flags /* {jcc}: {desc} */) {{ {name}({args}); return; }}"]
+            return [f"if (_flags /* {jcc}: {desc} */) goto loc_{target:08X};"]
+        return [f"/* {jcc}: {desc} - no target */"]
 
     # ── SETcc / CMOVcc ──
 
     def _lift_setcc(self, insn, ops, m):
         if len(ops) < 1:
             return [f"/* {m}: no operand */"]
-        return [_fmt_operand_write(ops[0], f"/* {m} condition */ 0")]
+        return [_fmt_operand_write(ops[0], f"_flags /* {m} */")]
 
     def _lift_cmovcc(self, insn, ops, m):
         if len(ops) < 2:
             return [f"/* {m}: bad operands */"]
         src = _fmt_operand_read(ops[1])
-        return [f"if (/* {m} condition */) {_fmt_operand_write(ops[0], src)}"]
+        return [f"if (_flags /* {m} */) {_fmt_operand_write(ops[0], src)}"]
 
     # ── String operations ──
 
@@ -960,24 +1206,107 @@ class Lifter:
 def lift_basic_block(lifter, bb):
     """
     Lift a basic block to C statements.
-    Uses pattern matching for cmp/test+jcc pairs.
+    Tracks flags to generate proper conditions for jcc/setcc/cmovcc.
     Returns list of C statement strings.
     """
     stmts = []
     insns = bb.instructions
     i = 0
+
+    # Track the last instruction that set flags
+    last_flag_setter = None  # mnemonic
+    last_flag_ops = []       # operands of the flag-setting instruction
+
     while i < len(insns):
-        # Try cmp/test + jcc pattern first
-        match = try_match_cmp_jcc(insns, i)
+        curr = insns[i]
+
+        # Try cmp/test + jcc pattern first (2-instruction match)
+        match = try_match_cmp_jcc(insns, i, lifter=lifter)
         if match:
             stmt, consumed = match
             stmts.append(stmt)
+            last_flag_setter = None
+            last_flag_ops = []
             i += consumed
             continue
 
-        # Single instruction
+        # Handle jecxz/jcxz specially (not flag-based)
+        if curr.mnemonic in ("jecxz", "jcxz"):
+            results = lifter._lift_jcc(curr)
+            stmts.extend(results)
+            i += 1
+            continue
+
+        # Check if this instruction uses flags (jcc, setcc, cmovcc)
+        if curr.is_cond_jump and last_flag_setter:
+            result = _make_condition(
+                curr.mnemonic, last_flag_setter, last_flag_ops)
+            if result:
+                cond_expr, desc = result
+                target = curr.jump_target
+                stmt = _emit_cond_goto(
+                    cond_expr, curr.mnemonic, desc, target, lifter)
+                stmts.append(stmt)
+                i += 1
+                continue
+
+        if (curr.mnemonic in ("sete", "setne", "setb", "setae", "setbe",
+                              "seta", "setl", "setge", "setle", "setg",
+                              "sets", "setns")
+                and last_flag_setter and len(curr.operands) >= 1):
+            cond = _make_setcc_value(
+                curr.mnemonic, last_flag_setter, last_flag_ops)
+            if cond:
+                stmts.append(
+                    _fmt_operand_write(curr.operands[0],
+                                       f"({cond}) ? 1 : 0")
+                    + f" /* {curr.mnemonic} */")
+                i += 1
+                continue
+
+        if (curr.mnemonic in ("cmove", "cmovne", "cmovb", "cmovae",
+                              "cmovbe", "cmova", "cmovl", "cmovge",
+                              "cmovle", "cmovg", "cmovs", "cmovns")
+                and last_flag_setter and len(curr.operands) >= 2):
+            cond = _make_cmovcc_cond(
+                curr.mnemonic, last_flag_setter, last_flag_ops)
+            if cond:
+                src = _fmt_operand_read(curr.operands[1])
+                stmts.append(
+                    f"if ({cond}) "
+                    + _fmt_operand_write(curr.operands[0], src)
+                    + f" /* {curr.mnemonic} */")
+                i += 1
+                continue
+
+        # Lift the instruction normally
         results = lifter.lift_instruction(insns[i])
         stmts.extend(results)
+
+        # Track flag-setting instructions
+        if curr.mnemonic in FLAG_SETTERS:
+            last_flag_setter = curr.mnemonic
+            last_flag_ops = list(curr.operands)
+        elif curr.mnemonic in ("mov", "lea", "push", "pop", "nop",
+                                "call", "movss", "movsd", "movaps",
+                                "movups", "movd", "movq", "movzx",
+                                "movsx", "xchg", "bswap", "cdq",
+                                "cwde", "cbw", "lahf", "sahf"):
+            pass  # These don't affect flags
+        elif curr.mnemonic.startswith("f") or curr.mnemonic.startswith("cmov"):
+            pass  # FPU and already-handled CMOVcc
+        elif curr.mnemonic.startswith("j"):
+            pass  # Jumps don't set flags
+        elif curr.mnemonic.startswith("set"):
+            pass  # SETcc doesn't set flags
+        elif curr.mnemonic.startswith("rep"):
+            last_flag_setter = None  # Rep string ops modify flags unpredictably
+            last_flag_ops = []
+        else:
+            # Unknown instruction - conservatively clear flag state
+            last_flag_setter = None
+            last_flag_ops = []
+
         i += 1
 
     return stmts

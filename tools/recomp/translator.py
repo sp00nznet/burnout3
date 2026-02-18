@@ -37,7 +37,7 @@ class FunctionTranslator:
         self.classification_db = classification_db or {}
         self.abi_db = abi_db or {}
         self.disasm = Disassembler()
-        self.lifter = Lifter(func_db=func_db, label_db=label_db)
+        self.lifter = Lifter(func_db=func_db, label_db=label_db, abi_db=abi_db)
 
     def _read_func_bytes(self, start_va, end_va):
         """Read raw bytes for a function from the XBE."""
@@ -86,6 +86,10 @@ class FunctionTranslator:
         if not raw_bytes:
             return None
 
+        # Set function bounds for the lifter
+        self.lifter.func_start = start
+        self.lifter.func_end = end
+
         # Disassemble
         instructions = self.disasm.disassemble_function(raw_bytes, start, end)
         if not instructions:
@@ -115,6 +119,28 @@ class FunctionTranslator:
         used_xmm = self._find_used_xmm(instructions)
         has_prologue = self._func_has_prologue(instructions)
         has_fpu = any(insn.mnemonic.startswith("f") for insn in instructions)
+
+        # Ensure esp is declared if function uses stack operations
+        has_stack_ops = any(insn.mnemonic in ("push", "pop", "leave", "call")
+                           or (insn.mnemonic == "ret" and has_prologue)
+                           for insn in instructions)
+        if has_stack_ops:
+            used_regs.add("esp")
+
+        # Ensure ecx is declared if function calls thiscall functions
+        for insn in instructions:
+            target = insn.call_target or insn.jump_target
+            if target and target in self.abi_db:
+                callee_cc = self.abi_db[target].get("calling_convention", "")
+                if callee_cc in ("thiscall", "thiscall_cdecl"):
+                    used_regs.add("ecx")
+                    break
+
+        # Ensure edx/eax declared for implicit-operand instructions
+        for insn in instructions:
+            if insn.mnemonic in ("cdq", "div", "idiv", "mul"):
+                used_regs.add("edx")
+                used_regs.add("eax")
 
         # Build call targets list
         call_targets = set()
@@ -171,16 +197,35 @@ class FunctionTranslator:
         if reg_decls:
             lines.append(f"    uint32_t {', '.join(reg_decls)};")
 
+        # Add _flags variable if function has conditional instructions
+        has_conditionals = any(
+            insn.is_cond_jump or insn.mnemonic.startswith("set")
+            or insn.mnemonic.startswith("cmov")
+            for insn in instructions)
+        if has_conditionals:
+            lines.append(f"    int _flags = 0; /* fallback flag var */")
+
+        # Add _cf for carry-dependent instructions (sbb, adc)
+        has_carry = any(insn.mnemonic in ("sbb", "adc")
+                        for insn in instructions)
+        if has_carry:
+            lines.append(f"    int _cf = 0; /* carry flag */")
+
         # Map parameters to registers/stack locations
         if is_thiscall:
             lines.append(f"    ecx = (uint32_t)(uintptr_t)this_ptr;")
         if num_params > 0:
             lines.append(f"    /* Parameters: {', '.join(f'a{i+1}' for i in range(num_params))} */")
 
-        # SSE register declarations
+        # SSE/MMX register declarations
         if used_xmm:
-            xmm_decls = sorted(used_xmm)
-            lines.append(f"    float {', '.join(xmm_decls)};")
+            xmm_regs = sorted([r for r in used_xmm if r.startswith("xmm")])
+            mmx_regs = sorted([r for r in used_xmm if r.startswith("mm")
+                               and not r.startswith("xmm")])
+            if xmm_regs:
+                lines.append(f"    float {', '.join(xmm_regs)};")
+            if mmx_regs:
+                lines.append(f"    uint64_t {', '.join(mmx_regs)};")
 
         # FPU stack (simplified)
         if has_fpu:
@@ -255,13 +300,14 @@ class FunctionTranslator:
         return regs
 
     def _find_used_xmm(self, instructions):
-        """Find which XMM registers are used."""
-        xmm = set()
+        """Find which XMM and MMX registers are used."""
+        regs = set()
         for insn in instructions:
             for op in insn.operands:
-                if op.type == "reg" and op.reg and op.reg.startswith("xmm"):
-                    xmm.add(op.reg)
-        return xmm
+                if op.type == "reg" and op.reg:
+                    if op.reg.startswith("xmm") or op.reg.startswith("mm"):
+                        regs.add(op.reg)
+        return regs
 
 
 class BatchTranslator:
