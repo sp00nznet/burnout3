@@ -884,6 +884,9 @@ class Lifter:
             return ["/* pop: no operand */"]
         if ops[0].type == "reg":
             r = ops[0].reg
+            # Segment register pop → discard from stack
+            if r in ("fs", "gs", "cs", "ds", "es", "ss"):
+                return [f"{{ uint32_t _tmp; POP32(esp, _tmp); }} /* pop {r} - segment register */"]
             return [f"POP32(esp, {r});"]
         else:
             return [f"{{ uint32_t _tmp; POP32(esp, _tmp); {_fmt_operand_write(ops[0], '_tmp')} }}"]

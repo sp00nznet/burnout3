@@ -136,6 +136,10 @@ class FunctionTranslator:
                     used_regs.add("ecx")
                     break
 
+        # Ensure ebp declared if function uses 'leave' (implicit ebp)
+        if any(insn.mnemonic == "leave" for insn in instructions):
+            used_regs.add("ebp")
+
         # Ensure edx/eax declared for implicit-operand instructions
         for insn in instructions:
             if insn.mnemonic in ("cdq", "div", "idiv", "mul"):

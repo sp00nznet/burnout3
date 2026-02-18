@@ -40,8 +40,16 @@ def va_to_file_offset(va):
 
 
 def is_code_address(va):
-    """Check if VA is in an executable section."""
-    return TEXT_VA_START <= va < TEXT_VA_END
+    """Check if VA is in an executable section (.text or XDK library sections)."""
+    if TEXT_VA_START <= va < TEXT_VA_END:
+        return True
+    # XDK library sections also contain executable code
+    for name, sec_va, sec_size, _ in SECTIONS:
+        if name in (".text", ".rdata", ".data", ".data1"):
+            continue  # skip data sections
+        if sec_va <= va < sec_va + sec_size:
+            return True
+    return False
 
 
 def is_data_address(va):
