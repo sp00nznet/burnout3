@@ -42,6 +42,10 @@ static const struct {
 
 static void *g_memory_base = NULL;
 static size_t g_memory_size = 0;
+static ptrdiff_t g_memory_offset = 0;  /* actual_base - XBOX_BASE_ADDRESS */
+
+/* Global offset accessible by recompiled code (via recomp_types.h) */
+ptrdiff_t g_xbox_mem_offset = 0;
 
 BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
 {
@@ -63,43 +67,69 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
 
     /*
      * Reserve the entire virtual address range.
-     * MEM_RESERVE + MEM_COMMIT with PAGE_READWRITE.
-     * We request a specific base address - if this fails (e.g., ASLR
-     * placed something there), we fall back to relocation.
+     * Try the original Xbox base address first. If that fails (common on
+     * Windows 11 where low addresses are often reserved), try page-aligned
+     * addresses upward until we find a free region.
      */
-    g_memory_base = VirtualAlloc(
-        (LPVOID)(uintptr_t)XBOX_BASE_ADDRESS,
-        g_memory_size,
-        MEM_RESERVE | MEM_COMMIT,
-        PAGE_READWRITE
-    );
+    {
+        static const uintptr_t try_bases[] = {
+            XBOX_BASE_ADDRESS,      /* 0x00010000 - original Xbox address */
+            0x00800000,             /* 8 MB - above typical PEB/TEB region */
+            0x01000000,             /* 16 MB */
+            0x02000000,             /* 32 MB */
+            0x10000000,             /* 256 MB */
+            0,                      /* sentinel - let OS choose */
+        };
+
+        for (int i = 0; try_bases[i] != 0 || i == 0; i++) {
+            LPVOID hint = try_bases[i] ? (LPVOID)try_bases[i] : NULL;
+            g_memory_base = VirtualAlloc(
+                hint,
+                g_memory_size,
+                MEM_RESERVE | MEM_COMMIT,
+                PAGE_READWRITE
+            );
+            if (g_memory_base) {
+                if (try_bases[i] != 0 && (uintptr_t)g_memory_base != try_bases[i]) {
+                    /* OS gave us a different address, retry */
+                    VirtualFree(g_memory_base, 0, MEM_RELEASE);
+                    g_memory_base = NULL;
+                    continue;
+                }
+                break;
+            }
+        }
+    }
 
     if (!g_memory_base) {
-        fprintf(stderr, "xbox_MemoryLayoutInit: VirtualAlloc at 0x%08X failed (error %lu)\n",
-                XBOX_BASE_ADDRESS, GetLastError());
-        fprintf(stderr, "  The required address range may be in use.\n");
-        fprintf(stderr, "  Try running without ASLR or with a manifest disabling it.\n");
+        fprintf(stderr, "xbox_MemoryLayoutInit: failed to allocate %zu KB of virtual memory\n",
+                g_memory_size / 1024);
         return FALSE;
     }
 
-    if ((uintptr_t)g_memory_base != XBOX_BASE_ADDRESS) {
-        fprintf(stderr, "xbox_MemoryLayoutInit: VirtualAlloc returned 0x%p instead of 0x%08X\n",
-                g_memory_base, XBOX_BASE_ADDRESS);
-        VirtualFree(g_memory_base, 0, MEM_RELEASE);
-        g_memory_base = NULL;
-        return FALSE;
+    g_memory_offset = (uintptr_t)g_memory_base - XBOX_BASE_ADDRESS;
+
+    if (g_memory_offset == 0) {
+        fprintf(stderr, "xbox_MemoryLayoutInit: mapped %zu KB at 0x%08X (original Xbox address)\n",
+                g_memory_size / 1024, XBOX_BASE_ADDRESS);
+    } else {
+        fprintf(stderr, "xbox_MemoryLayoutInit: mapped %zu KB at 0x%p (offset %+td from Xbox base)\n",
+                g_memory_size / 1024, g_memory_base, g_memory_offset);
     }
 
-    fprintf(stderr, "xbox_MemoryLayoutInit: mapped %zu KB at 0x%08X\n",
-            g_memory_size / 1024, XBOX_BASE_ADDRESS);
+    /*
+     * Helper macro: convert Xbox VA to actual mapped address.
+     * When g_memory_offset == 0 (ideal case), this is identity.
+     */
+    #define XBOX_VA(va) ((void *)((uintptr_t)(va) + g_memory_offset))
 
     /*
      * Copy .rdata section from XBE.
      */
     if (RDATA_RAW_OFFSET + XBOX_RDATA_SIZE <= xbe_size) {
-        void *rdata_dest = (void *)(uintptr_t)XBOX_RDATA_VA;
-        memcpy(rdata_dest, xbe + RDATA_RAW_OFFSET, XBOX_RDATA_SIZE);
-        fprintf(stderr, "  .rdata: %u bytes at 0x%08X\n", XBOX_RDATA_SIZE, XBOX_RDATA_VA);
+        memcpy(XBOX_VA(XBOX_RDATA_VA), xbe + RDATA_RAW_OFFSET, XBOX_RDATA_SIZE);
+        fprintf(stderr, "  .rdata: %u bytes at %p (Xbox VA 0x%08X)\n",
+                XBOX_RDATA_SIZE, XBOX_VA(XBOX_RDATA_VA), XBOX_RDATA_VA);
     } else {
         fprintf(stderr, "  WARNING: .rdata raw data out of bounds\n");
     }
@@ -109,10 +139,10 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
      * BSS (the rest of .data) is already zeroed by VirtualAlloc.
      */
     if (DATA_RAW_OFFSET + XBOX_DATA_INIT_SIZE <= xbe_size) {
-        void *data_dest = (void *)(uintptr_t)XBOX_DATA_VA;
-        memcpy(data_dest, xbe + DATA_RAW_OFFSET, XBOX_DATA_INIT_SIZE);
-        fprintf(stderr, "  .data: %u bytes initialized, %u bytes BSS at 0x%08X\n",
-                XBOX_DATA_INIT_SIZE, XBOX_DATA_SIZE - XBOX_DATA_INIT_SIZE, XBOX_DATA_VA);
+        memcpy(XBOX_VA(XBOX_DATA_VA), xbe + DATA_RAW_OFFSET, XBOX_DATA_INIT_SIZE);
+        fprintf(stderr, "  .data: %u bytes initialized, %u bytes BSS at %p (Xbox VA 0x%08X)\n",
+                XBOX_DATA_INIT_SIZE, XBOX_DATA_SIZE - XBOX_DATA_INIT_SIZE,
+                XBOX_VA(XBOX_DATA_VA), XBOX_DATA_VA);
     } else {
         fprintf(stderr, "  WARNING: .data raw data out of bounds\n");
     }
@@ -122,10 +152,11 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
      */
     for (size_t i = 0; i < NUM_EXTRA_SECTIONS; i++) {
         if (g_extra_sections[i].raw_offset + g_extra_sections[i].size <= xbe_size) {
-            void *dest = (void *)(uintptr_t)g_extra_sections[i].va;
-            memcpy(dest, xbe + g_extra_sections[i].raw_offset, g_extra_sections[i].size);
-            fprintf(stderr, "  %s: %u bytes at 0x%08X\n",
-                    g_extra_sections[i].name, g_extra_sections[i].size, g_extra_sections[i].va);
+            memcpy(XBOX_VA(g_extra_sections[i].va),
+                   xbe + g_extra_sections[i].raw_offset, g_extra_sections[i].size);
+            fprintf(stderr, "  %s: %u bytes at %p (Xbox VA 0x%08X)\n",
+                    g_extra_sections[i].name, g_extra_sections[i].size,
+                    XBOX_VA(g_extra_sections[i].va), g_extra_sections[i].va);
         }
     }
 
@@ -134,11 +165,16 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
      * This helps catch accidental writes to constants early.
      */
     VirtualProtect(
-        (LPVOID)(uintptr_t)XBOX_RDATA_VA,
+        XBOX_VA(XBOX_RDATA_VA),
         XBOX_RDATA_SIZE,
         PAGE_READONLY,
         &old_protect
     );
+
+    #undef XBOX_VA
+
+    /* Set the global offset for recompiled code MEM macros */
+    g_xbox_mem_offset = g_memory_offset;
 
     fprintf(stderr, "xbox_MemoryLayoutInit: complete\n");
     return TRUE;
@@ -163,4 +199,9 @@ BOOL xbox_IsXboxAddress(uintptr_t address)
 void *xbox_GetMemoryBase(void)
 {
     return g_memory_base;
+}
+
+ptrdiff_t xbox_GetMemoryOffset(void)
+{
+    return g_memory_offset;
 }

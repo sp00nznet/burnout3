@@ -103,6 +103,13 @@ BOOL xbox_IsXboxAddress(uintptr_t address);
  */
 void *xbox_GetMemoryBase(void);
 
+/**
+ * Get the offset from Xbox VA to actual mapped address.
+ * actual_address = xbox_va + offset
+ * Returns 0 if memory is mapped at original Xbox addresses (ideal case).
+ */
+ptrdiff_t xbox_GetMemoryOffset(void);
+
 #ifdef __cplusplus
 }
 #endif

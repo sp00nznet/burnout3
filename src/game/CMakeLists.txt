@@ -9,6 +9,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 # Game executable sources
 set(GAME_SOURCES
     main.c
+    recomp/recomp_test.c
 )
 
 # Create Windows GUI application
@@ -32,6 +33,7 @@ target_link_libraries(burnout3 PRIVATE
 # Include paths
 target_include_directories(burnout3 PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/recomp
     ${CMAKE_SOURCE_DIR}/src
 )
 

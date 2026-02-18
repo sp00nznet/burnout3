@@ -332,6 +332,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         return 1;
     }
 
+    /* Run recompiled code integration tests */
+    {
+        int recomp_run_tests(void);
+        int test_result = recomp_run_tests();
+        if (test_result < 0) {
+            fprintf(stderr, "WARNING: Integration tests skipped\n");
+        } else if (test_result != 0) {
+            fprintf(stderr, "WARNING: Some integration tests failed\n");
+        }
+    }
+
     /* Run the game */
     game_loop();
 

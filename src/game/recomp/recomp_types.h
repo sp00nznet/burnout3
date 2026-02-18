@@ -26,23 +26,39 @@
 #define RECOMP_TYPES_H
 
 #include <stdint.h>
+#include <stddef.h>
 #include <string.h>
+
+/* ── Memory offset ──────────────────────────────────────── */
+
+/**
+ * Memory offset from Xbox VA to actual mapped address.
+ * When Xbox memory is mapped at the original address (0x00010000),
+ * this is 0 and the MEM macros are simple identity casts.
+ * When mapped elsewhere, this adjusts all memory accesses.
+ *
+ * Set once during xbox_MemoryLayoutInit, then read-only.
+ */
+extern ptrdiff_t g_xbox_mem_offset;
 
 /* ── Memory access helpers ──────────────────────────────── */
 
+/** Translate an Xbox VA to an actual pointer. */
+#define XBOX_PTR(addr) ((uintptr_t)(addr) + g_xbox_mem_offset)
+
 /** Read N bytes from a flat memory address. */
-#define MEM8(addr)   (*(volatile uint8_t  *)(uintptr_t)(addr))
-#define MEM16(addr)  (*(volatile uint16_t *)(uintptr_t)(addr))
-#define MEM32(addr)  (*(volatile uint32_t *)(uintptr_t)(addr))
+#define MEM8(addr)   (*(volatile uint8_t  *)XBOX_PTR(addr))
+#define MEM16(addr)  (*(volatile uint16_t *)XBOX_PTR(addr))
+#define MEM32(addr)  (*(volatile uint32_t *)XBOX_PTR(addr))
 
 /** Signed memory reads. */
-#define SMEM8(addr)  (*(volatile int8_t   *)(uintptr_t)(addr))
-#define SMEM16(addr) (*(volatile int16_t  *)(uintptr_t)(addr))
-#define SMEM32(addr) (*(volatile int32_t  *)(uintptr_t)(addr))
+#define SMEM8(addr)  (*(volatile int8_t   *)XBOX_PTR(addr))
+#define SMEM16(addr) (*(volatile int16_t  *)XBOX_PTR(addr))
+#define SMEM32(addr) (*(volatile int32_t  *)XBOX_PTR(addr))
 
 /** Float memory access. */
-#define MEMF(addr)   (*(volatile float    *)(uintptr_t)(addr))
-#define MEMD(addr)   (*(volatile double   *)(uintptr_t)(addr))
+#define MEMF(addr)   (*(volatile float    *)XBOX_PTR(addr))
+#define MEMD(addr)   (*(volatile double   *)XBOX_PTR(addr))
 
 /* ── Flag computation helpers ───────────────────────────── */
 

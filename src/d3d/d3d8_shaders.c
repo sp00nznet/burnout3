@@ -96,16 +96,16 @@ static const char g_ps_source[] =
     "    \n"
     "    // Alpha test\n"
     "    if (Flags & 2u) {\n"
-    "        bool pass = true;\n"
-    "        if (AlphaFunc == 1u) pass = false;\n"            /* NEVER */
-    "        else if (AlphaFunc == 2u) pass = (result.a < AlphaRef);\n"  /* LESS */
-    "        else if (AlphaFunc == 3u) pass = (result.a == AlphaRef);\n" /* EQUAL */
-    "        else if (AlphaFunc == 4u) pass = (result.a <= AlphaRef);\n" /* LESSEQUAL */
-    "        else if (AlphaFunc == 5u) pass = (result.a > AlphaRef);\n"  /* GREATER */
-    "        else if (AlphaFunc == 6u) pass = (result.a != AlphaRef);\n" /* NOTEQUAL */
-    "        else if (AlphaFunc == 7u) pass = (result.a >= AlphaRef);\n" /* GREATEREQUAL */
-    "        // AlphaFunc 8 = ALWAYS → pass stays true\n"
-    "        if (!pass) discard;\n"
+    "        bool alphaOk = true;\n"
+    "        if (AlphaFunc == 1u) alphaOk = false;\n"            /* NEVER */
+    "        else if (AlphaFunc == 2u) alphaOk = (result.a < AlphaRef);\n"  /* LESS */
+    "        else if (AlphaFunc == 3u) alphaOk = (result.a == AlphaRef);\n" /* EQUAL */
+    "        else if (AlphaFunc == 4u) alphaOk = (result.a <= AlphaRef);\n" /* LESSEQUAL */
+    "        else if (AlphaFunc == 5u) alphaOk = (result.a > AlphaRef);\n"  /* GREATER */
+    "        else if (AlphaFunc == 6u) alphaOk = (result.a != AlphaRef);\n" /* NOTEQUAL */
+    "        else if (AlphaFunc == 7u) alphaOk = (result.a >= AlphaRef);\n" /* GREATEREQUAL */
+    "        // AlphaFunc 8 = ALWAYS - alphaOk stays true\n"
+    "        if (!alphaOk) discard;\n"
     "    }\n"
     "    \n"
     "    return result;\n"
