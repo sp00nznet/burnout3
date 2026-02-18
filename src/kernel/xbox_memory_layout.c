@@ -47,6 +47,9 @@ static ptrdiff_t g_memory_offset = 0;  /* actual_base - XBOX_BASE_ADDRESS */
 /* Global offset accessible by recompiled code (via recomp_types.h) */
 ptrdiff_t g_xbox_mem_offset = 0;
 
+/* Initial ESP for recompiled code (set during memory layout init) */
+uint32_t g_xbox_initial_esp = 0;
+
 BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
 {
     DWORD old_protect;
@@ -62,7 +65,7 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
      * From XBOX_BASE_ADDRESS to the end of the furthest section.
      * The furthest is .data1 at 0x00774000 + 224 = 0x007740E0.
      */
-    DWORD map_end = 0x007740E0;  /* Past end of .data1 */
+    DWORD map_end = XBOX_STACK_BASE + XBOX_STACK_SIZE;  /* Include stack area */
     g_memory_size = map_end - XBOX_BASE_ADDRESS;
 
     /*
@@ -124,6 +127,27 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
     #define XBOX_VA(va) ((void *)((uintptr_t)(va) + g_memory_offset))
 
     /*
+     * Copy XBE header to base address.
+     * The Xbox kernel maps the XBE image header at 0x00010000.
+     * Game code reads kernel thunk table, certificate data, and
+     * section info from this region.
+     */
+    {
+        /* XBE header size is at file offset 0x0108 (SizeOfImageHeader) */
+        DWORD header_size = 0;
+        if (xbe_size >= 0x10C) {
+            header_size = *(const DWORD *)(xbe + 0x0108);
+        }
+        if (header_size == 0 || header_size > 0x10000)
+            header_size = 0x1000;  /* fallback: 4KB */
+        if (header_size > xbe_size)
+            header_size = (DWORD)xbe_size;
+        memcpy(XBOX_VA(XBOX_BASE_ADDRESS), xbe, header_size);
+        fprintf(stderr, "  XBE header: %u bytes at %p (Xbox VA 0x%08X)\n",
+                header_size, XBOX_VA(XBOX_BASE_ADDRESS), XBOX_BASE_ADDRESS);
+    }
+
+    /*
      * Copy .rdata section from XBE.
      */
     if (RDATA_RAW_OFFSET + XBOX_RDATA_SIZE <= xbe_size) {
@@ -175,6 +199,15 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
 
     /* Set the global offset for recompiled code MEM macros */
     g_xbox_mem_offset = g_memory_offset;
+
+    /*
+     * Initialize the Xbox stack for recompiled code.
+     * The stack area lives at XBOX_STACK_BASE in Xbox address space.
+     * Each translated function initializes its local esp from g_xbox_initial_esp.
+     */
+    g_xbox_initial_esp = XBOX_STACK_TOP;
+    fprintf(stderr, "  Stack: %u KB at Xbox VA 0x%08X (ESP = 0x%08X)\n",
+            XBOX_STACK_SIZE / 1024, XBOX_STACK_BASE, g_xbox_initial_esp);
 
     fprintf(stderr, "xbox_MemoryLayoutInit: complete\n");
     return TRUE;

@@ -29,6 +29,9 @@
 #include "../audio/dsound_xbox.h"
 #include "../input/xinput_xbox.h"
 
+/* Recompiled code */
+#include "recomp/gen/recomp_funcs.h"
+
 /* ── Configuration ──────────────────────────────────────────── */
 
 /* Default path to the original XBE file */
@@ -343,7 +346,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         }
     }
 
-    /* Run the game */
+    /* Call the recompiled game entry point with crash protection */
+    fprintf(stderr, "\n=== Calling xbe_entry_point (0x001D2807) ===\n");
+    __try {
+        xbe_entry_point();
+        fprintf(stderr, "xbe_entry_point returned normally\n");
+    } __except(EXCEPTION_EXECUTE_HANDLER) {
+        DWORD code = GetExceptionCode();
+        fprintf(stderr, "CRASH in xbe_entry_point: exception 0x%08lX\n", code);
+        switch (code) {
+        case EXCEPTION_ACCESS_VIOLATION:
+            fprintf(stderr, "  Access violation (bad memory read/write)\n");
+            break;
+        case EXCEPTION_STACK_OVERFLOW:
+            fprintf(stderr, "  Stack overflow (infinite recursion?)\n");
+            break;
+        case EXCEPTION_INT_DIVIDE_BY_ZERO:
+            fprintf(stderr, "  Integer divide by zero\n");
+            break;
+        case EXCEPTION_ILLEGAL_INSTRUCTION:
+            fprintf(stderr, "  Illegal instruction (tried to execute Xbox code VA as native?)\n");
+            break;
+        default:
+            fprintf(stderr, "  Exception code: 0x%08lX\n", code);
+            break;
+        }
+    }
+
+    /* Run the game window loop */
     game_loop();
 
     /* Clean up */

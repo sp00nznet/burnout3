@@ -224,6 +224,22 @@ class FunctionTranslator:
         if has_fpu_cmp:
             lines.append(f"    int _fpu_cmp = 0; /* FPU compare result: -1/0/1 */")
 
+        # Initialize esp and set up call frame with parameters on the stack.
+        # In x86 cdecl, the caller pushes args right-to-left then CALL pushes
+        # the return address. At function entry:
+        #   [esp+0] = return addr, [esp+4] = a1, [esp+8] = a2, ...
+        # For EBP-frame functions (push ebp; mov ebp, esp):
+        #   [ebp+4] = return addr, [ebp+8] = a1, [ebp+0xC] = a2, ...
+        if "esp" in used_regs:
+            lines.append(f"    esp = g_xbox_initial_esp;")
+            # Place params on the stack so [esp+4] = a1, [esp+8] = a2, etc.
+            total_frame = (num_params + 1) * 4  # return addr + params
+            if total_frame > 0:
+                lines.append(f"    esp -= {total_frame}; /* call frame */")
+                lines.append(f"    MEM32(esp) = 0; /* return address */")
+                for i in range(num_params):
+                    lines.append(f"    MEM32(esp + {4 + i*4}) = a{i+1};")
+
         # Map parameters to registers/stack locations
         if is_thiscall:
             lines.append(f"    ecx = (uint32_t)(uintptr_t)this_ptr;")

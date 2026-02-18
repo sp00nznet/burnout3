@@ -1073,7 +1073,7 @@ class Lifter:
             return [f"{name}({args}); /* call 0x{insn.call_target:08X} */"]
         elif len(ops) >= 1:
             target = _fmt_operand_read(ops[0])
-            return [f"((void (*)(void))(uintptr_t){target})(); /* indirect call */"]
+            return [f"RECOMP_ICALL({target}); /* indirect call */"]
         return ["/* call: no target */"]
 
     def _lift_ret(self, insn, ops):
@@ -1096,7 +1096,7 @@ class Lifter:
             return [f"goto loc_{insn.jump_target:08X};"]
         elif len(ops) >= 1:
             target = _fmt_operand_read(ops[0])
-            return [f"((void (*)(void))(uintptr_t){target})(); return; /* indirect tail jmp */"]
+            return [f"RECOMP_ICALL({target}); return; /* indirect tail jmp */"]
         return ["/* jmp: no target */"]
 
     def _lift_jcc(self, insn):

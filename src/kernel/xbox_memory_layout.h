@@ -110,6 +110,19 @@ void *xbox_GetMemoryBase(void);
  */
 ptrdiff_t xbox_GetMemoryOffset(void);
 
+/* ================================================================
+ * Xbox stack for recompiled code
+ * ================================================================ */
+
+/** Size of the simulated Xbox stack (1 MB). */
+#define XBOX_STACK_SIZE     (1 * 1024 * 1024)
+
+/** Base VA of the stack area (above last XBE section). */
+#define XBOX_STACK_BASE     0x00780000
+
+/** Initial ESP value (top of stack, 16-byte aligned). */
+#define XBOX_STACK_TOP      (XBOX_STACK_BASE + XBOX_STACK_SIZE - 16)
+
 #ifdef __cplusplus
 }
 #endif
