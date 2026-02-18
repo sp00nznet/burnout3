@@ -82,6 +82,11 @@ def main():
                         help="List categories and exit")
     parser.add_argument("--header", action="store_true",
                         help="Generate C header file")
+    parser.add_argument("--split", type=int, metavar="N",
+                        help="Split output into files of N functions each")
+    parser.add_argument("--gen-dir",
+                        help="Output dir for split generated files "
+                             "(default: src/game/recomp/gen)")
 
     args = parser.parse_args()
 
@@ -167,17 +172,44 @@ def main():
 
     print(f"\nTranslating {len(funcs)} functions...", file=sys.stderr)
 
-    stats = translator.translate_batch(
-        funcs,
-        max_funcs=args.max_funcs,
-        verbose=args.verbose,
-    )
+    if args.split:
+        # Split output mode: multiple .c files + header + dispatch table
+        gen_dir = args.gen_dir or os.path.join(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+            "src", "game", "recomp", "gen")
 
-    t_translate = time.time() - t0
+        if args.max_funcs:
+            funcs = funcs[:args.max_funcs]
 
-    print(f"\n=== Translation Complete ({t_translate:.1f}s) ===",
-          file=sys.stderr)
-    print_stats(stats)
+        stats = translator.translate_batch_split(
+            funcs,
+            output_dir=gen_dir,
+            chunk_size=args.split,
+            verbose=args.verbose,
+        )
+
+        t_translate = time.time() - t0
+        print(f"\n=== Split Translation Complete ({t_translate:.1f}s) ===",
+              file=sys.stderr)
+        print(f"{stats['translated']}/{stats['total']} functions "
+              f"({stats['failed']} failed), "
+              f"{stats['total_lines']} lines of C, "
+              f"{stats['num_chunks']} source files",
+              file=sys.stderr)
+        for f_path in stats.get("files", []):
+            print(f"  {f_path}", file=sys.stderr)
+    else:
+        stats = translator.translate_batch(
+            funcs,
+            max_funcs=args.max_funcs,
+            verbose=args.verbose,
+        )
+
+        t_translate = time.time() - t0
+
+        print(f"\n=== Translation Complete ({t_translate:.1f}s) ===",
+              file=sys.stderr)
+        print_stats(stats)
 
     # Write summary
     output_dir = args.output_dir or os.path.join(

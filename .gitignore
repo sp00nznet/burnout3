@@ -61,6 +61,9 @@ tools/asset_tools/output/
 # Recompiler generated output (regenerate with: py -3 -m tools.recomp)
 tools/recomp/output/
 
+# Generated recompiled source (regenerate with: py -3 -m tools.recomp ... --split 1000)
+src/game/recomp/gen/
+
 # Claude Code auto memory
 .claude/
 

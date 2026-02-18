@@ -11,6 +11,7 @@
  */
 
 #include "recomp_types.h"
+#include "recomp_dispatch.h"
 #include "../../kernel/xbox_memory_layout.h"
 #include <stdio.h>
 
@@ -213,6 +214,150 @@ static int test_stack_simulation(void)
     return pass;
 }
 
+/* ── Test: Call actual translated function (float copy) ────
+ *
+ * Calls sub_002575A0 which does:
+ *   xmm0 = MEMF(0x3B191C);  // read from .rdata
+ *   MEMF(0x4D53CC) = xmm0;  // write to .data BSS
+ */
+extern void sub_002575A0(void);
+
+static int test_call_translated_float_copy(void)
+{
+    float src_val, dst_val;
+
+    /* Read the source value from .rdata */
+    src_val = MEMF(0x3B191C);
+
+    /* Clear destination */
+    MEMF(0x4D53CC) = 0.0f;
+
+    /* Call the ACTUAL translated function */
+    sub_002575A0();
+
+    /* Verify destination was written */
+    dst_val = MEMF(0x4D53CC);
+    if (dst_val == src_val) {
+        fprintf(stderr, "  PASS: translated sub_002575A0 (float copy: %f)\n", dst_val);
+        return 1;
+    } else {
+        fprintf(stderr, "  FAIL: translated sub_002575A0 (expected %f, got %f)\n",
+                src_val, dst_val);
+        return 0;
+    }
+}
+
+/* ── Test: Call translated function (float chain: subtract) ──
+ *
+ * Calls sub_00257720 which does:
+ *   xmm0 = MEMF(0x4D53F8);          // read from .data
+ *   xmm0 = xmm0 - MEMF(0x3A7964);  // subtract .rdata constant
+ *   MEMF(0x4D5408) = xmm0;          // write result to .data
+ */
+extern void sub_00257720(void);
+
+static int test_call_translated_float_chain(void)
+{
+    float input_val, sub_val, expected, result;
+
+    /* Set up a known input value in .data */
+    MEMF(0x4D53F8) = 100.0f;
+
+    /* Read the .rdata subtract constant */
+    sub_val = MEMF(0x3A7964);
+
+    /* Clear destination */
+    MEMF(0x4D5408) = 0.0f;
+
+    /* Call the ACTUAL translated function */
+    sub_00257720();
+
+    /* Verify: result should be 100.0 - sub_val */
+    input_val = 100.0f;
+    expected = input_val - sub_val;
+    result = MEMF(0x4D5408);
+
+    if (result == expected) {
+        fprintf(stderr, "  PASS: translated sub_00257720 (100.0 - %f = %f)\n",
+                sub_val, result);
+        return 1;
+    } else {
+        fprintf(stderr, "  FAIL: translated sub_00257720 (expected %f, got %f)\n",
+                expected, result);
+        return 0;
+    }
+}
+
+/* ── Test: Dispatch table lookup ──────────────────────────
+ *
+ * Verify that recomp_lookup() can find translated functions
+ * by their original Xbox virtual address.
+ */
+static int test_dispatch_lookup(void)
+{
+    recomp_func_t func;
+    size_t count;
+    int pass = 1;
+
+    count = recomp_get_count();
+    if (count == 0) {
+        fprintf(stderr, "  FAIL: dispatch table is empty\n");
+        return 0;
+    }
+
+    /* Look up sub_002575A0 */
+    func = recomp_lookup(0x002575A0);
+    if (!func) {
+        fprintf(stderr, "  FAIL: recomp_lookup(0x002575A0) returned NULL\n");
+        pass = 0;
+    } else if (func != (recomp_func_t)sub_002575A0) {
+        fprintf(stderr, "  FAIL: recomp_lookup(0x002575A0) returned wrong pointer\n");
+        pass = 0;
+    }
+
+    /* Look up a non-existent address */
+    func = recomp_lookup(0x00000001);
+    if (func != NULL) {
+        fprintf(stderr, "  FAIL: recomp_lookup(0x00000001) should be NULL\n");
+        pass = 0;
+    }
+
+    if (pass)
+        fprintf(stderr, "  PASS: dispatch table (%zu functions registered)\n", count);
+    return pass;
+}
+
+/* ── Test: Bulk-execute ALL data_init functions ────────────
+ *
+ * Call all 13,868 translated data_init functions and verify
+ * they don't crash. This is the ultimate pipeline test.
+ */
+
+/* Defined in recomp_dispatch.c - we need direct table access for bulk test */
+extern size_t recomp_call_all(void);
+
+static int test_bulk_data_init(void)
+{
+    size_t count = recomp_get_count();
+    size_t called;
+
+    if (count == 0) {
+        fprintf(stderr, "  FAIL: no functions in dispatch table\n");
+        return 0;
+    }
+
+    called = recomp_call_all();
+
+    if (called == count) {
+        fprintf(stderr, "  PASS: executed all %zu translated functions without crash\n",
+                called);
+        return 1;
+    } else {
+        fprintf(stderr, "  FAIL: only called %zu of %zu functions\n", called, count);
+        return 0;
+    }
+}
+
 /* ── Test runner ────────────────────────────────────────── */
 
 int recomp_run_tests(void)
@@ -228,12 +373,19 @@ int recomp_run_tests(void)
         return -1;
     }
 
+    /* Core macro tests */
     total++; passed += test_integer_globals();
     total++; passed += test_byte_word_access();
     total++; passed += test_register_macros();
     total++; passed += test_comparison_macros();
     total++; passed += test_stack_simulation();
     total++; passed += test_rdata_to_data_copy();
+
+    /* Translated function execution tests */
+    total++; passed += test_call_translated_float_copy();
+    total++; passed += test_call_translated_float_chain();
+    total++; passed += test_dispatch_lookup();
+    total++; passed += test_bulk_data_init();
 
     fprintf(stderr, "\n=== Results: %d/%d tests passed ===\n\n", passed, total);
     return (passed == total) ? 0 : 1;
