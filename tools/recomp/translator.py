@@ -275,6 +275,24 @@ class FunctionTranslator:
 
             lines.append(f"")
 
+        # Validate: comment out goto targets that reference missing labels
+        # (dead code after unconditional jumps may reference non-existent labels)
+        import re
+        defined_labels = set()
+        goto_lines = []
+        for idx, line in enumerate(lines):
+            lbl_match = re.match(r'^(loc_[0-9A-Fa-f]+):', line)
+            if lbl_match:
+                defined_labels.add(lbl_match.group(1))
+            goto_match = re.search(r'goto (loc_[0-9A-Fa-f]+);', line)
+            if goto_match:
+                goto_lines.append((idx, goto_match.group(1)))
+        for idx, target in goto_lines:
+            if target not in defined_labels:
+                lines[idx] = lines[idx].replace(
+                    f"goto {target};",
+                    f"(void)0; /* goto {target} - dead code, label not in function */")
+
         # Undefine FPU macros
         if has_fpu:
             lines.append(f"    #undef fp_push")

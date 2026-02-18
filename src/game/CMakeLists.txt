@@ -54,7 +54,7 @@ if(MSVC)
     )
     # Reduce warning noise on generated code
     set_source_files_properties(${RECOMP_GEN_SOURCES} PROPERTIES
-        COMPILE_FLAGS "/W1"
+        COMPILE_FLAGS "/w"
     )
     target_compile_definitions(burnout3 PRIVATE
         _CRT_SECURE_NO_WARNINGS
