@@ -187,11 +187,87 @@ COND_MAP = {
     "jcxz":  (None,      None,      "cx is zero"),
 }
 
-# Instructions that set arithmetic flags
+# Instructions that set arithmetic flags (primary set, fully handled)
 FLAG_SETTERS = frozenset({
     "cmp", "test", "sub", "add", "and", "or", "xor",
     "inc", "dec", "neg", "shl", "shr", "sar", "imul", "adc", "sbb",
     "comiss", "comisd", "ucomiss", "ucomisd",  # SSE float compare
+})
+
+# Additional instructions that modify EFLAGS (tracked but handled as generic)
+_EFLAGS_SETTERS = frozenset({
+    "shld", "shrd", "rol", "ror", "rcl", "rcr",  # Shifts/rotates set CF
+    "bsf", "bsr",       # Bit scan sets ZF
+    "bt", "bts", "btr", "btc",  # Bit test sets CF
+    "cmpxchg",           # Compare-and-exchange sets ZF
+    "xadd",              # Exchange-and-add sets flags
+})
+
+# Instructions with undefined/unpredictable flags (clear tracking)
+_FLAGS_UNDEFINED = frozenset({
+    "mul", "div", "idiv",  # Flags partially undefined
+    "rdtsc", "cpuid",      # Special instructions
+    "lock xadd",           # Lock prefix - complex flag behavior
+})
+
+# Instructions that do NOT modify EFLAGS (preserve flag tracking)
+_EFLAGS_PRESERVE = frozenset({
+    # General-purpose data movement / stack
+    "mov", "lea", "push", "pop", "nop", "leave", "ret",
+    "movzx", "movsx", "xchg", "bswap",
+    "cdq", "cwde", "cbw", "cwd",
+    "lahf",
+    "not",  # NOT does not modify flags
+    "call",
+    "int3", "int", "wait",
+    "cld", "std", "cli", "sti",
+    "pushfd", "popfd", "pushal",
+    "sgdt", "ljmp", "sfence",
+    # SSE scalar float
+    "movss", "movsd",
+    "addss", "subss", "mulss", "divss",
+    "minss", "maxss", "sqrtss", "rsqrtss", "rcpss",
+    "addsd", "subsd", "mulsd", "divsd",
+    "minsd", "maxsd", "sqrtsd",
+    "cvtsi2ss", "cvtss2si", "cvttss2si",
+    "cvtsi2sd", "cvtsd2si", "cvttsd2si",
+    "cvtss2sd", "cvtsd2ss",
+    "cmpss", "cmpsd",
+    "cmpltss", "cmpeqss", "cmpleps", "cmpneqss",
+    # SSE packed float
+    "movaps", "movups", "movlps", "movhps", "movlhps", "movhlps",
+    "addps", "subps", "mulps", "divps",
+    "minps", "maxps", "sqrtps", "rsqrtps", "rcpps",
+    "shufps", "unpcklps", "unpckhps",
+    "andps", "orps", "xorps", "andnps",
+    "cmpps", "cmpneqps",
+    "movmskps",
+    # SSE2 packed double
+    "movapd", "movupd",
+    "addpd", "subpd", "mulpd", "divpd",
+    # SSE/MMX integer
+    "movd", "movq", "movntq",
+    "emms",
+    "paddb", "paddw", "paddd", "paddq",
+    "psubb", "psubw", "psubd",
+    "pmullw", "pmulhw", "pmulhuw", "pmaddwd",
+    "pand", "pandn", "por", "pxor",
+    "pcmpeqb", "pcmpeqw", "pcmpeqd",
+    "pcmpgtb", "pcmpgtw", "pcmpgtd",
+    "psllw", "pslld", "psllq",
+    "psrlw", "psrld", "psrlq",
+    "psraw", "psrad",
+    "pshufw", "pshufd", "pshufhw", "pshuflw",
+    "punpcklbw", "punpcklwd", "punpckldq", "punpcklqdq",
+    "punpckhbw", "punpckhwd", "punpckhdq", "punpckhqdq",
+    "packsswb", "packssdw", "packuswb",
+    "pmovmskb",
+    # String operations (without rep prefix)
+    "stosb", "stosw", "stosd",
+    "movsb", "movsw", "movsd",
+    "lodsb", "lodsw", "lodsd",
+    # Prefetch hints
+    "prefetchnta", "prefetcht0", "prefetcht1", "prefetcht2",
 })
 
 
@@ -212,6 +288,31 @@ def _make_condition(jcc, flag_setter, flag_ops):
         lhs = _fmt_operand_read(flag_ops[0])
         rhs = None
     else:
+        lhs = None
+        rhs = None
+
+    # ── FPU compare-to-EFLAGS and sahf: no standard operands ──
+    if flag_setter in ("fcompi", "fcomip", "fucomi", "fucompi",
+                        "fucomip", "fcomi", "sahf"):
+        fpu_cmp_map = {
+            "ja": ">", "jnbe": ">",
+            "jae": ">=", "jnb": ">=", "jnc": ">=",
+            "jb": "<", "jnae": "<", "jc": "<",
+            "jbe": "<=", "jna": "<=",
+            "je": "==", "jz": "==",
+            "jne": "!=", "jnz": "!=",
+        }
+        op = fpu_cmp_map.get(jcc)
+        if op:
+            return f"(_fpu_cmp {op} 0) /* {flag_setter} */", desc
+        if jcc == "jp":
+            return "0 /* fpu: unordered/NaN */", desc
+        if jcc == "jnp":
+            return "1 /* fpu: ordered */", desc
+        return None
+
+    # If no operands available for other flag-setters, can't generate condition
+    if lhs is None:
         return None
 
     # ── comiss/ucomiss: float comparison, sets CF/ZF/PF ──
@@ -263,6 +364,14 @@ def _make_condition(jcc, flag_setter, flag_ops):
             return f"{test_macro}({lhs}, {rhs})", desc
         if cmp_macro:
             return f"{cmp_macro}({lhs} & {rhs}, 0)", desc
+        if jcc == "js":
+            return f"((int32_t)({lhs} & {rhs}) < 0)", desc
+        if jcc == "jns":
+            return f"((int32_t)({lhs} & {rhs}) >= 0)", desc
+        if jcc == "jo":
+            return "0", desc  # OF=0 after test
+        if jcc == "jno":
+            return "1", desc
         if jcc in ("jp", "jnp"):
             return f"1 /* {jcc} after test - parity */", desc
         return None
@@ -284,6 +393,14 @@ def _make_condition(jcc, flag_setter, flag_ops):
             return f"((uint32_t){lhs} + (uint32_t){rhs} < (uint32_t){rhs})", desc
         if jcc in ("jae", "jnb"):
             return f"((uint32_t){lhs} + (uint32_t){rhs} >= (uint32_t){rhs})", desc
+        if jcc in ("jl", "jnge"):
+            return f"((int32_t){lhs} < 0)", desc
+        if jcc in ("jge", "jnl"):
+            return f"((int32_t){lhs} >= 0)", desc
+        if jcc in ("jle", "jng"):
+            return f"((int32_t){lhs} <= 0)", desc
+        if jcc in ("jg", "jnle"):
+            return f"((int32_t){lhs} > 0)", desc
         return None
 
     # ── add: a = a + b, flags from result ──
@@ -300,6 +417,26 @@ def _make_condition(jcc, flag_setter, flag_ops):
             return f"({lhs} < (uint32_t){rhs})", desc
         if jcc in ("jae", "jnb", "jnc"):
             return f"({lhs} >= (uint32_t){rhs})", desc
+        if jcc in ("jl", "jnge"):
+            return f"((int32_t){lhs} < 0)", desc
+        if jcc in ("jge", "jnl"):
+            return f"((int32_t){lhs} >= 0)", desc
+        if jcc in ("jle", "jng"):
+            return f"((int32_t){lhs} <= 0)", desc
+        if jcc in ("jg", "jnle"):
+            return f"((int32_t){lhs} > 0)", desc
+        return None
+
+    # ── adc/sbb: result-based (like add/sub but with carry) ──
+    if flag_setter in ("adc", "sbb"):
+        if jcc in ("je", "jz"):
+            return f"({lhs} == 0)", desc
+        if jcc in ("jne", "jnz"):
+            return f"({lhs} != 0)", desc
+        if jcc == "js":
+            return f"((int32_t){lhs} < 0)", desc
+        if jcc == "jns":
+            return f"((int32_t){lhs} >= 0)", desc
         return None
 
     # ── and/or/xor: result-based, CF=0, OF=0 ──
@@ -347,6 +484,20 @@ def _make_condition(jcc, flag_setter, flag_ops):
         if jcc in ("jb", "jnae", "jc"):
             # CF=1 unless original was 0
             return f"({lhs} != 0)", desc
+        if jcc in ("jae", "jnb", "jnc"):
+            return f"({lhs} == 0)", desc
+        if jcc == "js":
+            return f"((int32_t){lhs} < 0)", desc
+        if jcc == "jns":
+            return f"((int32_t){lhs} >= 0)", desc
+        if jcc in ("jg", "jnle"):
+            return f"((int32_t){lhs} > 0)", desc
+        if jcc in ("jge", "jnl"):
+            return f"((int32_t){lhs} >= 0)", desc
+        if jcc in ("jl", "jnge"):
+            return f"((int32_t){lhs} < 0)", desc
+        if jcc in ("jle", "jng"):
+            return f"((int32_t){lhs} <= 0)", desc
         return None
 
     # ── shift: result-based ──
@@ -359,6 +510,67 @@ def _make_condition(jcc, flag_setter, flag_ops):
             return f"((int32_t){lhs} < 0)", desc
         if jcc == "jns":
             return f"((int32_t){lhs} >= 0)", desc
+        return None
+
+    # ── shld/shrd: double-precision shift, result-based ──
+    if flag_setter in ("shld", "shrd"):
+        if jcc in ("je", "jz"):
+            return f"({lhs} == 0)", desc
+        if jcc in ("jne", "jnz"):
+            return f"({lhs} != 0)", desc
+        if jcc == "js":
+            return f"((int32_t){lhs} < 0)", desc
+        if jcc == "jns":
+            return f"((int32_t){lhs} >= 0)", desc
+        return None
+
+    # ── rol/ror/rcl/rcr: rotation, only CF/OF affected ──
+    if flag_setter in ("rol", "ror", "rcl", "rcr"):
+        # ZF/SF not modified by rotations - can't resolve most conditions
+        return None
+
+    # ── bsf/bsr: bit scan, ZF set if source is zero ──
+    if flag_setter in ("bsf", "bsr"):
+        if rhs is None:
+            return None
+        if jcc in ("je", "jz"):
+            return f"({rhs} == 0)", desc
+        if jcc in ("jne", "jnz"):
+            return f"({rhs} != 0)", desc
+        return None
+
+    # ── bt/bts/btr/btc: bit test, sets CF ──
+    if flag_setter in ("bt", "bts", "btr", "btc"):
+        if rhs is None:
+            return None
+        if jcc in ("jb", "jnae", "jc"):
+            return f"(({lhs} >> ({rhs} & 31)) & 1)", desc
+        if jcc in ("jae", "jnb", "jnc"):
+            return f"!(({lhs} >> ({rhs} & 31)) & 1)", desc
+        return None
+
+    # ── cmpxchg: compares accumulator with dest, sets ZF on match ──
+    if flag_setter == "cmpxchg":
+        if jcc in ("je", "jz"):
+            return f"({lhs} == eax)", desc
+        if jcc in ("jne", "jnz"):
+            return f"({lhs} != eax)", desc
+        return None
+
+    # ── xadd: exchange and add, flags from addition ──
+    if flag_setter == "xadd":
+        if jcc in ("je", "jz"):
+            return f"({lhs} == 0)", desc
+        if jcc in ("jne", "jnz"):
+            return f"({lhs} != 0)", desc
+        return None
+
+    # ── repe cmpsb / repne scasb: string comparison ──
+    if "cmps" in flag_setter or "scas" in flag_setter:
+        if jcc in ("je", "jz"):
+            return "1 /* strings matched (repe cmpsb) */", desc
+        if jcc in ("jne", "jnz"):
+            return "0 /* strings differed (repe cmpsb) */", desc
         return None
 
     return None
@@ -1188,7 +1400,16 @@ class Lifter:
         if m == "fxch":
             return [f"{{ double _t = fp_top(); fp_top() = fp_st1(); fp_st1() = _t; }} /* fxch */"]
         if m in ("fcom", "fcomp", "fcompp", "fucom", "fucomp", "fucompp"):
-            return [f"/* {m} {insn.op_str} - FPU compare, sets FPU flags */"]
+            # Set _fpu_cmp for the fcomp/fnstsw/sahf pattern
+            return [f"_fpu_cmp = (fp_top() < fp_st1()) ? -1 : (fp_top() > fp_st1()) ? 1 : 0;"
+                    f" /* {m} {insn.op_str} */"]
+        if m in ("fcompi", "fcomip", "fucomi", "fucompi", "fucomip", "fcomi"):
+            # These set EFLAGS directly (CF, ZF, PF) from FPU comparison
+            # fcompi/fucompi pop st(0) after comparing; fcomi/fucomi do not
+            pops = m.endswith("pi") or m.endswith("ip")
+            pop_code = " fp_pop();" if pops else ""
+            return [f"_fpu_cmp = (fp_top() < fp_st1()) ? -1 : (fp_top() > fp_st1()) ? 1 : 0;"
+                    f"{pop_code} /* {m} */"]
         if m == "fnstsw":
             return [f"/* fnstsw {insn.op_str} - store FPU status word */"]
         if m == "fnstcw":
@@ -1203,19 +1424,31 @@ class Lifter:
         return [f"/* FPU: {m} {insn.op_str} */"]
 
 
-def lift_basic_block(lifter, bb):
+def lift_basic_block(lifter, bb, flag_state=None):
     """
     Lift a basic block to C statements.
     Tracks flags to generate proper conditions for jcc/setcc/cmovcc.
-    Returns list of C statement strings.
+
+    Args:
+        lifter: Lifter instance
+        bb: BasicBlock with instructions
+        flag_state: tuple of (flag_setter_mnemonic, flag_operands) from
+                    a preceding block, or None
+
+    Returns:
+        (stmts, flag_state) where stmts is a list of C statement strings
+        and flag_state is a tuple for passing to the next block.
     """
     stmts = []
     insns = bb.instructions
     i = 0
 
     # Track the last instruction that set flags
-    last_flag_setter = None  # mnemonic
-    last_flag_ops = []       # operands of the flag-setting instruction
+    if flag_state:
+        last_flag_setter, last_flag_ops = flag_state
+    else:
+        last_flag_setter = None
+        last_flag_ops = []
 
     while i < len(insns):
         curr = insns[i]
@@ -1225,8 +1458,11 @@ def lift_basic_block(lifter, bb):
         if match:
             stmt, consumed = match
             stmts.append(stmt)
-            last_flag_setter = None
-            last_flag_ops = []
+            # Preserve the flag-setter from the cmp/test since jcc
+            # doesn't modify flags - subsequent jcc can reuse them
+            flag_insn = insns[i]
+            last_flag_setter = flag_insn.mnemonic
+            last_flag_ops = list(flag_insn.operands)
             i += consumed
             continue
 
@@ -1287,12 +1523,26 @@ def lift_basic_block(lifter, bb):
         if curr.mnemonic in FLAG_SETTERS:
             last_flag_setter = curr.mnemonic
             last_flag_ops = list(curr.operands)
-        elif curr.mnemonic in ("mov", "lea", "push", "pop", "nop",
-                                "call", "movss", "movsd", "movaps",
-                                "movups", "movd", "movq", "movzx",
-                                "movsx", "xchg", "bswap", "cdq",
-                                "cwde", "cbw", "lahf", "sahf"):
-            pass  # These don't affect flags
+        elif curr.mnemonic in _FLAGS_UNDEFINED:
+            # Flags are undefined after these - clear tracking
+            last_flag_setter = None
+            last_flag_ops = []
+        elif curr.mnemonic in _EFLAGS_SETTERS:
+            # Additional flag-setting instructions
+            last_flag_setter = curr.mnemonic
+            last_flag_ops = list(curr.operands)
+        elif curr.mnemonic in _EFLAGS_PRESERVE:
+            pass  # These don't affect EFLAGS
+        elif curr.mnemonic in ("fcompi", "fcomip", "fucomi", "fucompi",
+                                "fucomip", "fcomi"):
+            # FPU compare-to-EFLAGS: sets CF, ZF, PF directly
+            last_flag_setter = curr.mnemonic
+            last_flag_ops = list(curr.operands)
+        elif curr.mnemonic == "sahf":
+            # sahf loads AH into flags - typically after fnstsw ax
+            # in the fcomp/fnstsw/sahf pattern for FPU comparisons
+            last_flag_setter = "sahf"
+            last_flag_ops = list(curr.operands)
         elif curr.mnemonic.startswith("f") or curr.mnemonic.startswith("cmov"):
             pass  # FPU and already-handled CMOVcc
         elif curr.mnemonic.startswith("j"):
@@ -1300,8 +1550,18 @@ def lift_basic_block(lifter, bb):
         elif curr.mnemonic.startswith("set"):
             pass  # SETcc doesn't set flags
         elif curr.mnemonic.startswith("rep"):
-            last_flag_setter = None  # Rep string ops modify flags unpredictably
-            last_flag_ops = []
+            # rep movsb/movsd = data copy, preserves flags
+            # repe cmpsb/repne scasb = comparison, sets flags
+            rest = curr.op_str.strip() if hasattr(curr, 'op_str') else ""
+            raw_m = curr.mnemonic
+            if "cmps" in raw_m or "scas" in raw_m:
+                last_flag_setter = raw_m
+                last_flag_ops = list(curr.operands)
+            elif "cmps" in rest or "scas" in rest:
+                last_flag_setter = raw_m
+                last_flag_ops = list(curr.operands)
+            else:
+                pass  # rep movs/stos = data movement, flags preserved
         else:
             # Unknown instruction - conservatively clear flag state
             last_flag_setter = None
@@ -1309,4 +1569,5 @@ def lift_basic_block(lifter, bb):
 
         i += 1
 
-    return stmts
+    out_flag_state = (last_flag_setter, last_flag_ops) if last_flag_setter else None
+    return stmts, out_flag_state

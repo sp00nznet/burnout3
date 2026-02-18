@@ -211,6 +211,15 @@ class FunctionTranslator:
         if has_carry:
             lines.append(f"    int _cf = 0; /* carry flag */")
 
+        # Add _fpu_cmp for FPU compare instructions (both old and new style)
+        has_fpu_cmp = any(insn.mnemonic in ("fcompi", "fcomip", "fucomi",
+                                             "fucompi", "fucomip", "fcomi",
+                                             "fcom", "fcomp", "fcompp",
+                                             "fucom", "fucomp", "fucompp")
+                          for insn in instructions)
+        if has_fpu_cmp:
+            lines.append(f"    int _fpu_cmp = 0; /* FPU compare result: -1/0/1 */")
+
         # Map parameters to registers/stack locations
         if is_thiscall:
             lines.append(f"    ecx = (uint32_t)(uintptr_t)this_ptr;")
@@ -250,13 +259,17 @@ class FunctionTranslator:
             if insn.jump_target and start <= insn.jump_target < end:
                 label_addrs.add(insn.jump_target)
 
+        flag_state = None
         for bb in blocks:
             # Emit label if this block is a branch target
             if bb.start in label_addrs or bb.start == start:
                 lines.append(f"loc_{bb.start:08X}:")
 
-            # Lift the block
-            stmts = lift_basic_block(self.lifter, bb)
+            # Propagate flag state from previous block (fallthrough path).
+            # This handles patterns like: test eax,eax / ja X / jb Y
+            # where jb uses the same flags as ja from the preceding block.
+            stmts, flag_state = lift_basic_block(
+                self.lifter, bb, flag_state=flag_state)
             for stmt in stmts:
                 lines.append(f"    {stmt}")
 
