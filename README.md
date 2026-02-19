@@ -4,7 +4,7 @@ A project to statically recompile the original Xbox version of **Burnout 3: Take
 
 ## Project Status
 
-**Phase: Early Analysis / Toolchain Development**
+**Phase 5: Integration** - Game entry point executes full call chain and returns successfully.
 
 ## Overview
 
@@ -126,6 +126,12 @@ The main executable (`default.xbe`) contains:
 
 ### Phase 5: Integration & Testing
 - [x] Game executable scaffold (WinMain, window, subsystem init, game loop)
+- [x] 22,096 recompiled functions in dispatch table (22,095 auto + 1 manual)
+- [x] Kernel bridge: 27 per-ordinal bridges, 120 stubs (147 total thunk entries)
+- [x] Game entry point (0x001D2807) runs to completion → creates thread → calls RW init → returns
+- [x] Manual function for mid-function entry point 0x001D1818 (thread start routine)
+- [x] Fake TIB/TLS for fs:[N] references (translator drops segment prefix)
+- [x] Single-threaded critical section model (no-op CS for ABI safety)
 - [ ] D3D8 device initialization from game code
 - [ ] Asset loading and rendering pipeline
 - [ ] Input mapping (Xbox controller → PC gamepad/keyboard)
@@ -159,13 +165,25 @@ burnout3/
 
 ## Building
 
-*Build instructions will be added as the toolchain matures.*
-
 ### Prerequisites
 - Windows 11 (target platform)
-- Visual Studio 2022 or MSYS2/MinGW-w64
+- Visual Studio 2022 (MSVC 19.x)
 - Python 3.10+ (for toolchain scripts)
 - CMake 3.20+
+
+### Build Steps
+```bash
+# Configure
+cmake -S . -B build
+
+# Build (Release)
+cmake --build build --config Release
+
+# Run (requires game files in 'Burnout 3 Takedown/' folder)
+./bin/burnout3.exe
+```
+
+The game executable is output to `bin/burnout3.exe`. You need the original `default.xbe` in a `Burnout 3 Takedown/` subfolder.
 
 ## Legal Notice
 

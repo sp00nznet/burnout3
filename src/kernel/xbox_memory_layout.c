@@ -62,11 +62,12 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
 
     /*
      * Calculate the full range we need to map.
-     * From XBOX_BASE_ADDRESS to the end of the furthest section.
-     * The furthest is .data1 at 0x00774000 + 224 = 0x007740E0.
+     * From XBOX_MAP_START (0x0) to the end of the furthest section.
+     * This includes low memory (KPCR at 0x0-0xFF) which game code reads
+     * from, the XBE sections, and the simulated stack.
      */
     DWORD map_end = XBOX_STACK_BASE + XBOX_STACK_SIZE;  /* Include stack area */
-    g_memory_size = map_end - XBOX_BASE_ADDRESS;
+    g_memory_size = map_end - XBOX_MAP_START;
 
     /*
      * Reserve the entire virtual address range.
@@ -110,11 +111,11 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
         return FALSE;
     }
 
-    g_memory_offset = (uintptr_t)g_memory_base - XBOX_BASE_ADDRESS;
+    g_memory_offset = (uintptr_t)g_memory_base - XBOX_MAP_START;
 
     if (g_memory_offset == 0) {
         fprintf(stderr, "xbox_MemoryLayoutInit: mapped %zu KB at 0x%08X (original Xbox address)\n",
-                g_memory_size / 1024, XBOX_BASE_ADDRESS);
+                g_memory_size / 1024, XBOX_MAP_START);
     } else {
         fprintf(stderr, "xbox_MemoryLayoutInit: mapped %zu KB at 0x%p (offset %+td from Xbox base)\n",
                 g_memory_size / 1024, g_memory_base, g_memory_offset);
@@ -208,6 +209,63 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
     g_esp = XBOX_STACK_TOP;
     fprintf(stderr, "  Stack: %u KB at Xbox VA 0x%08X (ESP = 0x%08X)\n",
             XBOX_STACK_SIZE / 1024, XBOX_STACK_BASE, g_esp);
+
+    /*
+     * Populate the fake Thread Information Block (TIB) at Xbox VA 0x0.
+     *
+     * The original Xbox code uses fs:[offset] to read per-thread data,
+     * but the recompiler drops the fs: segment prefix and generates
+     * MEM32(offset) instead. Since we mapped low memory (0x0-0xFFFF),
+     * we populate the TIB fields that game code accesses:
+     *
+     *   fs:[0x00] = SEH exception list (-1 = end of chain)
+     *   fs:[0x04] = stack base (top of stack)
+     *   fs:[0x08] = stack limit (bottom of stack)
+     *   fs:[0x18] = self pointer (TIB address)
+     *   fs:[0x20] = KPCR Prcb pointer (→ fake structure)
+     *   fs:[0x28] = TLS / RW engine context pointer
+     *
+     * We use free space in the BSS area for the fake structures.
+     */
+    {
+        #define XBOX_VA(va) ((void *)((uintptr_t)(va) + g_memory_offset))
+        #define MEM32_INIT(va, val) (*(uint32_t *)XBOX_VA(va) = (uint32_t)(val))
+
+        /* Fake TIB at address 0x0 */
+        MEM32_INIT(0x00, 0xFFFFFFFF);       /* SEH: end of chain */
+        MEM32_INIT(0x04, XBOX_STACK_TOP);   /* Stack base (high address) */
+        MEM32_INIT(0x08, XBOX_STACK_BASE);  /* Stack limit (low address) */
+        MEM32_INIT(0x18, 0x00000000);       /* Self pointer (TIB at VA 0) */
+
+        /*
+         * fs:[0x20] - On Xbox KPCR, this is the Prcb pointer.
+         * Game code reads [fs:[0x20] + 0x250] which on the real Xbox
+         * accesses a D3D cache structure. We set it to 0 so the read
+         * at offset 0x250 returns 0, causing the cache init to be skipped.
+         */
+        MEM32_INIT(0x20, 0x00000000);
+
+        /*
+         * fs:[0x28] - Thread local storage / RW engine context.
+         * The RW engine reads [fs:[0x28] + 0x28] to get a pointer
+         * to its data area. We allocate a fake structure at 0x00760000
+         * (in the BSS area) and a data buffer at 0x00700000.
+         */
+        #define FAKE_TLS_VA     0x00760000  /* Fake TLS structure (in BSS) */
+        #define FAKE_RWDATA_VA  0x00700000  /* RW engine data area (in BSS) */
+
+        MEM32_INIT(0x28, FAKE_TLS_VA);
+        /* TLS[0x28] = pointer to RW data area */
+        MEM32_INIT(FAKE_TLS_VA + 0x28, FAKE_RWDATA_VA);
+
+        fprintf(stderr, "  TIB: fake TIB at VA 0x0, TLS at 0x%08X, RW data at 0x%08X\n",
+                FAKE_TLS_VA, FAKE_RWDATA_VA);
+
+        #undef FAKE_TLS_VA
+        #undef FAKE_RWDATA_VA
+        #undef MEM32_INIT
+        #undef XBOX_VA
+    }
 
     fprintf(stderr, "xbox_MemoryLayoutInit: complete\n");
     return TRUE;

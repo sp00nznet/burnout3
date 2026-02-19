@@ -157,19 +157,35 @@ ULONG __stdcall xbox_RtlCompareMemoryUlong(PVOID Source, ULONG Length, ULONG Pat
  * Critical Sections (direct 1:1 mapping)
  * ============================================================================ */
 
+/*
+ * Critical section operations are no-ops for now.
+ *
+ * The Xbox CRITICAL_SECTION is a 20-byte 32-bit structure that's
+ * incompatible with the Windows 64-bit CRITICAL_SECTION (40 bytes).
+ * Passing Xbox memory pointers to native Windows CS functions would
+ * corrupt memory. Since the recompiled game runs single-threaded
+ * (all Xbox threads are called synchronously), there's no contention
+ * and no-ops are correct.
+ *
+ * TODO: If multithreading is needed, implement a shadow CS mapping
+ * (Xbox VA → native Windows CRITICAL_SECTION).
+ */
 VOID __stdcall xbox_RtlEnterCriticalSection(PRTL_CRITICAL_SECTION CriticalSection)
 {
-    EnterCriticalSection(CriticalSection);
+    (void)CriticalSection;
+    /* No-op: single-threaded execution, no contention */
 }
 
 VOID __stdcall xbox_RtlLeaveCriticalSection(PRTL_CRITICAL_SECTION CriticalSection)
 {
-    LeaveCriticalSection(CriticalSection);
+    (void)CriticalSection;
+    /* No-op: single-threaded execution */
 }
 
 VOID __stdcall xbox_RtlInitializeCriticalSection(PRTL_CRITICAL_SECTION CriticalSection)
 {
-    InitializeCriticalSection(CriticalSection);
+    (void)CriticalSection;
+    /* No-op: single-threaded execution */
 }
 
 /* ============================================================================

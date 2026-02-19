@@ -16,6 +16,7 @@ file(GLOB RECOMP_GEN_SOURCES
 set(GAME_SOURCES
     main.c
     recomp/recomp_test.c
+    recomp/recomp_manual.c
     ${RECOMP_GEN_SOURCES}
 )
 
@@ -52,8 +53,8 @@ if(MSVC)
         /WX-
         /O2
     )
-    # Reduce warning noise on generated code
-    set_source_files_properties(${RECOMP_GEN_SOURCES} PROPERTIES
+    # Reduce warning noise on generated/recompiled code
+    set_source_files_properties(${RECOMP_GEN_SOURCES} recomp/recomp_manual.c PROPERTIES
         COMPILE_FLAGS "/w"
     )
     target_compile_definitions(burnout3 PRIVATE

@@ -40,6 +40,10 @@ extern "C" {
 /* Base address of the XBE in Xbox memory */
 #define XBOX_BASE_ADDRESS       0x00010000
 
+/* Start of mapped region - includes low memory (KPCR at 0x0) because
+ * game code reads from addresses like 0x20 and 0x28 (Xbox kernel structures). */
+#define XBOX_MAP_START          0x00000000
+
 /* .text section */
 #define XBOX_TEXT_VA            0x00011000
 #define XBOX_TEXT_SIZE          2863616     /* 0x002BC000 */
@@ -61,8 +65,8 @@ extern "C" {
 /* End of mapped sections */
 #define XBOX_MAP_END            (XBOX_DATA_VA + XBOX_DATA_SIZE)
 
-/* Total virtual space needed */
-#define XBOX_MAP_TOTAL_SIZE     (XBOX_MAP_END - XBOX_BASE_ADDRESS)
+/* Total virtual space needed (from XBOX_MAP_START, not XBOX_BASE_ADDRESS) */
+#define XBOX_MAP_TOTAL_SIZE     (XBOX_MAP_END - XBOX_MAP_START)
 
 /* ================================================================
  * Memory initialization

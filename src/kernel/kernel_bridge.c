@@ -95,10 +95,11 @@ static void bridge_PsCreateSystemThreadEx(void)
 {
     uint32_t xbox_handle_ptr = STACK_ARG(0);
     uint32_t start_context1  = STACK_ARG(5);
+    uint32_t start_context2  = STACK_ARG(6);
     uint32_t start_routine   = STACK_ARG(9);
 
-    fprintf(stderr, "  [KERNEL] PsCreateSystemThreadEx: routine=0x%08X ctx=0x%08X\n",
-            start_routine, start_context1);
+    fprintf(stderr, "  [KERNEL] PsCreateSystemThreadEx: routine=0x%08X ctx1=0x%08X ctx2=0x%08X\n",
+            start_routine, start_context1, start_context2);
     fflush(stderr);
 
     /* Write a fake handle to the output pointer */
@@ -107,13 +108,15 @@ static void bridge_PsCreateSystemThreadEx(void)
     }
 
     /* Call the start routine synchronously through the recomp dispatch.
-     * The start routine expects its context parameter in [esp+4].
-     * We push it onto the simulated stack. */
+     * Xbox thread start routines receive two parameters:
+     *   void ThreadRoutine(PVOID StartContext1, PVOID StartContext2)
+     * We push both onto the simulated stack (right-to-left). */
     if (start_routine) {
         recomp_func_t fn = recomp_lookup(start_routine);
         if (fn) {
-            /* Push context arg for the start routine */
-            g_esp -= 4; BRIDGE_MEM32(g_esp) = start_context1;
+            /* Push args right-to-left for the start routine */
+            g_esp -= 4; BRIDGE_MEM32(g_esp) = start_context2;  /* [esp+8] → ebp+0xC */
+            g_esp -= 4; BRIDGE_MEM32(g_esp) = start_context1;  /* [esp+4] → ebp+0x8 */
             /* Push dummy return addr (simulating call) */
             g_esp -= 4; BRIDGE_MEM32(g_esp) = 0;
             fn();
@@ -396,6 +399,24 @@ static void bridge_AvSetDisplayMode(void)
     g_eax = 0;
 }
 
+/* ── PsTerminateSystemThread (ordinal 258) ───────────────
+ * VOID PsTerminateSystemThread(NTSTATUS ExitStatus)
+ *
+ * On real Xbox, this terminates the calling thread (never returns).
+ * In our recompiled version, threads run synchronously, so we just
+ * return. The caller (sub_001D1818) handles this gracefully.
+ */
+static void bridge_PsTerminateSystemThread(void)
+{
+    uint32_t exit_status = STACK_ARG(0);
+
+    fprintf(stderr, "  [KERNEL] PsTerminateSystemThread: status=0x%08X\n", exit_status);
+    fflush(stderr);
+
+    g_eax = exit_status;
+    /* Simply return - caller will clean up */
+}
+
 /* ── Generic fallback for simple value-only functions ────── */
 static void bridge_generic_stub(void)
 {
@@ -412,6 +433,7 @@ static bridge_func_t bridge_for_ordinal(ULONG ordinal)
     switch (ordinal) {
     /* Threading */
     case 255: return bridge_PsCreateSystemThreadEx;
+    case 258: return bridge_PsTerminateSystemThread;
 
     /* File/Handle */
     case 187: return bridge_NtClose;

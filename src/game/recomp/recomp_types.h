@@ -184,6 +184,7 @@ static inline uint16_t BSWAP16(uint16_t v) {
 typedef void (*recomp_func_t)(void);
 recomp_func_t recomp_lookup(uint32_t xbox_va);
 recomp_func_t recomp_lookup_kernel(uint32_t xbox_va);
+recomp_func_t recomp_lookup_manual(uint32_t xbox_va);
 #endif
 
 /**
@@ -195,6 +196,7 @@ recomp_func_t recomp_lookup_kernel(uint32_t xbox_va);
  */
 #define RECOMP_ICALL(xbox_va) do { \
     recomp_func_t _fn = recomp_lookup((uint32_t)(xbox_va)); \
+    if (!_fn) _fn = recomp_lookup_manual((uint32_t)(xbox_va)); \
     if (!_fn) _fn = recomp_lookup_kernel((uint32_t)(xbox_va)); \
     if (_fn) _fn(); \
 } while(0)
@@ -205,6 +207,7 @@ recomp_func_t recomp_lookup_kernel(uint32_t xbox_va);
  */
 #define RECOMP_ITAIL(xbox_va) do { \
     recomp_func_t _fn = recomp_lookup((uint32_t)(xbox_va)); \
+    if (!_fn) _fn = recomp_lookup_manual((uint32_t)(xbox_va)); \
     if (!_fn) _fn = recomp_lookup_kernel((uint32_t)(xbox_va)); \
     if (_fn) _fn(); \
 } while(0)
