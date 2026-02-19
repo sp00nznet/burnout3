@@ -60,6 +60,16 @@ extern ptrdiff_t g_xbox_mem_offset;
  */
 extern uint32_t g_eax, g_ecx, g_edx, g_esp;
 
+/**
+ * SEH frame pointer bridge.
+ *
+ * __SEH_prolog (sub_00244784) sets up ebp for the caller, but since ebp is
+ * a local variable in each function, the caller can't see the prolog's change.
+ * The prolog writes g_seh_ebp, and the caller reads it after the call.
+ * Similarly, __SEH_epilog reads g_seh_ebp at entry and writes it at exit.
+ */
+extern uint32_t g_seh_ebp;
+
 /* ── Memory access helpers ──────────────────────────────── */
 
 /** Translate an Xbox VA to an actual pointer. */
@@ -228,6 +238,8 @@ recomp_func_t recomp_lookup_manual(uint32_t xbox_va);
 #define ecx g_ecx
 #define edx g_edx
 #define esp g_esp
+/* ebp is NOT global - it's local in each function.
+ * For __SEH_prolog/epilog, use g_seh_ebp to bridge. */
 #endif
 
 /* ── Forward declarations for translated functions ──────── */

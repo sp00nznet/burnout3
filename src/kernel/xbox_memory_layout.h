@@ -146,6 +146,28 @@ ptrdiff_t xbox_GetMemoryOffset(void);
 /** Initial ESP value (top of stack, 16-byte aligned). */
 #define XBOX_STACK_TOP      (XBOX_STACK_BASE + XBOX_STACK_SIZE - 16)
 
+/* ================================================================
+ * Xbox dynamic heap (for MmAllocateContiguousMemory, etc.)
+ * ================================================================ */
+
+/** Base VA of the dynamic heap area (above stack). */
+#define XBOX_HEAP_BASE      (XBOX_STACK_BASE + XBOX_STACK_SIZE)  /* 0x00880000 */
+
+/** Size of the dynamic heap (16 MB - enough for GPU buffers etc.). */
+#define XBOX_HEAP_SIZE      (16 * 1024 * 1024)
+
+/**
+ * Allocate from the Xbox heap. Returns an Xbox VA, or 0 on failure.
+ * Alignment must be a power of 2 (minimum 4).
+ * Thread-safe: no (single-threaded recompiled code).
+ */
+uint32_t xbox_HeapAlloc(uint32_t size, uint32_t alignment);
+
+/**
+ * Free a block from the Xbox heap. Currently a no-op (bump allocator).
+ */
+void xbox_HeapFree(uint32_t xbox_va);
+
 #ifdef __cplusplus
 }
 #endif

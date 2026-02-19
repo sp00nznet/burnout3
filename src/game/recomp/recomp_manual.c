@@ -223,10 +223,13 @@ void sub_001D2793(void)
     uint32_t ebx, esi, edi, ebp;
 
     /* call sub_001D3F2F - RenderWare global init (version/cache check) */
+    fprintf(stderr, "  [init] sub_001D3F2F (RW global init)...\n");
     PUSH32(esp, 0); sub_001D3F2F();
 
     /* call sub_001D2EE5 - engine setup (D3D device, timers, DPCs) */
+    fprintf(stderr, "  [init] sub_001D2EE5 (engine setup)...\n");
     PUSH32(esp, 0); sub_001D2EE5();
+    fprintf(stderr, "  [init] sub_001D2EE5 done\n");
 
     /* mov eax, fs:[0x20] - KPCR pointer from fake TIB
      * On Xbox, fs:[0x20] is the KPCR (Kernel Processor Control Region).
@@ -286,12 +289,16 @@ loc_001D27B4:
 
 loc_001D27DF:
     /* call sub_001D3EA2 - validation/finalization */
+    fprintf(stderr, "  [init] sub_001D3EA2 (RW validate)...\n");
     PUSH32(esp, 0); sub_001D3EA2();
 
-    /* call sub_001D3E4A - more finalization */
+    /* call sub_001D3E4A - C++ static constructors */
+    fprintf(stderr, "  [init] sub_001D3E4A (static init)...\n");
     PUSH32(esp, 0); sub_001D3E4A();
+    fprintf(stderr, "  [init] sub_001D3E4A done\n");
 
     /* push 0; push 0; push 0; call sub_00156400; add esp, 0xC (cdecl) */
+    fprintf(stderr, "  [init] sub_00156400 (game subsystem init)...\n");
     PUSH32(esp, 0);
     PUSH32(esp, 0);
     PUSH32(esp, 0);
@@ -299,6 +306,7 @@ loc_001D27DF:
     esp += 0xC;  /* cdecl: caller cleans 3 args */
 
     /* push 0; push 1; push 1; call sub_001D2E6F (stdcall: callee cleans) */
+    fprintf(stderr, "  [init] sub_001D2E6F (enable game systems)...\n");
     PUSH32(esp, 0);
     PUSH32(esp, 1);
     PUSH32(esp, 1);

@@ -229,14 +229,16 @@ static void bridge_MmAllocateContiguousMemory(void)
 {
     uint32_t size = STACK_ARG(0);
 
+    /* Allocate from Xbox heap so MEM32(result) works correctly */
+    uint32_t xbox_va = xbox_HeapAlloc(size, 4096);
+
     if (g_kernel_call_count <= 100) {
-        fprintf(stderr, "  [KERNEL] MmAllocateContiguousMemory: size=%u\n", size);
+        fprintf(stderr, "  [KERNEL] MmAllocateContiguousMemory: size=%u → Xbox VA 0x%08X\n",
+                size, xbox_va);
         fflush(stderr);
     }
 
-    PVOID ptr = xbox_MmAllocateContiguousMemory(size);
-    /* Return as Xbox VA - our impl already uses Xbox VA space */
-    g_eax = ptr ? (uint32_t)(uintptr_t)ptr : 0;
+    g_eax = xbox_va;
 }
 
 /* ── MmAllocateContiguousMemoryEx (ordinal 166) ───────────
@@ -251,14 +253,17 @@ static void bridge_MmAllocateContiguousMemoryEx(void)
     uint32_t align = STACK_ARG(3);
     uint32_t prot = STACK_ARG(4);
 
+    /* Allocate from Xbox heap with requested alignment */
+    if (align < 4096) align = 4096;
+    uint32_t xbox_va = xbox_HeapAlloc(size, align);
+
     if (g_kernel_call_count <= 100) {
-        fprintf(stderr, "  [KERNEL] MmAllocateContiguousMemoryEx: size=%u low=0x%X high=0x%X\n",
-                size, low, high);
+        fprintf(stderr, "  [KERNEL] MmAllocateContiguousMemoryEx: size=%u align=%u → Xbox VA 0x%08X\n",
+                size, align, xbox_va);
         fflush(stderr);
     }
 
-    PVOID ptr = xbox_MmAllocateContiguousMemoryEx(size, low, high, align, prot);
-    g_eax = ptr ? (uint32_t)(uintptr_t)ptr : 0;
+    g_eax = xbox_va;
 }
 
 /* ── MmFreeContiguousMemory (ordinal 171) ─────────────────
@@ -267,7 +272,7 @@ static void bridge_MmAllocateContiguousMemoryEx(void)
 static void bridge_MmFreeContiguousMemory(void)
 {
     uint32_t addr = STACK_ARG(0);
-    xbox_MmFreeContiguousMemory(XBOX_TO_NATIVE(addr));
+    xbox_HeapFree(addr);
     g_eax = 0;
 }
 
@@ -283,15 +288,34 @@ static void bridge_NtAllocateVirtualMemory(void)
     uint32_t alloc_type = STACK_ARG(3);
     uint32_t protect = STACK_ARG(4);
 
+    /* Read the requested size from Xbox memory */
+    uint32_t size = size_ptr ? BRIDGE_MEM32(size_ptr) : 0;
+    /* Read the base address hint (0 = let kernel choose) */
+    uint32_t base_hint = base_ptr ? BRIDGE_MEM32(base_ptr) : 0;
+
     if (g_kernel_call_count <= 100) {
-        fprintf(stderr, "  [KERNEL] NtAllocateVirtualMemory: base_ptr=0x%08X size_ptr=0x%08X type=0x%X\n",
-                base_ptr, size_ptr, alloc_type);
+        fprintf(stderr, "  [KERNEL] NtAllocateVirtualMemory: base=0x%08X size=%u type=0x%X\n",
+                base_hint, size, alloc_type);
         fflush(stderr);
     }
 
-    g_eax = (uint32_t)xbox_NtAllocateVirtualMemory(
-        XBOX_TO_NATIVE(base_ptr), zero_bits,
-        XBOX_TO_NATIVE(size_ptr), alloc_type, protect);
+    if (size == 0) {
+        g_eax = 0xC0000045u; /* STATUS_INVALID_PAGE_PROTECTION */
+        return;
+    }
+
+    /* Allocate from Xbox heap */
+    uint32_t xbox_va = xbox_HeapAlloc(size, 4096);
+    if (!xbox_va) {
+        g_eax = 0xC0000017u; /* STATUS_NO_MEMORY */
+        return;
+    }
+
+    /* Write back the allocated address and actual size */
+    if (base_ptr) BRIDGE_MEM32(base_ptr) = xbox_va;
+    if (size_ptr) BRIDGE_MEM32(size_ptr) = size;
+
+    g_eax = 0; /* STATUS_SUCCESS */
 }
 
 /* ── NtFreeVirtualMemory (ordinal 199) ────────────────────
@@ -491,6 +515,155 @@ static void bridge_PsTerminateSystemThread(void)
     /* Simply return - caller will clean up */
 }
 
+/* ── HalReadSMCTrayState (ordinal 47) ─────────────────────
+ * VOID HalReadSMCTrayState(PDWORD TrayState, PDWORD TrayStateChangeCount)
+ *
+ * Returns DVD tray state. 0x10 = no disc, 0x14 = tray closed with disc.
+ */
+static void bridge_HalReadSMCTrayState(void)
+{
+    uint32_t state_ptr = STACK_ARG(0);
+    uint32_t count_ptr = STACK_ARG(1);
+
+    if (state_ptr) BRIDGE_MEM32(state_ptr) = 0x10;  /* No disc */
+    if (count_ptr) BRIDGE_MEM32(count_ptr) = 0;
+    g_eax = 0;
+}
+
+/* ── KeInitializeDpc (ordinal 107) ────────────────────────
+ * VOID KeInitializeDpc(PKDPC Dpc, PKDEFERRED_ROUTINE DeferredRoutine,
+ *                       PVOID DeferredContext)
+ *
+ * Initializes a DPC object. The Xbox KDPC structure is 32 bytes.
+ * We zero it and set the routine and context pointers.
+ */
+static void bridge_KeInitializeDpc(void)
+{
+    uint32_t dpc_va = STACK_ARG(0);
+    uint32_t routine = STACK_ARG(1);
+    uint32_t context = STACK_ARG(2);
+
+    /* Zero the structure (32 bytes) */
+    memset(XBOX_TO_NATIVE(dpc_va), 0, 32);
+
+    /* Set Type (0x13 = DpcObject) and fields */
+    BRIDGE_MEM16(dpc_va + 0) = 0x13;   /* Type */
+    BRIDGE_MEM32(dpc_va + 12) = routine; /* DeferredRoutine */
+    BRIDGE_MEM32(dpc_va + 16) = context; /* DeferredContext */
+    g_eax = 0;
+}
+
+/* ── KeInitializeTimerEx (ordinal 113) ────────────────────
+ * VOID KeInitializeTimerEx(PKTIMER Timer, TIMER_TYPE Type)
+ *
+ * Initializes a timer object. Xbox KTIMER is 40 bytes.
+ */
+static void bridge_KeInitializeTimerEx(void)
+{
+    uint32_t timer_va = STACK_ARG(0);
+    uint32_t type = STACK_ARG(1);
+
+    /* Zero the structure (40 bytes) */
+    memset(XBOX_TO_NATIVE(timer_va), 0, 40);
+
+    /* Set Type (0x08 = TimerNotificationObject, 0x09 = TimerSynchronizationObject) */
+    BRIDGE_MEM16(timer_va + 0) = (uint16_t)(0x08 + (type & 1));
+    g_eax = 0;
+}
+
+/* ── KeSetTimer / KeSetTimerEx (ordinal 149/150) ──────────
+ * BOOLEAN KeSetTimer(PKTIMER Timer, LARGE_INTEGER DueTime, PKDPC Dpc)
+ *
+ * Sets a timer. We don't actually start timers - just record the state.
+ * Returns FALSE (timer was not already set).
+ */
+static void bridge_KeSetTimer(void)
+{
+    /* Timer functionality is not needed for basic execution.
+     * Return FALSE = timer was not previously set. */
+    g_eax = 0;
+}
+
+/* ── ExQueryPoolBlockSize (ordinal 24) ────────────────────
+ * ULONG ExQueryPoolBlockSize(PVOID PoolBlock)
+ *
+ * Returns the size of a pool memory block.
+ * Since we use HeapAlloc, we can query the Windows heap.
+ */
+static void bridge_ExQueryPoolBlockSize(void)
+{
+    uint32_t block = STACK_ARG(0);
+    /* Return a reasonable default size. Actual pool blocks are managed
+     * by the kernel; for recompilation, returning 0 might be OK since
+     * code usually uses this for debugging/stats. */
+    g_eax = 0;
+}
+
+/* ── RtlCompareMemory (ordinal 301) ──────────────────────
+ * SIZE_T RtlCompareMemory(CONST VOID *Source1, CONST VOID *Source2, SIZE_T Length)
+ *
+ * Compares two memory blocks and returns the number of bytes that match.
+ */
+static void bridge_RtlCompareMemory(void)
+{
+    uint32_t src1 = STACK_ARG(0);
+    uint32_t src2 = STACK_ARG(1);
+    uint32_t length = STACK_ARG(2);
+
+    if (length == 0 || !src1 || !src2) {
+        g_eax = 0;
+        return;
+    }
+
+    /* Note: don't use XBOX_TO_NATIVE here because Xbox VA 0 IS valid
+     * in our model, but these pointers should never actually be 0. */
+    const uint8_t *p1 = (const uint8_t *)((uintptr_t)src1 + g_xbox_mem_offset);
+    const uint8_t *p2 = (const uint8_t *)((uintptr_t)src2 + g_xbox_mem_offset);
+    uint32_t i;
+    for (i = 0; i < length; i++) {
+        if (p1[i] != p2[i]) break;
+    }
+    g_eax = i;
+}
+
+/* ── NtCreateFile (ordinal 190) ──────────────────────────── */
+static void bridge_NtCreateFile(void)
+{
+    /* File I/O stub - return STATUS_OBJECT_NAME_NOT_FOUND */
+    g_eax = 0xC0000034u;
+}
+
+/* ── NtOpenFile (ordinal 202) ────────────────────────────── */
+static void bridge_NtOpenFile(void)
+{
+    /* File I/O stub - return STATUS_OBJECT_NAME_NOT_FOUND */
+    g_eax = 0xC0000034u;
+}
+
+/* ── NtCreateDirectoryObject (ordinal 188) ──────────────── */
+static void bridge_NtCreateDirectoryObject(void)
+{
+    /* Return STATUS_SUCCESS with a fake handle */
+    uint32_t handle_ptr = STACK_ARG(0);
+    if (handle_ptr) BRIDGE_MEM32(handle_ptr) = 0xBEEF0010;
+    g_eax = 0;  /* STATUS_SUCCESS */
+}
+
+/* ── IoCreateSymbolicLink (ordinal 63) ───────────────────── */
+static void bridge_IoCreateSymbolicLink(void)
+{
+    g_eax = 0;  /* STATUS_SUCCESS */
+}
+
+/* ── ObReferenceObjectByHandle (ordinal 246) ─────────────── */
+static void bridge_ObReferenceObjectByHandle(void)
+{
+    /* Returns STATUS_SUCCESS, sets output object pointer to a dummy */
+    uint32_t object_ptr = STACK_ARG(4);
+    if (object_ptr) BRIDGE_MEM32(object_ptr) = 0;
+    g_eax = 0;
+}
+
 /* ── Generic fallback for simple value-only functions ────── */
 static void bridge_generic_stub(void)
 {
@@ -511,6 +684,8 @@ static bridge_func_t bridge_for_ordinal(ULONG ordinal)
 
     /* File/Handle */
     case 187: return bridge_NtClose;
+    case 190: return bridge_NtCreateFile;
+    case 202: return bridge_NtOpenFile;
 
     /* Memory - contiguous */
     case 165: return bridge_MmAllocateContiguousMemory;
@@ -527,6 +702,7 @@ static bridge_func_t bridge_for_ordinal(ULONG ordinal)
     /* Pool */
     case  15: return bridge_ExAllocatePool;
     case  16: return bridge_ExAllocatePoolWithTag;
+    case  24: return bridge_ExQueryPoolBlockSize;
 
     /* IRQL */
     case 160: return bridge_KfRaiseIrql;
@@ -542,6 +718,12 @@ static bridge_func_t bridge_for_ordinal(ULONG ordinal)
     case 126: return bridge_KeQueryPerformanceCounter;
     case 127: return bridge_KeQueryPerformanceFrequency;
     case 128: return bridge_KeQuerySystemTime;
+    case 149: return bridge_KeSetTimer;
+    case 150: return bridge_KeSetTimer;  /* KeSetTimerEx */
+
+    /* DPC / Timer init */
+    case 107: return bridge_KeInitializeDpc;
+    case 113: return bridge_KeInitializeTimerEx;
 
     /* Synchronization */
     case 189: return bridge_NtCreateEvent;
@@ -549,8 +731,19 @@ static bridge_func_t bridge_for_ordinal(ULONG ordinal)
     case 159: return bridge_KeWaitForSingleObject;
     case 238: return bridge_NtYieldExecution;
 
+    /* Hardware */
+    case  47: return bridge_HalReadSMCTrayState;
+
     /* Display */
     case   3: return bridge_AvSetDisplayMode;
+
+    /* I/O */
+    case  63: return bridge_IoCreateSymbolicLink;
+    case 188: return bridge_NtCreateDirectoryObject;
+    case 246: return bridge_ObReferenceObjectByHandle;
+
+    /* RTL */
+    case 301: return bridge_RtlCompareMemory;
 
     default:  return NULL;
     }

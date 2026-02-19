@@ -54,6 +54,9 @@ ptrdiff_t g_xbox_mem_offset = 0;
 /* Global volatile registers for recompiled code (via recomp_types.h) */
 uint32_t g_eax = 0, g_ecx = 0, g_edx = 0, g_esp = 0;
 
+/* SEH frame pointer bridge (see recomp_types.h for explanation) */
+uint32_t g_seh_ebp = 0;
+
 BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
 {
     DWORD old_protect;
@@ -70,7 +73,7 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
      * This includes low memory (KPCR at 0x0-0xFF) which game code reads
      * from, the XBE sections, and the simulated stack.
      */
-    DWORD map_end = XBOX_STACK_BASE + XBOX_STACK_SIZE;  /* Include stack area */
+    DWORD map_end = XBOX_HEAP_BASE + XBOX_HEAP_SIZE;  /* Include stack + heap */
     g_memory_size = map_end - XBOX_MAP_START;
 
     /*
@@ -307,6 +310,11 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
         #undef KERNEL_PAGE_SIZE
     }
 
+    /* Initialize the dynamic heap */
+    fprintf(stderr, "  Heap: %u MB at Xbox VA 0x%08X-0x%08X\n",
+            XBOX_HEAP_SIZE / (1024 * 1024), XBOX_HEAP_BASE,
+            XBOX_HEAP_BASE + XBOX_HEAP_SIZE);
+
     fprintf(stderr, "xbox_MemoryLayoutInit: complete\n");
     return TRUE;
 }
@@ -339,4 +347,41 @@ void *xbox_GetMemoryBase(void)
 ptrdiff_t xbox_GetMemoryOffset(void)
 {
     return g_memory_offset;
+}
+
+/* ── Dynamic heap allocator ────────────────────────────────
+ *
+ * Simple bump allocator for MmAllocateContiguousMemory and similar.
+ * Returns Xbox VAs within the mapped region so MEM32() works correctly.
+ * No free support (bump-only for now).
+ */
+static uint32_t g_heap_next = XBOX_HEAP_BASE;
+
+uint32_t xbox_HeapAlloc(uint32_t size, uint32_t alignment)
+{
+    uint32_t result;
+
+    if (alignment < 4) alignment = 4;
+
+    /* Align the next pointer */
+    result = (g_heap_next + alignment - 1) & ~(alignment - 1);
+
+    if (result + size > XBOX_HEAP_BASE + XBOX_HEAP_SIZE) {
+        fprintf(stderr, "xbox_HeapAlloc: out of memory (requested %u, used %u/%u)\n",
+                size, g_heap_next - XBOX_HEAP_BASE, XBOX_HEAP_SIZE);
+        return 0;
+    }
+
+    g_heap_next = result + size;
+
+    /* Zero-fill the allocated block (Xbox memory is always zeroed) */
+    memset((void *)((uintptr_t)result + g_memory_offset), 0, size);
+
+    return result;
+}
+
+void xbox_HeapFree(uint32_t xbox_va)
+{
+    /* No-op for bump allocator */
+    (void)xbox_va;
 }
