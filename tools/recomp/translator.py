@@ -107,7 +107,7 @@ class FunctionTranslator:
         source_file = cls_info.get("source_file", "")
         abi_info = self.abi_db.get(start, {})
 
-        # ABI-derived info
+        # ABI-derived info (kept for comments)
         cc = abi_info.get("calling_convention", "cdecl")
         num_params = abi_info.get("estimated_params", 0)
         return_hint = abi_info.get("return_hint", "int_or_void")
@@ -120,31 +120,14 @@ class FunctionTranslator:
         has_prologue = self._func_has_prologue(instructions)
         has_fpu = any(insn.mnemonic.startswith("f") for insn in instructions)
 
-        # Ensure esp is declared if function uses stack operations
-        has_stack_ops = any(insn.mnemonic in ("push", "pop", "leave", "call")
-                           or (insn.mnemonic == "ret" and has_prologue)
-                           for insn in instructions)
-        if has_stack_ops:
-            used_regs.add("esp")
+        # Volatile registers (eax, ecx, edx, esp) are globals - don't declare
+        # them as locals. The RECOMP_GENERATED_CODE #define maps register names
+        # to the global variables via preprocessor macros.
+        volatile_regs = {"eax", "ecx", "edx", "esp"}
 
-        # Ensure ecx is declared if function calls thiscall functions
-        for insn in instructions:
-            target = insn.call_target or insn.jump_target
-            if target and target in self.abi_db:
-                callee_cc = self.abi_db[target].get("calling_convention", "")
-                if callee_cc in ("thiscall", "thiscall_cdecl"):
-                    used_regs.add("ecx")
-                    break
-
-        # Ensure ebp declared if function uses 'leave' (implicit ebp)
+        # Ensure ebp tracked if function uses 'leave' (implicit ebp)
         if any(insn.mnemonic == "leave" for insn in instructions):
             used_regs.add("ebp")
-
-        # Ensure edx/eax declared for implicit-operand instructions
-        for insn in instructions:
-            if insn.mnemonic in ("cdq", "div", "idiv", "mul"):
-                used_regs.add("edx")
-                used_regs.add("eax")
 
         # Build call targets list
         call_targets = set()
@@ -152,24 +135,11 @@ class FunctionTranslator:
             if insn.call_target and is_code_address(insn.call_target):
                 call_targets.add(insn.call_target)
 
-        # Determine return type
-        if return_hint == "float_sse" or return_hint == "float":
-            ret_type = "float"
-        elif return_hint == "int_zero":
-            ret_type = "int"
-        elif num_params == 0 and return_hint == "int_or_void":
-            ret_type = "void"
-        else:
-            ret_type = "uint32_t"
-
-        # Build parameter list
-        is_thiscall = cc in ("thiscall", "thiscall_cdecl")
-        params = []
-        if is_thiscall:
-            params.append("void *this_ptr")
-        for i in range(num_params):
-            params.append(f"uint32_t a{i+1}")
-        param_str = ", ".join(params) if params else "void"
+        # All translated functions are void(void).
+        # Arguments pass via the global simulated stack (push instructions).
+        # Return values pass via g_eax (the global eax register).
+        ret_type = "void"
+        param_str = "void"
 
         # Generate C code
         lines = []
@@ -193,9 +163,11 @@ class FunctionTranslator:
         lines.append(f"{ret_type} {name}({param_str})")
         lines.append(f"{{")
 
-        # Register declarations (exclude params)
+        # Only declare non-volatile registers as locals.
+        # Volatile registers (eax, ecx, edx, esp) are globals accessed
+        # via #define macros in recomp_types.h.
         reg_decls = []
-        for reg in ["eax", "ebx", "ecx", "edx", "esi", "edi", "ebp", "esp"]:
+        for reg in ["ebx", "esi", "edi", "ebp"]:
             if reg in used_regs:
                 reg_decls.append(reg)
         if reg_decls:
@@ -223,28 +195,6 @@ class FunctionTranslator:
                           for insn in instructions)
         if has_fpu_cmp:
             lines.append(f"    int _fpu_cmp = 0; /* FPU compare result: -1/0/1 */")
-
-        # Initialize esp and set up call frame with parameters on the stack.
-        # In x86 cdecl, the caller pushes args right-to-left then CALL pushes
-        # the return address. At function entry:
-        #   [esp+0] = return addr, [esp+4] = a1, [esp+8] = a2, ...
-        # For EBP-frame functions (push ebp; mov ebp, esp):
-        #   [ebp+4] = return addr, [ebp+8] = a1, [ebp+0xC] = a2, ...
-        if "esp" in used_regs:
-            lines.append(f"    esp = g_xbox_initial_esp;")
-            # Place params on the stack so [esp+4] = a1, [esp+8] = a2, etc.
-            total_frame = (num_params + 1) * 4  # return addr + params
-            if total_frame > 0:
-                lines.append(f"    esp -= {total_frame}; /* call frame */")
-                lines.append(f"    MEM32(esp) = 0; /* return address */")
-                for i in range(num_params):
-                    lines.append(f"    MEM32(esp + {4 + i*4}) = a{i+1};")
-
-        # Map parameters to registers/stack locations
-        if is_thiscall:
-            lines.append(f"    ecx = (uint32_t)(uintptr_t)this_ptr;")
-        if num_params > 0:
-            lines.append(f"    /* Parameters: {', '.join(f'a{i+1}' for i in range(num_params))} */")
 
         # SSE/MMX register declarations
         if used_xmm:
@@ -438,30 +388,10 @@ class BatchTranslator:
         return result
 
     def _make_declaration(self, addr, name):
-        """Generate a function declaration string using ABI data."""
-        abi_info = self.abi_db.get(addr, {})
-        cc = abi_info.get("calling_convention", "cdecl")
-        num_params = abi_info.get("estimated_params", 0)
-        return_hint = abi_info.get("return_hint", "int_or_void")
-
-        if return_hint in ("float_sse", "float"):
-            ret_type = "float"
-        elif return_hint == "int_zero":
-            ret_type = "int"
-        elif num_params == 0 and return_hint == "int_or_void":
-            ret_type = "void"
-        else:
-            ret_type = "uint32_t"
-
-        is_thiscall = cc in ("thiscall", "thiscall_cdecl")
-        params = []
-        if is_thiscall:
-            params.append("void *this_ptr")
-        for i in range(num_params):
-            params.append(f"uint32_t a{i+1}")
-        param_str = ", ".join(params) if params else "void"
-
-        return f"{ret_type} {name}({param_str})"
+        """Generate a function declaration string.
+        All translated functions are void(void) - args pass via stack,
+        return values via g_eax."""
+        return f"void {name}(void)"
 
     def translate_single(self, addr):
         """Translate a single function by address. Returns C code string."""
@@ -502,6 +432,7 @@ class BatchTranslator:
         c_chunks.append(f" * Functions: {len(func_list)}")
         c_chunks.append(" */")
         c_chunks.append("")
+        c_chunks.append('#define RECOMP_GENERATED_CODE')
         c_chunks.append('#include "recomp_types.h"')
         c_chunks.append('#include <math.h>')
         c_chunks.append("")
@@ -659,6 +590,7 @@ class BatchTranslator:
                 f"(0x{chunk[0][0]:08X} - 0x{chunk[-1][0]:08X})",
                 " */",
                 "",
+                "#define RECOMP_GENERATED_CODE",
                 f'#include "{header_name}"',
                 '#include <math.h>',
                 "",
@@ -697,6 +629,7 @@ class BatchTranslator:
             " * Auto-generated by tools/recomp",
             " */",
             "",
+            "#define RECOMP_DISPATCH_H",
             f'#include "{header_name}"',
             '#include <stddef.h>',
             "",

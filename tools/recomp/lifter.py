@@ -604,8 +604,7 @@ def _emit_cond_goto(cond_expr, jcc, desc, target, lifter):
         return f"if ({cond_expr}) {{ /* {jcc}: {desc} - indirect */ }}"
     if lifter and lifter._is_external_target(target):
         name = lifter._call_target_name(target)
-        args = lifter._build_call_args(target)
-        return (f"if ({cond_expr}) {{ {name}({args}); return; }}"
+        return (f"if ({cond_expr}) {{ {name}(); return; }}"
                 f" /* {jcc}: {desc} */")
     return f"if ({cond_expr}) goto loc_{target:08X}; /* {jcc}: {desc} */"
 
@@ -1067,20 +1066,24 @@ class Lifter:
         return ", ".join(args)
 
     def _lift_call(self, insn, ops):
+        # x86 'call' pushes return address then jumps.
+        # With global esp, we push a dummy return address (0) then call.
+        # The callee's 'ret' will pop it back off.
         if insn.call_target:
             name = self._call_target_name(insn.call_target)
-            args = self._build_call_args(insn.call_target)
-            return [f"{name}({args}); /* call 0x{insn.call_target:08X} */"]
+            return [f"PUSH32(esp, 0); {name}(); /* call 0x{insn.call_target:08X} */"]
         elif len(ops) >= 1:
             target = _fmt_operand_read(ops[0])
-            return [f"RECOMP_ICALL({target}); /* indirect call */"]
+            return [f"PUSH32(esp, 0); RECOMP_ICALL({target}); /* indirect call */"]
         return ["/* call: no target */"]
 
     def _lift_ret(self, insn, ops):
-        # ret N pops N extra bytes from stack
+        # x86 'ret' pops return address from stack.
+        # 'ret N' also pops N extra bytes (stdcall cleanup).
         if len(ops) >= 1 and ops[0].type == "imm":
-            return [f"return; /* ret {ops[0].imm} */"]
-        return ["return;"]
+            n = ops[0].imm
+            return [f"esp += {4 + n}; return; /* ret {n} */"]
+        return [f"esp += 4; return; /* ret */"]
 
     def _is_external_target(self, addr):
         """Check if a jump target is outside the current function."""
@@ -1089,14 +1092,13 @@ class Lifter:
     def _lift_jmp(self, insn, ops):
         if insn.jump_target:
             if self._is_external_target(insn.jump_target):
-                # Tail call to another function
+                # Tail call - no return address push (reuses current frame's)
                 name = self._call_target_name(insn.jump_target)
-                args = self._build_call_args(insn.jump_target)
-                return [f"{name}({args}); return; /* tail jmp 0x{insn.jump_target:08X} */"]
+                return [f"{name}(); return; /* tail jmp 0x{insn.jump_target:08X} */"]
             return [f"goto loc_{insn.jump_target:08X};"]
         elif len(ops) >= 1:
             target = _fmt_operand_read(ops[0])
-            return [f"RECOMP_ICALL({target}); return; /* indirect tail jmp */"]
+            return [f"RECOMP_ITAIL({target}); return; /* indirect tail jmp */"]
         return ["/* jmp: no target */"]
 
     def _lift_jcc(self, insn):
@@ -1110,8 +1112,7 @@ class Lifter:
             if target:
                 if self._is_external_target(target):
                     name = self._call_target_name(target)
-                    args = self._build_call_args(target)
-                    return [f"if ({cond}) {{ {name}({args}); return; }} /* {jcc} */"]
+                    return [f"if ({cond}) {{ {name}(); return; }} /* {jcc} */"]
                 return [f"if ({cond}) goto loc_{target:08X}; /* {jcc} */"]
             return [f"/* {jcc} - no target */"]
 
@@ -1120,8 +1121,7 @@ class Lifter:
         if target:
             if self._is_external_target(target):
                 name = self._call_target_name(target)
-                args = self._build_call_args(target)
-                return [f"if (_flags /* {jcc}: {desc} */) {{ {name}({args}); return; }}"]
+                return [f"if (_flags /* {jcc}: {desc} */) {{ {name}(); return; }}"]
             return [f"if (_flags /* {jcc}: {desc} */) goto loc_{target:08X};"]
         return [f"/* {jcc}: {desc} - no target */"]
 

@@ -313,7 +313,7 @@ NTSTATUS __stdcall xbox_NtQueryVirtualMemory(
      * Xbox NtQueryVirtualMemory returns a MEMORY_BASIC_INFORMATION-like struct.
      * Copy what fits into the caller's buffer.
      */
-    ULONG copy_size = min(MemoryInformationLength, sizeof(mbi));
+    ULONG copy_size = (MemoryInformationLength < sizeof(mbi)) ? MemoryInformationLength : (ULONG)sizeof(mbi);
     memcpy(MemoryInformation, &mbi, copy_size);
 
     if (ReturnLength)

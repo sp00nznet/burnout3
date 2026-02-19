@@ -47,8 +47,8 @@ static ptrdiff_t g_memory_offset = 0;  /* actual_base - XBOX_BASE_ADDRESS */
 /* Global offset accessible by recompiled code (via recomp_types.h) */
 ptrdiff_t g_xbox_mem_offset = 0;
 
-/* Initial ESP for recompiled code (set during memory layout init) */
-uint32_t g_xbox_initial_esp = 0;
+/* Global volatile registers for recompiled code (via recomp_types.h) */
+uint32_t g_eax = 0, g_ecx = 0, g_edx = 0, g_esp = 0;
 
 BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
 {
@@ -203,11 +203,11 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
     /*
      * Initialize the Xbox stack for recompiled code.
      * The stack area lives at XBOX_STACK_BASE in Xbox address space.
-     * Each translated function initializes its local esp from g_xbox_initial_esp.
+     * g_esp is the global stack pointer shared by all translated functions.
      */
-    g_xbox_initial_esp = XBOX_STACK_TOP;
+    g_esp = XBOX_STACK_TOP;
     fprintf(stderr, "  Stack: %u KB at Xbox VA 0x%08X (ESP = 0x%08X)\n",
-            XBOX_STACK_SIZE / 1024, XBOX_STACK_BASE, g_xbox_initial_esp);
+            XBOX_STACK_SIZE / 1024, XBOX_STACK_BASE, g_esp);
 
     fprintf(stderr, "xbox_MemoryLayoutInit: complete\n");
     return TRUE;

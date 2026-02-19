@@ -441,6 +441,12 @@ extern ULONG_PTR xbox_kernel_thunk_table[XBOX_KERNEL_THUNK_TABLE_SIZE];
 void xbox_kernel_init(void);
 void xbox_kernel_shutdown(void);
 
+/* Resolve a kernel ordinal to a function/data pointer */
+ULONG_PTR xbox_resolve_ordinal(ULONG ordinal);
+
+/* Kernel bridge (kernel_bridge.c) - resolve kernel thunks in Xbox memory */
+void xbox_kernel_bridge_init(void);
+
 /* ============================================================================
  * Path Translation (kernel_path.c)
  * ============================================================================ */

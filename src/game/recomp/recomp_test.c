@@ -232,7 +232,9 @@ static int test_call_translated_float_copy(void)
     /* Clear destination */
     MEMF(0x4D53CC) = 0.0f;
 
-    /* Call the ACTUAL translated function */
+    /* Call the ACTUAL translated function.
+     * Must push a return address (simulating x86 'call'). */
+    PUSH32(g_esp, 0);
     sub_002575A0();
 
     /* Verify destination was written */
@@ -269,7 +271,8 @@ static int test_call_translated_float_chain(void)
     /* Clear destination */
     MEMF(0x4D5408) = 0.0f;
 
-    /* Call the ACTUAL translated function */
+    /* Call the ACTUAL translated function (push return addr first) */
+    PUSH32(g_esp, 0);
     sub_00257720();
 
     /* Verify: result should be 100.0 - sub_val */

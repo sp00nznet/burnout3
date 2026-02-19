@@ -184,7 +184,13 @@ static BOOL init_subsystems(void)
 
     /* 2. Xbox kernel replacement layer */
     fprintf(stderr, "[2/4] Kernel layer...\n");
-    /* Kernel thunks are resolved at link time via the static library */
+    fflush(stderr);
+    xbox_kernel_init();          /* Fill thunk table with our Win32 implementations */
+    fprintf(stderr, "  xbox_kernel_init() done\n");
+    fflush(stderr);
+    xbox_kernel_bridge_init();   /* Patch Xbox memory thunk entries with synthetic VAs */
+    fprintf(stderr, "  xbox_kernel_bridge_init() done\n");
+    fflush(stderr);
 
     /* 3. Graphics (D3D8→D3D11) */
     fprintf(stderr, "[3/4] Graphics (D3D8→D3D11)...\n");
@@ -346,11 +352,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         }
     }
 
-    /* Call the recompiled game entry point with crash protection */
+    /* Call the recompiled game entry point with crash protection.
+     * We push a dummy return address (simulating x86 'call' instruction)
+     * because the translated code expects [esp] = return addr on entry. */
     fprintf(stderr, "\n=== Calling xbe_entry_point (0x001D2807) ===\n");
+    fprintf(stderr, "  g_esp = 0x%08X before call\n", g_esp);
     __try {
+        PUSH32(g_esp, 0); /* simulate 'call' pushing return address */
         xbe_entry_point();
-        fprintf(stderr, "xbe_entry_point returned normally\n");
+        fprintf(stderr, "xbe_entry_point returned normally (g_eax=0x%08X)\n", g_eax);
     } __except(EXCEPTION_EXECUTE_HANDLER) {
         DWORD code = GetExceptionCode();
         fprintf(stderr, "CRASH in xbe_entry_point: exception 0x%08lX\n", code);

@@ -89,7 +89,7 @@ void xbox_log(int level, const char* subsystem, const char* fmt, ...)
  * either a function pointer or a data pointer.
  * ============================================================================ */
 
-static ULONG_PTR xbox_resolve_ordinal(ULONG ordinal)
+ULONG_PTR xbox_resolve_ordinal(ULONG ordinal)
 {
     switch (ordinal) {
 
