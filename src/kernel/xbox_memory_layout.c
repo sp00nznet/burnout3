@@ -44,6 +44,10 @@ static void *g_memory_base = NULL;
 static size_t g_memory_size = 0;
 static ptrdiff_t g_memory_offset = 0;  /* actual_base - XBOX_BASE_ADDRESS */
 
+/* Separate allocation for Xbox kernel address space (0x80010000+).
+ * Some RenderWare code reads the kernel PE header to detect features. */
+static void *g_kernel_memory = NULL;
+
 /* Global offset accessible by recompiled code (via recomp_types.h) */
 ptrdiff_t g_xbox_mem_offset = 0;
 
@@ -267,12 +271,52 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
         #undef XBOX_VA
     }
 
+    /*
+     * Allocate a page at Xbox kernel address space (0x80010000).
+     *
+     * RenderWare's Xbox driver code (xbcache.c) reads MEM32(0x8001003C)
+     * to parse the Xbox kernel's PE header and find the INIT section for
+     * CPU cache line sizing. On PC, we provide a minimal fake PE header
+     * with 0 sections so the function gracefully skips the cache init.
+     *
+     * The actual native address is 0x80010000 + g_memory_offset.
+     */
+    {
+        #define XBOX_KERNEL_BASE 0x80010000u
+        #define KERNEL_PAGE_SIZE 4096
+        uintptr_t kernel_native = XBOX_KERNEL_BASE + g_memory_offset;
+        g_kernel_memory = VirtualAlloc(
+            (LPVOID)kernel_native,
+            KERNEL_PAGE_SIZE,
+            MEM_RESERVE | MEM_COMMIT,
+            PAGE_READWRITE
+        );
+        if (g_kernel_memory) {
+            /* Zero-fill then set e_lfanew = 0x80 (offset to PE header).
+             * With the rest zeroed, NumberOfSections = 0 and the INIT
+             * section search finds nothing, which is the safe path. */
+            memset(g_kernel_memory, 0, KERNEL_PAGE_SIZE);
+            *(uint32_t *)((uint8_t *)g_kernel_memory + 0x3C) = 0x80;  /* e_lfanew */
+            fprintf(stderr, "  Kernel: fake PE header at Xbox VA 0x%08X (native %p)\n",
+                    XBOX_KERNEL_BASE, g_kernel_memory);
+        } else {
+            fprintf(stderr, "  WARNING: could not map Xbox kernel VA 0x%08X\n",
+                    XBOX_KERNEL_BASE);
+        }
+        #undef XBOX_KERNEL_BASE
+        #undef KERNEL_PAGE_SIZE
+    }
+
     fprintf(stderr, "xbox_MemoryLayoutInit: complete\n");
     return TRUE;
 }
 
 void xbox_MemoryLayoutShutdown(void)
 {
+    if (g_kernel_memory) {
+        VirtualFree(g_kernel_memory, 0, MEM_RELEASE);
+        g_kernel_memory = NULL;
+    }
     if (g_memory_base) {
         VirtualFree(g_memory_base, 0, MEM_RELEASE);
         g_memory_base = NULL;

@@ -118,6 +118,25 @@ ptrdiff_t xbox_GetMemoryOffset(void);
  * Xbox stack for recompiled code
  * ================================================================ */
 
+/* ================================================================
+ * Kernel data export area
+ * ================================================================ */
+
+/** Base VA for kernel data exports (XboxHardwareInfo, XboxKrnlVersion, etc.)
+ *  These are kernel exports that are DATA, not functions. The game reads
+ *  their thunk entries and dereferences them to access the data. */
+#define XBOX_KERNEL_DATA_BASE   0x00740000
+#define XBOX_KERNEL_DATA_SIZE   4096   /* 4 KB - plenty for all data exports */
+
+/* Offsets within the kernel data area */
+#define KDATA_HARDWARE_INFO     0x000  /* XBOX_HARDWARE_INFO (8 bytes) */
+#define KDATA_KRNL_VERSION      0x010  /* XBOX_KRNL_VERSION (8 bytes) */
+#define KDATA_TICK_COUNT        0x020  /* KeTickCount (4 bytes) */
+#define KDATA_LAUNCH_DATA_PAGE  0x030  /* LaunchDataPage (4 bytes, pointer) */
+#define KDATA_THREAD_OBJ_TYPE   0x040  /* PsThreadObjectType (4 bytes) */
+#define KDATA_EVENT_OBJ_TYPE    0x050  /* ExEventObjectType (4 bytes) */
+#define KDATA_XE_IMAGE_FILENAME 0x060  /* XeImageFileName (ANSI_STRING) */
+
 /** Size of the simulated Xbox stack (1 MB). */
 #define XBOX_STACK_SIZE     (1 * 1024 * 1024)
 

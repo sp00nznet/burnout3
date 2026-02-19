@@ -14,6 +14,7 @@
 
 /* Forward declarations for manually implemented functions */
 void sub_001D1818(void);
+void sub_001D2793(void);
 
 /* ── Manual dispatch table ────────────────────────────────────────────
  *
@@ -26,6 +27,7 @@ static const struct {
     recomp_func_t func;
 } g_manual_funcs[] = {
     { 0x001D1818u, (recomp_func_t)sub_001D1818 },
+    { 0x001D2793u, (recomp_func_t)sub_001D2793 },
 };
 #define NUM_MANUAL_FUNCS (sizeof(g_manual_funcs) / sizeof(g_manual_funcs[0]))
 
@@ -178,3 +180,136 @@ loc_001D18A2:
     esp = ebp + 4;  /* pop ebp + skip saved ebp */
     return;
 }
+
+/**
+ * sub_001D2793 - Game initialization callback
+ *
+ * This is an undetected function in the gap between sub_001D276B (ends ~0x001D278E)
+ * and xbe_entry_point (starts 0x001D2807). The recompiler didn't detect it because
+ * it's only reached via function pointer - pushed as StartContext1 parameter to
+ * PsCreateSystemThreadEx at address 0x001D2852 in xbe_entry_point.
+ *
+ * Called by sub_001D1818 (thread start routine) via:
+ *   RECOMP_ICALL(MEM32(ebp + 8))  where ebp+8 = 0x001D2793
+ *
+ * What it does:
+ *   1. Calls sub_001D3F2F (RenderWare global init)
+ *   2. Calls sub_001D2EE5 (engine setup)
+ *   3. Reads Xbox KPCR via fs:[0x20] → checks process block at offset 0x250
+ *   4. If process block pointer valid, sets up TLS-relative data structure
+ *   5. Calls sub_001D3EA2 and sub_001D3E4A (validation/finalization)
+ *   6. Calls sub_00156400(0, 0, 0) (cdecl - game subsystem init)
+ *   7. Calls sub_001D2E6F(1, 1, 0) (stdcall - enable game systems)
+ *   8. Returns 0
+ *
+ * Uses stdcall: ret 4 (takes 1 parameter from caller - StartContext2)
+ *
+ * Xbox x86 (0x001D2793-0x001D2806):
+ *   call sub_001D3F2F
+ *   call sub_001D2EE5
+ *   mov eax, fs:[0x20]         ; KPCR from TIB
+ *   mov eax, [eax+0x250]       ; process block field
+ *   test eax, eax / je skip
+ *   mov ecx, [eax+0x24]        ; pointer from process block
+ *   ...TLS setup using fs:[0x28], fs:[0x04], [0x41A7D4]...
+ *   call sub_001D3EA2
+ *   call sub_001D3E4A
+ *   push 0/0/0; call sub_00156400; add esp, 0xC
+ *   push 0/1/1; call sub_001D2E6F
+ *   xor eax, eax; ret 4
+ */
+void sub_001D2793(void)
+{
+    uint32_t ebx, esi, edi, ebp;
+
+    /* call sub_001D3F2F - RenderWare global init (version/cache check) */
+    PUSH32(esp, 0); sub_001D3F2F();
+
+    /* call sub_001D2EE5 - engine setup (D3D device, timers, DPCs) */
+    PUSH32(esp, 0); sub_001D2EE5();
+
+    /* mov eax, fs:[0x20] - KPCR pointer from fake TIB
+     * On Xbox, fs:[0x20] is the KPCR (Kernel Processor Control Region).
+     * Our fake TIB at VA 0x20 is initialized to 0 (no KPCR), which
+     * causes the code to skip the TLS setup block below. */
+    eax = MEM32(0x20);
+
+    /* mov eax, [eax + 0x250] - read from KPCR + 0x250 */
+    eax = MEM32(eax + 0x250);
+
+    /* test eax, eax; je loc_001D27B2 */
+    if (TEST_Z(eax, eax)) goto loc_001D27B2;
+
+    /* mov ecx, [eax + 0x24] */
+    ecx = MEM32(eax + 0x24);
+
+    /* jmp loc_001D27B4 */
+    goto loc_001D27B4;
+
+loc_001D27B2:
+    /* xor ecx, ecx */
+    ecx = 0;
+
+loc_001D27B4:
+    /* test ecx, ecx; je loc_001D27DF - skip TLS setup if no pointer */
+    if (TEST_Z(ecx, ecx)) goto loc_001D27DF;
+
+    /* push edi (callee-save) */
+    PUSH32(esp, edi);
+
+    /* mov eax, fs:[0x28] - TLS array pointer from fake TIB */
+    eax = MEM32(0x28);
+
+    /* mov edi, fs:[0x04] - stack base from fake TIB */
+    edi = MEM32(0x04);
+
+    /* mov edx, [0x41A7D4] - TLS index for this module */
+    edx = MEM32(0x41A7D4);
+
+    /* mov edx, [edi + edx*4] - TLS slot[index] */
+    edx = MEM32(edi + edx * 4);
+
+    /* sub edx, [eax + 0x28] - subtract base from RW context */
+    edx = edx - MEM32(eax + 0x28);
+
+    /* mov byte [ecx], 1 - set enable flag */
+    MEM8(ecx) = 1;
+
+    /* add edx, 8 */
+    edx = edx + 8;
+
+    /* mov [ecx + 4], edx - store TLS-relative offset */
+    MEM32(ecx + 4) = edx;
+
+    /* pop edi */
+    POP32(esp, edi);
+
+loc_001D27DF:
+    /* call sub_001D3EA2 - validation/finalization */
+    PUSH32(esp, 0); sub_001D3EA2();
+
+    /* call sub_001D3E4A - more finalization */
+    PUSH32(esp, 0); sub_001D3E4A();
+
+    /* push 0; push 0; push 0; call sub_00156400; add esp, 0xC (cdecl) */
+    PUSH32(esp, 0);
+    PUSH32(esp, 0);
+    PUSH32(esp, 0);
+    PUSH32(esp, 0); sub_00156400();
+    esp += 0xC;  /* cdecl: caller cleans 3 args */
+
+    /* push 0; push 1; push 1; call sub_001D2E6F (stdcall: callee cleans) */
+    PUSH32(esp, 0);
+    PUSH32(esp, 1);
+    PUSH32(esp, 1);
+    PUSH32(esp, 0); sub_001D2E6F();
+
+    /* xor eax, eax - return 0 */
+    eax = 0;
+
+    /* ret 4 - stdcall: pop return addr + 1 parameter */
+    esp += 4;  /* pop dummy return address */
+    esp += 4;  /* pop 1 parameter (StartContext2 from caller) */
+    return;
+}
+

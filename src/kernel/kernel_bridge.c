@@ -43,10 +43,84 @@ recomp_func_t recomp_lookup(uint32_t xbox_va);
 /* Translate Xbox VA to native pointer (NULL-safe: 0 → NULL) */
 #define XBOX_TO_NATIVE(va) ((va) ? (void*)((uintptr_t)(va) + g_xbox_mem_offset) : NULL)
 
-/* ── Synthetic VA range ─────────────────────────────────── */
+/* ── Synthetic VA range (for function exports) ─────────── */
 
 #define KERNEL_VA_BASE  0xFE000000u
 #define KERNEL_VA_END   (KERNEL_VA_BASE + XBOX_KERNEL_THUNK_TABLE_SIZE * 4)
+
+/* ── Kernel data exports ──────────────────────────────────
+ *
+ * Some kernel ordinals are DATA exports (structs/variables), not functions.
+ * The game reads their thunk entries and dereferences the result to access
+ * the data. These cannot use synthetic VAs — they must point to real,
+ * dereferenceable addresses in the Xbox VA space.
+ *
+ * We allocate a "kernel data area" at XBOX_KERNEL_DATA_BASE and populate
+ * it with the expected structures.
+ */
+
+#define BRIDGE_MEM16(addr) (*(volatile uint16_t *)((uintptr_t)(addr) + g_xbox_mem_offset))
+#define BRIDGE_MEM8(addr)  (*(volatile uint8_t  *)((uintptr_t)(addr) + g_xbox_mem_offset))
+
+/**
+ * Get the Xbox VA of data for a kernel DATA export ordinal.
+ * Returns 0 if the ordinal is not a data export (i.e., it's a function).
+ */
+static uint32_t kernel_data_va_for_ordinal(ULONG ordinal)
+{
+    switch (ordinal) {
+    case 322: return XBOX_KERNEL_DATA_BASE + KDATA_HARDWARE_INFO;
+    case 324: return XBOX_KERNEL_DATA_BASE + KDATA_KRNL_VERSION;
+    case 156: return XBOX_KERNEL_DATA_BASE + KDATA_TICK_COUNT;
+    case 164: return XBOX_KERNEL_DATA_BASE + KDATA_LAUNCH_DATA_PAGE;
+    case 259: return XBOX_KERNEL_DATA_BASE + KDATA_THREAD_OBJ_TYPE;
+    case  17: return XBOX_KERNEL_DATA_BASE + KDATA_EVENT_OBJ_TYPE;
+    case 328: return XBOX_KERNEL_DATA_BASE + KDATA_XE_IMAGE_FILENAME;
+    default:  return 0;  /* Not a data export */
+    }
+}
+
+/**
+ * Initialize kernel data export values at the kernel data area.
+ * Called during bridge init, after Xbox memory is mapped.
+ */
+static void kernel_data_init(void)
+{
+    /* XboxHardwareInfo (ordinal 322) - XBOX_HARDWARE_INFO
+     *   +0: ULONG Flags (0 = retail, 0x20 = devkit)
+     *   +4: UCHAR GpuRevision
+     *   +5: UCHAR McpRevision
+     */
+    BRIDGE_MEM32(XBOX_KERNEL_DATA_BASE + KDATA_HARDWARE_INFO + 0) = 0;   /* Retail */
+    BRIDGE_MEM8(XBOX_KERNEL_DATA_BASE + KDATA_HARDWARE_INFO + 4) = 0xA1; /* NV2A A1 */
+    BRIDGE_MEM8(XBOX_KERNEL_DATA_BASE + KDATA_HARDWARE_INFO + 5) = 0xB1; /* MCPX B1 */
+
+    /* XboxKrnlVersion (ordinal 324) - XBOX_KRNL_VERSION
+     *   +0: USHORT Major (1)
+     *   +2: USHORT Minor (0)
+     *   +4: USHORT Build (5849 = XDK version)
+     *   +6: USHORT Qfe (0)
+     */
+    BRIDGE_MEM16(XBOX_KERNEL_DATA_BASE + KDATA_KRNL_VERSION + 0) = 1;
+    BRIDGE_MEM16(XBOX_KERNEL_DATA_BASE + KDATA_KRNL_VERSION + 2) = 0;
+    BRIDGE_MEM16(XBOX_KERNEL_DATA_BASE + KDATA_KRNL_VERSION + 4) = 5849;
+    BRIDGE_MEM16(XBOX_KERNEL_DATA_BASE + KDATA_KRNL_VERSION + 6) = 0;
+
+    /* KeTickCount (ordinal 156) - starts at 0, would increment per tick */
+    BRIDGE_MEM32(XBOX_KERNEL_DATA_BASE + KDATA_TICK_COUNT) = 0;
+
+    /* LaunchDataPage (ordinal 164) - NULL (no launch data) */
+    BRIDGE_MEM32(XBOX_KERNEL_DATA_BASE + KDATA_LAUNCH_DATA_PAGE) = 0;
+
+    /* PsThreadObjectType (ordinal 259) - type object (stub: 0) */
+    BRIDGE_MEM32(XBOX_KERNEL_DATA_BASE + KDATA_THREAD_OBJ_TYPE) = 0;
+
+    /* ExEventObjectType (ordinal 17) - type object (stub: 0) */
+    BRIDGE_MEM32(XBOX_KERNEL_DATA_BASE + KDATA_EVENT_OBJ_TYPE) = 0;
+
+    fprintf(stderr, "  Kernel data exports: initialized at Xbox VA 0x%08X\n",
+            XBOX_KERNEL_DATA_BASE);
+}
 
 /* ── Per-slot ordinal and bridge function ────────────────── */
 
@@ -578,6 +652,9 @@ void xbox_kernel_bridge_init(void)
         &old_protect
     );
 
+    /* Initialize kernel data export values first */
+    kernel_data_init();
+
     for (i = 0; i < XBOX_KERNEL_THUNK_TABLE_SIZE; i++) {
         uint32_t va = XBOX_KERNEL_THUNK_TABLE_BASE + i * 4;
         uint32_t current = BRIDGE_MEM32(va);
@@ -587,7 +664,18 @@ void xbox_kernel_bridge_init(void)
             ULONG ordinal = current & 0x7FFFFFFF;
             g_slot_ordinals[i] = ordinal;
 
-            /* Find a per-ordinal bridge function */
+            /* Check if this is a data export */
+            uint32_t data_va = kernel_data_va_for_ordinal(ordinal);
+            if (data_va) {
+                /* DATA export: point thunk to actual data in mapped memory.
+                 * This allows the game to dereference the thunk entry. */
+                BRIDGE_MEM32(va) = data_va;
+                resolved++;
+                bridged++;
+                continue;
+            }
+
+            /* FUNCTION export: use synthetic VA for dispatch */
             g_slot_bridges[i] = bridge_for_ordinal(ordinal);
             if (g_slot_bridges[i]) {
                 bridged++;
@@ -614,4 +702,5 @@ void xbox_kernel_bridge_init(void)
             resolved, XBOX_KERNEL_THUNK_TABLE_SIZE, bridged, unbridged);
     fprintf(stderr, "  Synthetic VA range: 0x%08X-0x%08X\n",
             KERNEL_VA_BASE, KERNEL_VA_BASE + (resolved - 1) * 4);
+
 }

@@ -195,8 +195,8 @@ recomp_func_t recomp_lookup_manual(uint32_t xbox_va);
  * If not found, the call is a no-op (stub target).
  */
 #define RECOMP_ICALL(xbox_va) do { \
-    recomp_func_t _fn = recomp_lookup((uint32_t)(xbox_va)); \
-    if (!_fn) _fn = recomp_lookup_manual((uint32_t)(xbox_va)); \
+    recomp_func_t _fn = recomp_lookup_manual((uint32_t)(xbox_va)); \
+    if (!_fn) _fn = recomp_lookup((uint32_t)(xbox_va)); \
     if (!_fn) _fn = recomp_lookup_kernel((uint32_t)(xbox_va)); \
     if (_fn) _fn(); \
 } while(0)
@@ -206,8 +206,8 @@ recomp_func_t recomp_lookup_manual(uint32_t xbox_va);
  * No return address is pushed - reuses the current frame's return addr.
  */
 #define RECOMP_ITAIL(xbox_va) do { \
-    recomp_func_t _fn = recomp_lookup((uint32_t)(xbox_va)); \
-    if (!_fn) _fn = recomp_lookup_manual((uint32_t)(xbox_va)); \
+    recomp_func_t _fn = recomp_lookup_manual((uint32_t)(xbox_va)); \
+    if (!_fn) _fn = recomp_lookup((uint32_t)(xbox_va)); \
     if (!_fn) _fn = recomp_lookup_kernel((uint32_t)(xbox_va)); \
     if (_fn) _fn(); \
 } while(0)

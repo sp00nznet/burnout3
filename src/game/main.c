@@ -361,12 +361,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         PUSH32(g_esp, 0); /* simulate 'call' pushing return address */
         xbe_entry_point();
         fprintf(stderr, "xbe_entry_point returned normally (g_eax=0x%08X)\n", g_eax);
-    } __except(EXCEPTION_EXECUTE_HANDLER) {
+    } __except(
+        (fprintf(stderr, "CRASH in xbe_entry_point: exception 0x%08lX\n",
+                 GetExceptionInformation()->ExceptionRecord->ExceptionCode),
+         fprintf(stderr, "  Fault address: 0x%p\n",
+                 GetExceptionInformation()->ExceptionRecord->ExceptionAddress),
+         GetExceptionInformation()->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION
+            ? fprintf(stderr, "  Access violation %s address 0x%p\n",
+                      GetExceptionInformation()->ExceptionRecord->ExceptionInformation[0] ? "writing" : "reading",
+                      (void*)GetExceptionInformation()->ExceptionRecord->ExceptionInformation[1])
+            : 0,
+         EXCEPTION_EXECUTE_HANDLER)
+    ) {
         DWORD code = GetExceptionCode();
-        fprintf(stderr, "CRASH in xbe_entry_point: exception 0x%08lX\n", code);
         switch (code) {
         case EXCEPTION_ACCESS_VIOLATION:
-            fprintf(stderr, "  Access violation (bad memory read/write)\n");
+            fprintf(stderr, "  Registers: eax=0x%08X ecx=0x%08X edx=0x%08X esp=0x%08X\n",
+                    g_eax, g_ecx, g_edx, g_esp);
             break;
         case EXCEPTION_STACK_OVERFLOW:
             fprintf(stderr, "  Stack overflow (infinite recursion?)\n");
