@@ -76,7 +76,7 @@ recomp_func_t recomp_lookup_manual(uint32_t xbox_va)
  */
 void sub_001D1818(void)
 {
-    uint32_t ebx, esi, edi, ebp;
+    uint32_t ebp;
 
     /* Synthetic prologue - simulate push ebp; mov ebp, esp; sub esp, 48
      * The original x86 has an SEH prologue (push 0x18; push handler;
@@ -220,7 +220,7 @@ loc_001D18A2:
  */
 void sub_001D2793(void)
 {
-    uint32_t ebx, esi, edi, ebp;
+    uint32_t ebp;
 
     /* call sub_001D3F2F - RenderWare global init (version/cache check) */
     fprintf(stderr, "  [init] sub_001D3F2F (RW global init)...\n");
@@ -289,11 +289,12 @@ loc_001D27B4:
 
 loc_001D27DF:
     /* call sub_001D3EA2 - validation/finalization */
-    fprintf(stderr, "  [init] sub_001D3EA2 (RW validate)...\n");
+    fprintf(stderr, "  [init] sub_001D3EA2 (RW validate)... MEM32(0x754D94)=0x%08X\n", MEM32(0x754D94));
     PUSH32(esp, 0); sub_001D3EA2();
+    fprintf(stderr, "  [init] after sub_001D3EA2: MEM32(0x754D94)=0x%08X\n", MEM32(0x754D94));
 
     /* call sub_001D3E4A - C++ static constructors */
-    fprintf(stderr, "  [init] sub_001D3E4A (static init)...\n");
+    fprintf(stderr, "  [init] sub_001D3E4A (static init)... MEM32(0x754D94)=0x%08X\n", MEM32(0x754D94));
     PUSH32(esp, 0); sub_001D3E4A();
     fprintf(stderr, "  [init] sub_001D3E4A done\n");
 

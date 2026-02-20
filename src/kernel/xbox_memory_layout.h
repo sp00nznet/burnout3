@@ -136,6 +136,13 @@ ptrdiff_t xbox_GetMemoryOffset(void);
 #define KDATA_THREAD_OBJ_TYPE   0x040  /* PsThreadObjectType (4 bytes) */
 #define KDATA_EVENT_OBJ_TYPE    0x050  /* ExEventObjectType (4 bytes) */
 #define KDATA_XE_IMAGE_FILENAME 0x060  /* XeImageFileName (ANSI_STRING) */
+#define KDATA_IO_COMPLETION_TYPE 0x070 /* IoCompletionObjectType (4 bytes) */
+#define KDATA_IO_DEVICE_TYPE    0x080  /* IoDeviceObjectType (4 bytes) */
+#define KDATA_HD_KEY            0x100  /* XboxHDKey (16 bytes) */
+#define KDATA_SIGNATURE_KEY     0x110  /* XboxSignatureKey (16 bytes) */
+#define KDATA_LAN_KEY           0x120  /* XboxLANKey (16 bytes) */
+#define KDATA_ALT_SIGNATURE_KEYS 0x130 /* XboxAlternateSignatureKeys (256 bytes) */
+#define KDATA_XE_PUBLIC_KEY     0x300  /* XePublicKeyData (284 bytes) */
 
 /** Size of the simulated Xbox stack (1 MB). */
 #define XBOX_STACK_SIZE     (1 * 1024 * 1024)

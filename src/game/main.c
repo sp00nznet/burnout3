@@ -192,6 +192,37 @@ static BOOL init_subsystems(void)
     fprintf(stderr, "  xbox_kernel_bridge_init() done\n");
     fflush(stderr);
 
+    /* 2b. Pre-initialize CRT bootstrap locks.
+     *
+     * The Xbox CRT uses a lock table at 0x3C6500 with 36 entries (8 bytes
+     * each: [pointer(4), flag(4)]). Bootstrap locks have flag=1 and must be
+     * initialized before any code calls __lock(). Normally _mtinitlocks()
+     * (sub_0024858A) does this during CRT startup, but we bypass the CRT
+     * entry point.
+     *
+     * Without this, __lock(8) → _mtinitlocknum(8) → __lock(10) →
+     * _mtinitlocknum(10) → __lock(10) → infinite recursion → stack overflow.
+     *
+     * Since all CS operations are no-ops (single-threaded execution), the
+     * pointers just need to be non-zero. We use the pre-allocated CS buffer
+     * array at 0x41D310 (in BSS), same as the original _mtinitlocks. */
+    {
+        uint32_t cs_addr = 0x41D310;  /* Pre-allocated CS buffer array */
+        int locks_initialized = 0;
+        int i;
+        for (i = 0; i < 36; i++) {
+            uint32_t flag_va = 0x3C6504 + i * 8;
+            uint32_t ptr_va  = 0x3C6500 + i * 8;
+            if (MEM32(flag_va) == 1) {
+                MEM32(ptr_va) = cs_addr;
+                cs_addr += 0x1C;  /* Each CS struct is 0x1C bytes */
+                locks_initialized++;
+            }
+        }
+        fprintf(stderr, "  CRT locks: %d bootstrap locks pre-initialized\n",
+                locks_initialized);
+    }
+
     /* 3. Graphics (D3D8→D3D11) */
     fprintf(stderr, "[3/4] Graphics (D3D8→D3D11)...\n");
     {

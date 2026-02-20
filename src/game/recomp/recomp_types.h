@@ -47,18 +47,27 @@
  */
 extern ptrdiff_t g_xbox_mem_offset;
 
-/* ── Global volatile registers ─────────────────────────── */
+/* ── Global registers ──────────────────────────────────── */
 
 /**
- * Volatile x86 registers shared across all translated functions.
- * These match real x86 behavior: eax/ecx/edx are caller-saved
- * (may be clobbered by any call), and esp is the shared stack pointer.
+ * Volatile x86 registers (caller-saved):
+ *   eax - return values, general accumulator
+ *   ecx - 'this' pointer for thiscall, loop counter
+ *   edx - high dword of multiply/divide, general
+ *   esp - stack pointer (initialized to XBOX_STACK_TOP)
  *
- * g_esp is initialized to XBOX_STACK_TOP during memory layout init.
- * g_eax carries function return values between caller and callee.
- * g_ecx carries 'this' pointer for thiscall functions.
+ * Callee-saved x86 registers (also global):
+ *   ebx, esi, edi - these are global because callers pass implicit
+ *   parameters through them (e.g. 'this' via esi in thiscall).
+ *   The callee-save contract is enforced by PUSH32/POP32 instructions
+ *   in the generated code, not by C local variable scoping.
+ *
+ * NOT global: ebp - stays local in each function because 20K+ FPO
+ * (Frame Pointer Omission) functions use it as scratch without
+ * save/restore. For SEH functions, g_seh_ebp bridges the gap.
  */
 extern uint32_t g_eax, g_ecx, g_edx, g_esp;
+extern uint32_t g_ebx, g_esi, g_edi;
 
 /**
  * SEH frame pointer bridge.
@@ -168,8 +177,10 @@ static inline uint32_t ROR32(uint32_t val, int n) {
 
 /* ── Stack simulation (for push/pop heavy prologues) ────── */
 
-/** Push a 32-bit value onto a simulated stack. */
-#define PUSH32(sp, val) do { (sp) -= 4; MEM32(sp) = (uint32_t)(val); } while(0)
+/** Push a 32-bit value onto a simulated stack.
+ *  Evaluates val BEFORE decrementing sp, matching x86 semantics
+ *  where push [esp+N] reads the operand before adjusting ESP. */
+#define PUSH32(sp, val) do { uint32_t _pv = (uint32_t)(val); (sp) -= 4; MEM32(sp) = _pv; } while(0)
 
 /** Pop a 32-bit value from a simulated stack. */
 #define POP32(sp, dst)  do { (dst) = MEM32(sp); (sp) += 4; } while(0)
@@ -238,6 +249,9 @@ recomp_func_t recomp_lookup_manual(uint32_t xbox_va);
 #define ecx g_ecx
 #define edx g_edx
 #define esp g_esp
+#define ebx g_ebx
+#define esi g_esi
+#define edi g_edi
 /* ebp is NOT global - it's local in each function.
  * For __SEH_prolog/epilog, use g_seh_ebp to bridge. */
 #endif
