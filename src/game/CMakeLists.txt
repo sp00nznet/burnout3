@@ -64,6 +64,8 @@ if(MSVC)
     target_link_options(burnout3 PRIVATE
         /DYNAMICBASE:NO
         /FIXED:NO
+        /MAP
+        /DEBUG
     )
 elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
     target_compile_options(burnout3 PRIVATE

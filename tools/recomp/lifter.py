@@ -1093,12 +1093,13 @@ class Lifter:
         if insn.jump_target:
             if self._is_external_target(insn.jump_target):
                 # Tail call - no return address push (reuses current frame's)
+                # Bridge ebp so the target function can inherit our frame pointer.
                 name = self._call_target_name(insn.jump_target)
-                return [f"{name}(); return; /* tail jmp 0x{insn.jump_target:08X} */"]
+                return [f"g_seh_ebp = ebp; {name}(); return; /* tail jmp 0x{insn.jump_target:08X} */"]
             return [f"goto loc_{insn.jump_target:08X};"]
         elif len(ops) >= 1:
             target = _fmt_operand_read(ops[0])
-            return [f"RECOMP_ITAIL({target}); return; /* indirect tail jmp */"]
+            return [f"g_seh_ebp = ebp; RECOMP_ITAIL({target}); return; /* indirect tail jmp */"]
         return ["/* jmp: no target */"]
 
     def _lift_jcc(self, insn):

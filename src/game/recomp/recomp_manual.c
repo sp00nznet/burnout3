@@ -15,6 +15,8 @@
 /* Forward declarations for manually implemented functions */
 void sub_001D1818(void);
 void sub_001D2793(void);
+void sub_00249B7C(void);
+void sub_00249B9C(void);
 
 /* ── Manual dispatch table ────────────────────────────────────────────
  *
@@ -28,6 +30,8 @@ static const struct {
 } g_manual_funcs[] = {
     { 0x001D1818u, (recomp_func_t)sub_001D1818 },
     { 0x001D2793u, (recomp_func_t)sub_001D2793 },
+    { 0x00249B7Cu, (recomp_func_t)sub_00249B7C },
+    { 0x00249B9Cu, (recomp_func_t)sub_00249B9C },
 };
 #define NUM_MANUAL_FUNCS (sizeof(g_manual_funcs) / sizeof(g_manual_funcs[0]))
 
@@ -320,5 +324,124 @@ loc_001D27DF:
     esp += 4;  /* pop dummy return address */
     esp += 4;  /* pop 1 parameter (StartContext2 from caller) */
     return;
+}
+
+/**
+ * sub_00249B7C - CRT FPU exception handler (with inlined tail jump target)
+ *
+ * Original x86: 0x00249B7C sets up an EBP frame, copies some args to locals,
+ * then tail-jumps (JMP) to 0x00249B9C which continues using the same frame.
+ * The auto-recompiler emits this as two separate C functions, but sub_00249B9C
+ * has its own local `ebp` which starts uninitialized (0). When it does
+ * `MEMD(ebp - 8)`, it writes to Xbox VA 0xFFFFFFF8 → crash.
+ *
+ * Fix: inline sub_00249B9C's code so both halves share the same `ebp` local.
+ *
+ * This is the CRT _fltused / __control87 / pow helper chain:
+ *   sub_00244E9C → sub_00244EC0 → sub_00249CB9 → sub_00249B7C → sub_0024BC71
+ */
+void sub_00249B7C(void)
+{
+    uint32_t ebp;
+    double _fp_stack[8];
+    int _fp_top = 0;
+    #define fp_push_m(v) (_fp_stack[--_fp_top & 7] = (v))
+    #define fp_pop_m() (_fp_top++)
+    #define fp_popp_m() (fp_pop_m())
+    #define fp_top_m() _fp_stack[_fp_top & 7]
+
+    /* sub_00249B7C prologue */
+    PUSH32(esp, ebp);
+    ebp = esp;
+    esp = esp + 0xFFFFFFE0u; /* sub esp, 0x20 */
+    MEM32(ebp - 32) = eax;
+    eax = MEM32(ebp + 0x18);
+    MEM32(ebp - 16) = eax;
+    eax = MEM32(ebp + 0x1C);
+    MEM32(ebp - 12) = eax;
+
+    /* --- inlined sub_00249B9C (tail jump target) --- */
+    MEMD(ebp - 8) = fp_top_m(); fp_popp_m(); /* fstp qword [ebp-8] */
+    MEM32(ebp - 28) = ecx;
+    eax = MEM32(ebp + 0x10);
+    ecx = MEM32(ebp + 0x14);
+    MEM32(ebp - 24) = eax;
+    MEM32(ebp - 20) = ecx;
+    eax = ebp + 8;
+    ecx = ebp - 32;
+    PUSH32(esp, eax);
+    PUSH32(esp, ecx);
+    PUSH32(esp, edx);
+    PUSH32(esp, 0); sub_0024BC71();
+
+    /* loc_00249BBC */
+    esp = esp + 0xC;
+    fp_push_m(MEMD(ebp - 8)); /* fld qword [ebp-8] */
+    if (!CMP_EQ(MEM16(ebp + 8), 0x27F)) {
+        /* fldcw word ptr [ebp + 8] - FPU control word restore (no-op for us) */
+    }
+
+    /* leave; ret */
+    esp = ebp;
+    POP32(esp, ebp);
+    esp += 4;
+    return;
+
+    #undef fp_push_m
+    #undef fp_pop_m
+    #undef fp_popp_m
+    #undef fp_top_m
+}
+
+/**
+ * sub_00249B9C - continuation of sub_00249B7C (shared frame)
+ *
+ * This is the tail jump target of sub_00249B7C. In rare cases it's called
+ * directly (not through sub_00249B7C). When called directly, ebp must be
+ * inherited from the caller via g_seh_ebp. But typically it's only reached
+ * via the tail jump, which we've inlined above. This stub exists so the
+ * dispatch table doesn't call the broken generated version.
+ */
+void sub_00249B9C(void)
+{
+    uint32_t ebp;
+    double _fp_stack[8];
+    int _fp_top = 0;
+    #define fp_push_m(v) (_fp_stack[--_fp_top & 7] = (v))
+    #define fp_pop_m() (_fp_top++)
+    #define fp_popp_m() (fp_pop_m())
+    #define fp_top_m() _fp_stack[_fp_top & 7]
+
+    /* Inherit ebp from caller - this function expects to share a frame */
+    ebp = g_seh_ebp;
+
+    MEMD(ebp - 8) = fp_top_m(); fp_popp_m();
+    MEM32(ebp - 28) = ecx;
+    eax = MEM32(ebp + 0x10);
+    ecx = MEM32(ebp + 0x14);
+    MEM32(ebp - 24) = eax;
+    MEM32(ebp - 20) = ecx;
+    eax = ebp + 8;
+    ecx = ebp - 32;
+    PUSH32(esp, eax);
+    PUSH32(esp, ecx);
+    PUSH32(esp, edx);
+    PUSH32(esp, 0); sub_0024BC71();
+
+    esp = esp + 0xC;
+    fp_push_m(MEMD(ebp - 8));
+    if (!CMP_EQ(MEM16(ebp + 8), 0x27F)) {
+        /* fldcw - no-op */
+    }
+
+    esp = ebp;
+    POP32(esp, ebp);
+    esp += 4;
+    return;
+
+    #undef fp_push_m
+    #undef fp_pop_m
+    #undef fp_popp_m
+    #undef fp_top_m
 }
 

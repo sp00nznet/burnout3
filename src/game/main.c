@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dbghelp.h>
+#pragma comment(lib, "dbghelp.lib")
 
 /* Compatibility layers */
 #include "../kernel/kernel.h"
@@ -31,6 +33,48 @@
 
 /* Recompiled code */
 #include "recomp/gen/recomp_funcs.h"
+
+/* ── Crash diagnostics ─────────────────────────────────────── */
+
+static LONG WINAPI crash_veh(PEXCEPTION_POINTERS info)
+{
+    if (info->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION) {
+        void *frames[32];
+        USHORT count;
+        HMODULE mod;
+        char modname[MAX_PATH];
+        uintptr_t base;
+
+        fprintf(stderr, "\n=== VEH: Access violation at RIP=0x%p ===\n",
+                info->ExceptionRecord->ExceptionAddress);
+        fprintf(stderr, "  %s address 0x%p\n",
+                info->ExceptionRecord->ExceptionInformation[0] ? "Writing" : "Reading",
+                (void*)info->ExceptionRecord->ExceptionInformation[1]);
+
+        /* Get module base to compute RVA */
+        GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+                          (LPCSTR)info->ExceptionRecord->ExceptionAddress, &mod);
+        base = (uintptr_t)mod;
+        GetModuleFileNameA(mod, modname, sizeof(modname));
+        fprintf(stderr, "  Module: %s (base=0x%p)\n", modname, (void*)base);
+        fprintf(stderr, "  Crash RVA: 0x%llX\n",
+                (unsigned long long)((uintptr_t)info->ExceptionRecord->ExceptionAddress - base));
+
+        /* Native stack trace */
+        count = CaptureStackBackTrace(0, 32, frames, NULL);
+        fprintf(stderr, "  Native stack (%d frames):\n", count);
+        for (USHORT i = 0; i < count; i++) {
+            HMODULE fmod = NULL;
+            GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+                              (LPCSTR)frames[i], &fmod);
+            fprintf(stderr, "    [%2d] 0x%p (RVA 0x%llX)\n",
+                    i, frames[i],
+                    (unsigned long long)((uintptr_t)frames[i] - (uintptr_t)fmod));
+        }
+        fflush(stderr);
+    }
+    return EXCEPTION_CONTINUE_SEARCH;
+}
 
 /* ── Configuration ──────────────────────────────────────────── */
 
@@ -223,6 +267,31 @@ static BOOL init_subsystems(void)
                 locks_initialized);
     }
 
+    /* 2c. Pre-initialize CRT atexit callback table.
+     *
+     * The CRT atexit/onexit registration function (sub_0024326D) stores
+     * callback function pointers in a dynamically-allocated table whose
+     * base and current pointers live at Xbox VA 0x76B92C and 0x76B928.
+     * These are BSS (zero-initialized), but the code doesn't handle null:
+     * sub_00246E8B → sub_001D4D65 reads RW heap block metadata at negative
+     * offsets from the table pointer, crashing on MEM8(0 - 11).
+     *
+     * Fix: allocate a zeroed buffer with 32 bytes of padding (for the
+     * negative-offset metadata reads). The zeroed metadata makes
+     * sub_001D4D65 return -1 (huge capacity), so sub_0024326D always
+     * finds room to store entries without needing to query block size. */
+    {
+        uint32_t atexit_buf = xbox_HeapAlloc(1024 + 32, 4);
+        if (atexit_buf) {
+            uint32_t table_base = atexit_buf + 32;
+            MEM32(0x76B92C) = table_base;  /* base pointer */
+            MEM32(0x76B928) = table_base;  /* current = base (empty table) */
+            fprintf(stderr, "  CRT atexit: table at 0x%08X (256 entries)\n", table_base);
+        } else {
+            fprintf(stderr, "  WARNING: could not allocate atexit table\n");
+        }
+    }
+
     /* 3. Graphics (D3D8→D3D11) */
     fprintf(stderr, "[3/4] Graphics (D3D8→D3D11)...\n");
     {
@@ -383,6 +452,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         }
     }
 
+    /* Register VEH for crash diagnostics */
+    AddVectoredExceptionHandler(1, crash_veh);
+
     /* Call the recompiled game entry point with crash protection.
      * We push a dummy return address (simulating x86 'call' instruction)
      * because the translated code expects [esp] = return addr on entry. */
@@ -409,6 +481,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         case EXCEPTION_ACCESS_VIOLATION:
             fprintf(stderr, "  Registers: eax=0x%08X ecx=0x%08X edx=0x%08X esp=0x%08X\n",
                     g_eax, g_ecx, g_edx, g_esp);
+            fprintf(stderr, "  ebx=0x%08X esi=0x%08X edi=0x%08X seh_ebp=0x%08X\n",
+                    g_ebx, g_esi, g_edi, g_seh_ebp);
+            /* Dump simulated Xbox stack to find return addresses */
+            {
+                int j;
+                uint32_t sp = g_esp;
+                fprintf(stderr, "  Xbox stack dump (16 dwords from esp=0x%08X):\n", sp);
+                for (j = 0; j < 16 && sp + j*4 < XBOX_STACK_TOP; j++) {
+                    uint32_t val = MEM32(sp + j*4);
+                    fprintf(stderr, "    [esp+%02X] 0x%08X", j*4, val);
+                    /* Mark values that look like code addresses */
+                    if (val >= 0x00010000 && val < 0x002CE000)
+                        fprintf(stderr, " <- .text");
+                    fprintf(stderr, "\n");
+                }
+            }
             break;
         case EXCEPTION_STACK_OVERFLOW:
             fprintf(stderr, "  Stack overflow (infinite recursion?)\n");

@@ -216,6 +216,15 @@ class FunctionTranslator:
             lines.append(f"    #define fp_top() _fp_stack[_fp_top & 7]")
             lines.append(f"    #define fp_st1() _fp_stack[(_fp_top + 1) & 7]")
 
+        # For fpo_leaf functions that use ebp: initialize from g_seh_ebp.
+        # In x86, these functions inherit EBP from their caller (typically
+        # via a tail jump that shares the caller's frame). In our C translation,
+        # ebp is a local variable that would start uninitialized, causing
+        # crashes when the function reads MEM32(ebp + offset). The g_seh_ebp
+        # global bridges ebp across function boundaries.
+        if frame_type == "fpo_leaf" and "ebp" in used_regs and not has_prologue:
+            lines.append(f"    ebp = g_seh_ebp; /* fpo_leaf: inherit caller's frame */")
+
         lines.append(f"")
 
         # Generate code for each basic block
