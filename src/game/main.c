@@ -34,11 +34,224 @@
 /* Recompiled code */
 #include "recomp/gen/recomp_funcs.h"
 
-/* ── Crash diagnostics ─────────────────────────────────────── */
+/* ── Crash diagnostics + SEH simulation ────────────────────── */
+
+/*
+ * Mini x86-64 instruction decoder for VEH fault skipping.
+ *
+ * When the RenderWare engine probes memory past 64MB, the real Xbox
+ * dispatches the fault through SEH. The game's __try/__except catches it
+ * to determine available RAM. We simulate this by decoding the faulting
+ * instruction, setting the destination register to 0 (as if reading from
+ * unmapped memory), and advancing RIP past the instruction.
+ */
+static int g_seh_skip_count = 0;
+
+static BOOL veh_skip_faulting_read(PCONTEXT ctx)
+{
+    uint8_t *rip = (uint8_t *)ctx->Rip;
+    int prefix_len = 0;
+    int rex_w = 0, rex_r = 0, rex_x = 0, rex_b = 0;
+
+    /* Map register index to CONTEXT field */
+    DWORD64 *gpr[] = {
+        &ctx->Rax, &ctx->Rcx, &ctx->Rdx, &ctx->Rbx,
+        &ctx->Rsp, &ctx->Rbp, &ctx->Rsi, &ctx->Rdi,
+        &ctx->R8,  &ctx->R9,  &ctx->R10, &ctx->R11,
+        &ctx->R12, &ctx->R13, &ctx->R14, &ctx->R15
+    };
+
+    /* Parse legacy prefixes (segment, operand size, etc.) */
+    while (prefix_len < 4) {
+        uint8_t b = rip[prefix_len];
+        if (b == 0x66 || b == 0x67 || b == 0xF2 || b == 0xF3 ||
+            b == 0x2E || b == 0x3E || b == 0x26 || b == 0x36 ||
+            b == 0x64 || b == 0x65) {
+            prefix_len++;
+        } else {
+            break;
+        }
+    }
+
+    /* Parse REX prefix (0x40-0x4F) */
+    if ((rip[prefix_len] & 0xF0) == 0x40) {
+        uint8_t rex = rip[prefix_len];
+        rex_w = (rex >> 3) & 1;
+        rex_r = (rex >> 2) & 1;
+        rex_x = (rex >> 1) & 1;
+        rex_b = rex & 1;
+        prefix_len++;
+    }
+
+    uint8_t *op = rip + prefix_len;
+
+    /* Calculate ModRM displacement length */
+    /* Returns total bytes for modrm + optional SIB + displacement */
+    #define MODRM_LEN(modrm_byte) do { \
+        int _mod = ((modrm_byte) >> 6) & 3; \
+        int _rm  = ((modrm_byte) & 7) | (rex_b << 3); \
+        modrm_total = 1; /* modrm byte itself */ \
+        if (_mod == 0 && (_rm & 7) == 4) modrm_total++; /* SIB */ \
+        if (_mod == 0 && (_rm & 7) == 5) modrm_total += 4; /* RIP-rel disp32 */ \
+        if (_mod == 1) { modrm_total++; if ((_rm & 7) == 4) modrm_total++; } \
+        if (_mod == 2) { modrm_total += 4; if ((_rm & 7) == 4) modrm_total++; } \
+        if (_mod == 3) modrm_total = 1; /* reg-reg, shouldn't fault */ \
+    } while(0)
+
+    int modrm_total = 0;
+    int reg_idx;
+
+    /* 8B /r : mov r32/r64, r/m32/r/m64 */
+    if (op[0] == 0x8B) {
+        reg_idx = ((op[1] >> 3) & 7) | (rex_r << 3);
+        MODRM_LEN(op[1]);
+        *gpr[reg_idx] = 0;
+        ctx->Rip += prefix_len + 1 + modrm_total;
+        return TRUE;
+    }
+
+    /* 8A /r : mov r8, r/m8 */
+    if (op[0] == 0x8A) {
+        reg_idx = ((op[1] >> 3) & 7) | (rex_r << 3);
+        MODRM_LEN(op[1]);
+        /* Zero just the low byte of the register */
+        *gpr[reg_idx] &= ~(DWORD64)0xFF;
+        ctx->Rip += prefix_len + 1 + modrm_total;
+        return TRUE;
+    }
+
+    /* 0F B6 /r : movzx r32, r/m8 */
+    /* 0F B7 /r : movzx r32, r/m16 */
+    /* 0F BE /r : movsx r32, r/m8 */
+    /* 0F BF /r : movsx r32, r/m16 */
+    if (op[0] == 0x0F && (op[1] == 0xB6 || op[1] == 0xB7 ||
+                           op[1] == 0xBE || op[1] == 0xBF)) {
+        reg_idx = ((op[2] >> 3) & 7) | (rex_r << 3);
+        MODRM_LEN(op[2]);
+        *gpr[reg_idx] = 0;
+        ctx->Rip += prefix_len + 2 + modrm_total;
+        return TRUE;
+    }
+
+    /* 3B /r : cmp r32, r/m32 - set flags as if comparing with 0 */
+    if (op[0] == 0x3B) {
+        reg_idx = ((op[1] >> 3) & 7) | (rex_r << 3);
+        MODRM_LEN(op[1]);
+        /* Set ZF=0, CF based on comparison with 0 */
+        DWORD64 val = *gpr[reg_idx];
+        ctx->EFlags &= ~(0x8D5);  /* clear OF, SF, ZF, AF, PF, CF */
+        if (val == 0) ctx->EFlags |= 0x40;  /* ZF */
+        if (val & (rex_w ? 0x8000000000000000ULL : 0x80000000ULL))
+            ctx->EFlags |= 0x80;  /* SF */
+        ctx->Rip += prefix_len + 1 + modrm_total;
+        return TRUE;
+    }
+
+    /* 39 /r : cmp r/m32, r32 - set flags as if mem=0 */
+    if (op[0] == 0x39) {
+        reg_idx = ((op[1] >> 3) & 7) | (rex_r << 3);
+        MODRM_LEN(op[1]);
+        DWORD64 val = *gpr[reg_idx];
+        ctx->EFlags &= ~(0x8D5);
+        if (val == 0) ctx->EFlags |= 0x40;  /* ZF: 0 == val */
+        /* 0 - val: CF set if val != 0 */
+        if (val != 0) ctx->EFlags |= 0x01;  /* CF */
+        /* SF: sign of (0 - val) */
+        DWORD64 result = (rex_w ? (DWORD64)(-(int64_t)val) : (DWORD64)(uint32_t)(-(int32_t)(uint32_t)val));
+        if (result & (rex_w ? 0x8000000000000000ULL : 0x80000000ULL))
+            ctx->EFlags |= 0x80;  /* SF */
+        ctx->Rip += prefix_len + 1 + modrm_total;
+        return TRUE;
+    }
+
+    /* F3 0F 10 /r : movss xmm, m32 */
+    /* Check if we had F3 prefix */
+    {
+        int has_f3 = 0;
+        for (int i = 0; i < prefix_len; i++) {
+            if (rip[i] == 0xF3) has_f3 = 1;
+        }
+        if (has_f3 && op[0] == 0x0F && op[1] == 0x10) {
+            /* Zero the XMM register */
+            int xmm_idx = ((op[2] >> 3) & 7) | (rex_r << 3);
+            MODRM_LEN(op[2]);
+            /* XMM registers in CONTEXT: Xmm0-Xmm15 */
+            if (xmm_idx < 16) {
+                M128A *xmm = &ctx->Xmm0 + xmm_idx;
+                xmm->Low = 0;
+                xmm->High = 0;
+            }
+            ctx->Rip += prefix_len + 2 + modrm_total;
+            return TRUE;
+        }
+    }
+
+    #undef MODRM_LEN
+    return FALSE;
+}
 
 static LONG WINAPI crash_veh(PEXCEPTION_POINTERS info)
 {
     if (info->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION) {
+        uintptr_t fault_addr = info->ExceptionRecord->ExceptionInformation[1];
+        int is_write = (int)info->ExceptionRecord->ExceptionInformation[0];
+
+        /*
+         * SEH simulation for memory probes past 64MB.
+         *
+         * The RenderWare engine probes memory to find the physical RAM boundary.
+         * On real Xbox, it probes past 64MB and SEH catches the fault.
+         * We decode the faulting instruction, return 0 (as if reading unmapped
+         * memory), and advance RIP. This simulates what SEH would do.
+         */
+        uintptr_t xbox_region_end = (uintptr_t)(XBOX_HEAP_BASE + XBOX_HEAP_SIZE +
+                                                 XBOX_GUARD_SIZE) + g_xbox_mem_offset;
+
+        if (fault_addr >= xbox_region_end) {
+            /*
+             * Dump the Xbox SEH chain to understand the exception handler
+             * structure. On real Xbox, this chain at FS:[0] is used to
+             * dispatch exceptions. In our code, MEM32(0) holds the chain head.
+             */
+            uint32_t frame_va = MEM32(0);
+            fprintf(stderr, "\n  [SEH-CHAIN] Fault at Xbox VA 0x%08X (%s)\n",
+                    (uint32_t)(fault_addr - g_xbox_mem_offset),
+                    is_write ? "WRITE" : "READ");
+            fprintf(stderr, "  [SEH-CHAIN] g_esp=0x%08X g_eax=0x%08X g_edx=0x%08X\n",
+                    g_esp, g_eax, g_edx);
+            for (int i = 0; i < 8 && frame_va != 0xFFFFFFFF && frame_va != 0; i++) {
+                uint32_t next    = MEM32(frame_va + 0);
+                uint32_t handler = MEM32(frame_va + 4);
+                /* Extended MSVC SEH frame: scope table at +8, try level at +C */
+                uint32_t scope_tbl = MEM32(frame_va + 8);
+                int32_t  try_level = (int32_t)MEM32(frame_va + 0xC);
+
+                fprintf(stderr, "  [SEH-CHAIN] Frame #%d at 0x%08X: Next=0x%08X "
+                        "Handler=0x%08X ScopeTable=0x%08X TryLevel=%d\n",
+                        i, frame_va, next, handler, scope_tbl, try_level);
+
+                /* Dump scope table entries if it looks valid */
+                if (scope_tbl > 0x10000 && scope_tbl < 0x04000000) {
+                    for (int j = 0; j <= try_level && j < 8; j++) {
+                        uint32_t enc_level  = MEM32(scope_tbl + j * 12 + 0);
+                        uint32_t filter_va  = MEM32(scope_tbl + j * 12 + 4);
+                        uint32_t handler_va = MEM32(scope_tbl + j * 12 + 8);
+                        fprintf(stderr, "    Scope[%d]: Enclosing=%d Filter=0x%08X "
+                                "Handler=0x%08X\n",
+                                j, (int32_t)enc_level, filter_va, handler_va);
+                    }
+                }
+
+                /* Also dump the saved EBP (typically at frame_va + 0x10 or nearby) */
+                fprintf(stderr, "    Frame+0x10=0x%08X Frame+0x14=0x%08X\n",
+                        MEM32(frame_va + 0x10), MEM32(frame_va + 0x14));
+
+                frame_va = next;
+            }
+            fflush(stderr);
+        }
+
+        /* Normal crash reporting */
         void *frames[32];
         USHORT count;
         HMODULE mod;
@@ -48,8 +261,8 @@ static LONG WINAPI crash_veh(PEXCEPTION_POINTERS info)
         fprintf(stderr, "\n=== VEH: Access violation at RIP=0x%p ===\n",
                 info->ExceptionRecord->ExceptionAddress);
         fprintf(stderr, "  %s address 0x%p\n",
-                info->ExceptionRecord->ExceptionInformation[0] ? "Writing" : "Reading",
-                (void*)info->ExceptionRecord->ExceptionInformation[1]);
+                is_write ? "Writing" : "Reading",
+                (void*)fault_addr);
 
         /* Get module base to compute RVA */
         GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,

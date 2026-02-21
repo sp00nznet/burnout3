@@ -393,20 +393,41 @@ static void bridge_NtFreeVirtualMemory(void)
         XBOX_TO_NATIVE(base_ptr), XBOX_TO_NATIVE(size_ptr), free_type);
 }
 
-/* ── ExAllocatePool / ExAllocatePoolWithTag (ordinals 15, 16) ─ */
+/* ── ExAllocatePool / ExAllocatePoolWithTag (ordinals 15, 16) ─
+ * Must allocate from Xbox heap so the returned pointer is an Xbox VA
+ * that can be accessed via MEM32(). Native HeapAlloc returns 64-bit
+ * pointers that get truncated and produce garbage Xbox VAs.
+ */
 static void bridge_ExAllocatePool(void)
 {
     uint32_t size = STACK_ARG(0);
-    PVOID ptr = xbox_ExAllocatePool(size);
-    g_eax = ptr ? (uint32_t)(uintptr_t)ptr : 0;
+    uint32_t xbox_va = xbox_HeapAlloc(size, 16);
+
+    if (g_kernel_call_count <= 200) {
+        fprintf(stderr, "  [KERNEL] ExAllocatePool: size=%u → Xbox VA 0x%08X\n",
+                size, xbox_va);
+        fflush(stderr);
+    }
+
+    g_eax = xbox_va;
 }
 
 static void bridge_ExAllocatePoolWithTag(void)
 {
     uint32_t size = STACK_ARG(0);
     uint32_t tag = STACK_ARG(1);
-    PVOID ptr = xbox_ExAllocatePoolWithTag(size, tag);
-    g_eax = ptr ? (uint32_t)(uintptr_t)ptr : 0;
+    uint32_t xbox_va = xbox_HeapAlloc(size, 16);
+
+    if (g_kernel_call_count <= 200) {
+        fprintf(stderr, "  [KERNEL] ExAllocatePoolWithTag: size=%u tag='%c%c%c%c' → Xbox VA 0x%08X\n",
+                size,
+                (char)(tag & 0xFF), (char)((tag >> 8) & 0xFF),
+                (char)((tag >> 16) & 0xFF), (char)((tag >> 24) & 0xFF),
+                xbox_va);
+        fflush(stderr);
+    }
+
+    g_eax = xbox_va;
 }
 
 /* ── KfRaiseIrql / KfLowerIrql (ordinals 160, 161) ────── */
@@ -529,8 +550,10 @@ static void bridge_NtYieldExecution(void)
 static void bridge_MmGetPhysicalAddress(void)
 {
     uint32_t addr = STACK_ARG(0);
-    ULONG_PTR result = xbox_MmGetPhysicalAddress(XBOX_TO_NATIVE(addr));
-    g_eax = (uint32_t)result;
+    /* Xbox uses identity mapping (physical == virtual) for the lower 64MB.
+     * Just return the Xbox VA as-is. Don't call xbox_MmGetPhysicalAddress
+     * which would return a native pointer. */
+    g_eax = addr;
 }
 
 /* ── MmSetAddressProtect (ordinal 182) ───────────────────── */
@@ -723,6 +746,63 @@ static void bridge_ObReferenceObjectByHandle(void)
     g_eax = 0;  /* STATUS_SUCCESS */
 }
 
+/* ── RtlRaiseException (ordinal 302) ─────────────────────
+ * VOID RtlRaiseException(PEXCEPTION_RECORD ExceptionRecord)
+ *
+ * Called by CRT / SEH code to raise structured exceptions.
+ * On Xbox this triggers the kernel exception dispatcher.
+ * For recompilation, we log and continue (no real SEH dispatch yet).
+ */
+static void bridge_RtlRaiseException(void)
+{
+    uint32_t record_ptr = STACK_ARG(0);
+    uint32_t code = record_ptr ? BRIDGE_MEM32(record_ptr) : 0;
+
+    static int raise_count = 0;
+    raise_count++;
+    if (raise_count <= 10) {
+        fprintf(stderr, "  [KERNEL] RtlRaiseException: record=0x%08X code=0x%08X (#%d)\n",
+                record_ptr, code, raise_count);
+        fflush(stderr);
+    }
+
+    /* Don't actually raise - just return. Many Xbox games use SEH for
+     * benign purposes (e.g., probing memory, FPU state detection). */
+    g_eax = 0;
+}
+
+/* ── MmMapIoSpace (ordinal 177) ──────────────────────────
+ * PVOID MmMapIoSpace(ULONG_PTR PhysicalAddress, ULONG NumberOfBytes, ULONG Protect)
+ *
+ * Maps physical I/O memory (GPU registers, etc.) into virtual address space.
+ * Allocate from Xbox heap so the returned pointer is a valid Xbox VA.
+ */
+static void bridge_MmMapIoSpace(void)
+{
+    uint32_t phys_addr = STACK_ARG(0);
+    uint32_t num_bytes = STACK_ARG(1);
+    uint32_t protect = STACK_ARG(2);
+    uint32_t xbox_va = xbox_HeapAlloc(num_bytes, 4096);
+
+    fprintf(stderr, "  [KERNEL] MmMapIoSpace: phys=0x%08X size=%u → Xbox VA 0x%08X\n",
+            phys_addr, num_bytes, xbox_va);
+    fflush(stderr);
+
+    g_eax = xbox_va;
+}
+
+/* ── MmPersistContiguousMemory (ordinal 178) ─────────────
+ * VOID MmPersistContiguousMemory(PVOID BaseAddress, ULONG NumberOfBytes, BOOLEAN Persist)
+ *
+ * Marks contiguous memory as persistent across reboots (for save data).
+ * No-op for recompilation.
+ */
+static void bridge_MmPersistContiguousMemory(void)
+{
+    /* No-op stub */
+    g_eax = 0;
+}
+
 /* ── Generic fallback for simple value-only functions ────── */
 static void bridge_generic_stub(void)
 {
@@ -830,6 +910,7 @@ static int stdcall_args_for_ordinal(ULONG ordinal)
     case 173: return  4;  /* MmGetPhysicalAddress(1) */
     case 175: return 12;  /* MmLockUnlockBufferPages(3) */
     case 176: return  8;  /* MmLockUnlockPhysicalPage(2) */
+    case 177: return 12;  /* MmMapIoSpace(3) */
     case 178: return 12;  /* MmPersistContiguousMemory(3) */
     case 179: return  4;  /* MmQueryAddressProtect(1) */
     case 180: return  4;  /* MmQueryAllocationSize(1) */
@@ -989,8 +1070,13 @@ static bridge_func_t bridge_for_ordinal(ULONG ordinal)
     case 188: return bridge_NtCreateDirectoryObject;
     case 246: return bridge_ObReferenceObjectByHandle;
 
+    /* Memory - I/O mapping */
+    case 177: return bridge_MmMapIoSpace;
+    case 178: return bridge_MmPersistContiguousMemory;
+
     /* RTL */
     case 301: return bridge_RtlNtStatusToDosError;
+    case 302: return bridge_RtlRaiseException;
 
     default:  return NULL;
     }

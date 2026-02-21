@@ -160,9 +160,15 @@ ptrdiff_t xbox_GetMemoryOffset(void);
 /** Base VA of the dynamic heap area (above stack). */
 #define XBOX_HEAP_BASE      (XBOX_STACK_BASE + XBOX_STACK_SIZE)  /* 0x00880000 */
 
-/** Size of the dynamic heap (96 MB - Xbox has 64 MB total RAM, but we
- *  need extra for the bump allocator plus ~30 MB framebuffers/textures). */
-#define XBOX_HEAP_SIZE      (96 * 1024 * 1024)
+/** Size of the dynamic heap.
+ *  Xbox has 64 MB total RAM. The total mapped region (data + stack + heap)
+ *  must equal 64 MB so the RenderWare engine's memory probing stops at the
+ *  correct boundary. On a real Xbox, probing past 64 MB causes a page fault
+ *  that the engine catches via SEH to determine available memory. */
+#define XBOX_HEAP_SIZE      (XBOX_TOTAL_RAM - XBOX_HEAP_BASE)  /* ~55.5 MB */
+
+/** No guard region - the heap fills up to the 64 MB boundary exactly. */
+#define XBOX_GUARD_SIZE     0
 
 /**
  * Allocate from the Xbox heap. Returns an Xbox VA, or 0 on failure.

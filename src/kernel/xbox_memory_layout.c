@@ -74,7 +74,7 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
      * This includes low memory (KPCR at 0x0-0xFF) which game code reads
      * from, the XBE sections, and the simulated stack.
      */
-    DWORD map_end = XBOX_HEAP_BASE + XBOX_HEAP_SIZE;  /* Include stack + heap */
+    DWORD map_end = XBOX_HEAP_BASE + XBOX_HEAP_SIZE + XBOX_GUARD_SIZE;  /* Include stack + heap + guard */
     g_memory_size = map_end - XBOX_MAP_START;
 
     /*
@@ -358,6 +358,8 @@ ptrdiff_t xbox_GetMemoryOffset(void)
  */
 static uint32_t g_heap_next = XBOX_HEAP_BASE;
 
+static int g_heap_alloc_count = 0;
+
 uint32_t xbox_HeapAlloc(uint32_t size, uint32_t alignment)
 {
     uint32_t result;
@@ -377,6 +379,12 @@ uint32_t xbox_HeapAlloc(uint32_t size, uint32_t alignment)
 
     /* Zero-fill the allocated block (Xbox memory is always zeroed) */
     memset((void *)((uintptr_t)result + g_memory_offset), 0, size);
+
+    g_heap_alloc_count++;
+    fprintf(stderr, "  [HEAP] #%d: size=%u align=%u → 0x%08X..0x%08X (used %u/%u)\n",
+            g_heap_alloc_count, size, alignment, result, result + size,
+            g_heap_next - XBOX_HEAP_BASE, XBOX_HEAP_SIZE);
+    fflush(stderr);
 
     return result;
 }

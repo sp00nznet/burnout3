@@ -4,7 +4,7 @@ A project to statically recompile the original Xbox version of **Burnout 3: Take
 
 ## Project Status
 
-**Phase 5: Integration** - Game entry point executes full call chain and returns successfully.
+**Phase 5: Integration** - Game boots through RenderWare engine init, allocates memory pools, reaches memory probe loop. Active debugging of SEH/exception dispatch for RW memory boundary detection.
 
 ## Overview
 
@@ -127,11 +127,20 @@ The main executable (`default.xbe`) contains:
 ### Phase 5: Integration & Testing
 - [x] Game executable scaffold (WinMain, window, subsystem init, game loop)
 - [x] 22,096 recompiled functions in dispatch table (22,095 auto + 1 manual)
-- [x] Kernel bridge: 27 per-ordinal bridges, 120 stubs (147 total thunk entries)
+- [x] Kernel bridge: 30 per-ordinal bridges, 117 stubs (147 total thunk entries)
 - [x] Game entry point (0x001D2807) runs to completion → creates thread → calls RW init → returns
 - [x] Manual function for mid-function entry point 0x001D1818 (thread start routine)
 - [x] Fake TIB/TLS for fs:[N] references (translator drops segment prefix)
 - [x] Single-threaded critical section model (no-op CS for ABI safety)
+- [x] Xbox heap allocator (bump allocator, 55.5 MB, returns Xbox VAs)
+- [x] VEH crash diagnostics (stack trace, register dump, SEH chain dump)
+- [x] ExAllocatePool/ExAllocatePoolWithTag → Xbox heap (was returning truncated 64-bit native pointers)
+- [x] MmGetPhysicalAddress → identity mapping (Xbox physical == virtual)
+- [x] RtlRaiseException bridge (ordinal 302) - logs FPU/SEH exceptions
+- [x] MmMapIoSpace bridge (ordinal 177) - allocates from Xbox heap
+- [x] Xbox memory region limited to 64 MB (matches real Xbox physical RAM)
+- [x] RenderWare engine initializes, allocates 3 memory pools (~32 MB total)
+- [ ] SEH exception dispatch for RW memory boundary probing (in progress)
 - [ ] D3D8 device initialization from game code
 - [ ] Asset loading and rendering pipeline
 - [ ] Input mapping (Xbox controller → PC gamepad/keyboard)
