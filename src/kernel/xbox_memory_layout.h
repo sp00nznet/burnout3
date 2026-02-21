@@ -160,9 +160,9 @@ ptrdiff_t xbox_GetMemoryOffset(void);
 /** Base VA of the dynamic heap area (above stack). */
 #define XBOX_HEAP_BASE      (XBOX_STACK_BASE + XBOX_STACK_SIZE)  /* 0x00880000 */
 
-/** Size of the dynamic heap (48 MB - Xbox has 64 MB total RAM, game
- *  allocates ~30 MB for framebuffers/textures via MmAllocateContiguous). */
-#define XBOX_HEAP_SIZE      (48 * 1024 * 1024)
+/** Size of the dynamic heap (96 MB - Xbox has 64 MB total RAM, but we
+ *  need extra for the bump allocator plus ~30 MB framebuffers/textures). */
+#define XBOX_HEAP_SIZE      (96 * 1024 * 1024)
 
 /**
  * Allocate from the Xbox heap. Returns an Xbox VA, or 0 on failure.

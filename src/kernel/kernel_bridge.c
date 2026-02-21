@@ -37,6 +37,7 @@ extern ptrdiff_t g_xbox_mem_offset;
 /* Dispatch table lookup (for function pointer args) */
 typedef void (*recomp_func_t)(void);
 recomp_func_t recomp_lookup(uint32_t xbox_va);
+recomp_func_t recomp_lookup_manual(uint32_t xbox_va);
 
 /* Memory access - same as recomp_types.h MEM32 but without the #define guard */
 #define BRIDGE_MEM32(addr) (*(volatile uint32_t *)((uintptr_t)(addr) + g_xbox_mem_offset))
@@ -220,6 +221,7 @@ static void bridge_PsCreateSystemThreadEx(void)
      * We push both onto the simulated stack (right-to-left). */
     if (start_routine) {
         recomp_func_t fn = recomp_lookup(start_routine);
+        if (!fn) fn = recomp_lookup_manual(start_routine);
         if (fn) {
             /* Push args right-to-left for the start routine */
             g_esp -= 4; BRIDGE_MEM32(g_esp) = start_context2;  /* [esp+8] → ebp+0xC */

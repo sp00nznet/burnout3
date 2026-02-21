@@ -1065,13 +1065,23 @@ class Lifter:
             args.append(f"0 /* a{i+1} */")
         return ", ".join(args)
 
+    # SEH prolog/epilog addresses - these functions modify ebp for their
+    # caller.  After calling __SEH_prolog, the caller must read back ebp
+    # from g_seh_ebp.  Before returning, __SEH_prolog writes g_seh_ebp.
+    SEH_PROLOG = 0x00244784  # __SEH_prolog
+    SEH_EPILOG = 0x002447BF  # __SEH_epilog
+
     def _lift_call(self, insn, ops):
         # x86 'call' pushes return address then jumps.
         # With global esp, we push a dummy return address (0) then call.
         # The callee's 'ret' will pop it back off.
         if insn.call_target:
             name = self._call_target_name(insn.call_target)
-            return [f"PUSH32(esp, 0); {name}(); /* call 0x{insn.call_target:08X} */"]
+            lines = [f"PUSH32(esp, 0); {name}(); /* call 0x{insn.call_target:08X} */"]
+            # After __SEH_prolog/__SEH_epilog, read back the frame pointer.
+            if insn.call_target in (self.SEH_PROLOG, self.SEH_EPILOG):
+                lines.append("ebp = g_seh_ebp; /* read back frame from SEH helper */")
+            return lines
         elif len(ops) >= 1:
             target = _fmt_operand_read(ops[0])
             return [f"PUSH32(esp, 0); RECOMP_ICALL({target}); /* indirect call */"]
@@ -1080,10 +1090,15 @@ class Lifter:
     def _lift_ret(self, insn, ops):
         # x86 'ret' pops return address from stack.
         # 'ret N' also pops N extra bytes (stdcall cleanup).
+        # If this function IS __SEH_prolog or __SEH_epilog, bridge ebp
+        # so the caller can read back the frame pointer.
+        prefix = ""
+        if self.func_start in (self.SEH_PROLOG, self.SEH_EPILOG):
+            prefix = "g_seh_ebp = ebp; "
         if len(ops) >= 1 and ops[0].type == "imm":
             n = ops[0].imm
-            return [f"esp += {4 + n}; return; /* ret {n} */"]
-        return [f"esp += 4; return; /* ret */"]
+            return [f"{prefix}esp += {4 + n}; return; /* ret {n} */"]
+        return [f"{prefix}esp += 4; return; /* ret */"]
 
     def _is_external_target(self, addr):
         """Check if a jump target is outside the current function."""
@@ -1143,16 +1158,16 @@ class Lifter:
 
     def _lift_rep_string(self, insn, m):
         if "movsb" in m:
-            return ["memcpy((void*)(uintptr_t)edi, (void*)(uintptr_t)esi, ecx);",
+            return ["memcpy((void*)XBOX_PTR(edi), (void*)XBOX_PTR(esi), ecx);",
                     "esi += ecx; edi += ecx; ecx = 0; /* rep movsb */"]
         if "movsd" in m:
-            return ["memcpy((void*)(uintptr_t)edi, (void*)(uintptr_t)esi, ecx * 4);",
+            return ["memcpy((void*)XBOX_PTR(edi), (void*)XBOX_PTR(esi), ecx * 4);",
                     "esi += ecx * 4; edi += ecx * 4; ecx = 0; /* rep movsd */"]
         if "movsw" in m:
-            return ["memcpy((void*)(uintptr_t)edi, (void*)(uintptr_t)esi, ecx * 2);",
+            return ["memcpy((void*)XBOX_PTR(edi), (void*)XBOX_PTR(esi), ecx * 2);",
                     "esi += ecx * 2; edi += ecx * 2; ecx = 0; /* rep movsw */"]
         if "stosb" in m:
-            return ["memset((void*)(uintptr_t)edi, (uint8_t)eax, ecx);",
+            return ["memset((void*)XBOX_PTR(edi), (uint8_t)eax, ecx);",
                     "edi += ecx; ecx = 0; /* rep stosb */"]
         if "stosd" in m:
             return [

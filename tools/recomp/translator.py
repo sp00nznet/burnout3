@@ -129,6 +129,24 @@ class FunctionTranslator:
         if any(insn.mnemonic == "leave" for insn in instructions):
             used_regs.add("ebp")
 
+        # Ensure ebp tracked if function has tail jumps (lifter emits
+        # g_seh_ebp = ebp before external jmp and indirect jmp).
+        has_tail_jump = any(
+            insn.mnemonic == "jmp" and (
+                (insn.jump_target and not (start <= insn.jump_target < end))
+                or not insn.jump_target  # indirect jmp
+            )
+            for insn in instructions
+        )
+        if has_tail_jump:
+            used_regs.add("ebp")
+
+        # Ensure ebp tracked if function calls __SEH_prolog or __SEH_epilog
+        # (lifter emits ebp = g_seh_ebp readback after these calls).
+        SEH_FUNCS = {0x00244784, 0x002447BF}
+        if any(insn.call_target in SEH_FUNCS for insn in instructions):
+            used_regs.add("ebp")
+
         # Build call targets list
         call_targets = set()
         for insn in instructions:
@@ -163,13 +181,14 @@ class FunctionTranslator:
         lines.append(f"{ret_type} {name}({param_str})")
         lines.append(f"{{")
 
-        # Only declare non-volatile registers as locals.
-        # Volatile registers (eax, ecx, edx, esp) are globals accessed
-        # via #define macros in recomp_types.h.
+        # ebp is the only callee-saved register declared as a local.
+        # ebx, esi, edi are global via #define macros (g_ebx, g_esi, g_edi)
+        # and must NOT be declared locally, otherwise the local shadows
+        # the global and cross-function register passing breaks.
+        # Volatile registers (eax, ecx, edx, esp) are also global via macros.
         reg_decls = []
-        for reg in ["ebx", "esi", "edi", "ebp"]:
-            if reg in used_regs:
-                reg_decls.append(reg)
+        if "ebp" in used_regs:
+            reg_decls.append("ebp")
         if reg_decls:
             lines.append(f"    uint32_t {', '.join(reg_decls)};")
 
