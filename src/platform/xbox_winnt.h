@@ -40,6 +40,12 @@
 #endif
 #include <windows.h>
 
+/* Wide-string helpers: map to the real CRT functions on Windows. */
+#define xbox_wcslen  wcslen
+#define xbox_wcsncmp wcsncmp
+#define xbox_wcscat  wcscat
+#define xbox_wcscpy  wcscpy
+
 #else /* !_WIN32 */
 
 /* ---- Linux / POSIX host: define the NT type vocabulary ------------------ */

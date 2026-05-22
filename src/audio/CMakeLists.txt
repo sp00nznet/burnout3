@@ -8,8 +8,10 @@ target_include_directories(dsound_compat PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# XAudio2 will be linked when implementation is complete
-# target_link_libraries(dsound_compat xaudio2)
+if(NOT WIN32)
+    # Linux: needs the platform layer for NT types / win32_compat
+    target_link_libraries(dsound_compat platform)
+endif()
 
 if(MSVC)
     target_compile_options(dsound_compat PRIVATE /W4 /O2)

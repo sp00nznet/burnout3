@@ -15,7 +15,7 @@
 #define BURNOUT3_XINPUT_XBOX_H
 
 #include <stdint.h>
-#include <windows.h>
+#include "platform/xbox_winnt.h"
 
 #ifdef __cplusplus
 extern "C" {

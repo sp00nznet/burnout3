@@ -34,7 +34,7 @@ VOID __stdcall xbox_RtlInitAnsiString(PXBOX_ANSI_STRING DestinationString, const
 VOID __stdcall xbox_RtlInitUnicodeString(PXBOX_UNICODE_STRING DestinationString, const WCHAR* SourceString)
 {
     if (SourceString) {
-        USHORT len = (USHORT)(wcslen(SourceString) * sizeof(WCHAR));
+        USHORT len = (USHORT)(xbox_wcslen(SourceString) * sizeof(WCHAR));
         DestinationString->Length = len;
         DestinationString->MaximumLength = len + sizeof(WCHAR);
         DestinationString->Buffer = (PWCHAR)SourceString;

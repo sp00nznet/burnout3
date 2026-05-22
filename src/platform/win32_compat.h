@@ -223,6 +223,26 @@ int   WideCharToMultiByte(UINT cp, DWORD flags, LPCWSTR wide, int wideCount,
 #define ERROR_CANCELLED               1223u
 #define ERROR_NO_SYSTEM_RESOURCES     1450u
 #define ERROR_COMMITMENT_LIMIT        1455u
+#define ERROR_DEVICE_NOT_CONNECTED    1167u
+
+/* ---- COM HRESULT codes ------------------------------------------------ */
+#ifndef S_OK
+#define S_OK            ((HRESULT)0x00000000L)
+#define S_FALSE         ((HRESULT)0x00000001L)
+#define E_NOTIMPL       ((HRESULT)0x80004001L)
+#define E_NOINTERFACE   ((HRESULT)0x80004002L)
+#define E_POINTER       ((HRESULT)0x80004003L)
+#define E_ABORT         ((HRESULT)0x80004004L)
+#define E_FAIL          ((HRESULT)0x80004005L)
+#define E_ACCESSDENIED  ((HRESULT)0x80070005L)
+#define E_HANDLE        ((HRESULT)0x80070006L)
+#define E_OUTOFMEMORY   ((HRESULT)0x8007000EL)
+#define E_INVALIDARG    ((HRESULT)0x80070057L)
+#endif
+#ifndef SUCCEEDED
+#define SUCCEEDED(hr)   (((HRESULT)(hr)) >= 0)
+#define FAILED(hr)      (((HRESULT)(hr)) < 0)
+#endif
 
 /* ---- Exception records (SEH compile-shim; not yet emulated) ----------- */
 #define EXCEPTION_MAXIMUM_PARAMETERS 15
@@ -288,15 +308,14 @@ void  _aligned_free(void *ptr);
 int _stricmp(const char *a, const char *b);
 int _strnicmp(const char *a, const char *b, SIZE_T n);
 
-/* ---- Wide-string helpers (operate on the 16-bit Xbox WCHAR) ---------- */
+/* ---- Wide-string helpers (operate on the 16-bit Xbox WCHAR) ----------
+ * Named xbox_wcs* (not macros over wcs*) so they never collide with the
+ * 32-bit-wchar_t CRT functions in <wchar.h>. On Windows xbox_winnt.h maps
+ * these names to the real CRT functions. */
 SIZE_T xbox_wcslen(const WCHAR *s);
 int    xbox_wcsncmp(const WCHAR *a, const WCHAR *b, SIZE_T n);
 WCHAR *xbox_wcscat(WCHAR *dst, const WCHAR *src);
 WCHAR *xbox_wcscpy(WCHAR *dst, const WCHAR *src);
-#define wcslen  xbox_wcslen
-#define wcsncmp xbox_wcsncmp
-#define wcscat  xbox_wcscat
-#define wcscpy  xbox_wcscpy
 
 /* ---- Time conversion ------------------------------------------------- */
 BOOL SystemTimeToFileTime(const SYSTEMTIME *st, LPFILETIME ft);

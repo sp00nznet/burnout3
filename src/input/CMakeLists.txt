@@ -8,9 +8,12 @@ target_include_directories(input_compat PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(input_compat
-    xinput
-)
+if(WIN32)
+    target_link_libraries(input_compat xinput)
+else()
+    find_package(SDL2 REQUIRED)
+    target_link_libraries(input_compat platform SDL2::SDL2)
+endif()
 
 if(MSVC)
     target_compile_options(input_compat PRIVATE /W4 /O2)
