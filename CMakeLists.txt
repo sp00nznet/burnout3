@@ -15,6 +15,9 @@ add_compile_definitions(
 
 # ── Compatibility layers (static libraries) ──────────────────
 
+# Platform layer: Win32/NT type vocabulary + POSIX host primitives
+add_subdirectory(src/platform)
+
 # Xbox kernel replacement (147 imports → Win32)
 add_subdirectory(src/kernel)
 

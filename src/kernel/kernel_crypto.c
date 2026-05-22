@@ -17,10 +17,15 @@
  */
 
 #include "kernel.h"
-#include <bcrypt.h>
 #include <string.h>
 
+/* SHA-1 / RC4 / HMAC below are portable software implementations, so the
+ * only platform dependency is BCrypt's types in the (unused) SHA_INTERNAL
+ * struct. Keep it Windows-only. */
+#if defined(_WIN32)
+#include <bcrypt.h>
 #pragma comment(lib, "bcrypt.lib")
+#endif
 
 /* ============================================================================
  * SHA-1
@@ -33,11 +38,13 @@
 /* We use a wrapper since XBOX_SHA_CONTEXT may not be large enough for
  * BCrypt's internal state. Store BCrypt handles in a separate mapping. */
 
+#if defined(_WIN32)
 typedef struct _SHA_INTERNAL {
     BCRYPT_ALG_HANDLE  hAlg;
     BCRYPT_HASH_HANDLE hHash;
     UCHAR              hashObject[256]; /* BCrypt hash object buffer */
 } SHA_INTERNAL;
+#endif
 
 /*
  * Since XBOX_SHA_CONTEXT is only 92 bytes (State[5] + Count[2] + Buffer[64]),

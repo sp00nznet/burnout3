@@ -29,14 +29,21 @@ set(KERNEL_SOURCES
 # Create static library
 add_library(xbox_kernel STATIC ${KERNEL_SOURCES})
 
-# Include directory (kernel.h)
-target_include_directories(xbox_kernel PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
-# Windows system libraries
-target_link_libraries(xbox_kernel PUBLIC
-    kernel32
-    bcrypt
+# Include directories: kernel.h, plus src/ root for "platform/xbox_winnt.h"
+target_include_directories(xbox_kernel PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/src
 )
+
+# System libraries (platform-specific)
+if(WIN32)
+    target_link_libraries(xbox_kernel PUBLIC kernel32 bcrypt)
+else()
+    # Linux: platform layer (POSIX host primitives) + OpenSSL (replaces
+    # bcrypt for kernel_crypto.c)
+    find_package(OpenSSL REQUIRED)
+    target_link_libraries(xbox_kernel PUBLIC platform OpenSSL::Crypto)
+endif()
 
 # Compiler-specific options
 if(MSVC)

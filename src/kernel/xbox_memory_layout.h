@@ -26,7 +26,7 @@
 #ifndef BURNOUT3_XBOX_MEMORY_LAYOUT_H
 #define BURNOUT3_XBOX_MEMORY_LAYOUT_H
 
-#include <windows.h>
+#include "platform/xbox_winnt.h"
 #include <stdint.h>
 
 #ifdef __cplusplus

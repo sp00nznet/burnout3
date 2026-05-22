@@ -12,7 +12,9 @@
  */
 
 #include "kernel.h"
+#if defined(_WIN32)
 #include <intrin.h>
+#endif
 
 /* ============================================================================
  * IRQL Simulation
@@ -27,7 +29,7 @@
  * allows code that checks IRQL to function correctly.
  * ============================================================================ */
 
-static __declspec(thread) KIRQL g_current_irql = PASSIVE_LEVEL;
+static XBOX_THREAD_LOCAL KIRQL g_current_irql = PASSIVE_LEVEL;
 
 /*
  * KfRaiseIrql - Raises IRQL to the specified level.

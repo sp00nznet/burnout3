@@ -15,10 +15,11 @@
 #ifndef XBOX_KERNEL_H
 #define XBOX_KERNEL_H
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
+/*
+ * NT type vocabulary. On Windows this resolves to <windows.h>; on Linux it
+ * provides the same types natively (see src/platform/xbox_winnt.h).
+ */
+#include "platform/xbox_winnt.h"
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -119,6 +120,16 @@ typedef LONG KPRIORITY;
 #endif
 
 #define NT_SUCCESS(Status)  (((NTSTATUS)(Status)) >= 0)
+
+/*
+ * Host filesystem path character. The Win32 build threads UTF-16 paths
+ * through to CreateFileW; the Linux build uses UTF-8 char paths for open().
+ */
+#if defined(_WIN32)
+typedef WCHAR xbox_host_char;
+#else
+typedef char  xbox_host_char;
+#endif
 
 /* Xbox ANSI_STRING (Xbox kernel uses ANSI, not Unicode, for paths) */
 typedef struct _XBOX_ANSI_STRING {
@@ -455,11 +466,11 @@ void xbox_kernel_bridge_init(void);
 void xbox_path_init(const char* game_dir, const char* save_dir);
 
 /*
- * Translate an Xbox path to a Windows path.
+ * Translate an Xbox path to a host filesystem path.
  * Returns TRUE on success, FALSE if the path couldn't be translated.
- * win_path_buf must be at least MAX_PATH characters.
+ * host_path_buf must be at least MAX_PATH characters.
  */
-BOOL xbox_translate_path(const char* xbox_path, WCHAR* win_path_buf, DWORD buf_size);
+BOOL xbox_translate_path(const char* xbox_path, xbox_host_char* host_path_buf, DWORD buf_size);
 
 /* ============================================================================
  * Pool Allocator (kernel_pool.c)
