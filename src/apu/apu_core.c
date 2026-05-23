@@ -154,8 +154,12 @@ static struct {
  * Monitor - Audio output (XAudio2 primary, waveOut fallback)
  * ============================================================ */
 
+#if defined(_WIN32)
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
+#endif
+/* On Linux, waveOut* are inert stubs from win32_compat.h: the APU's
+ * waveOut fallback path stays inactive and never produces audio. */
 
 /* Ring of waveOut buffers for double-buffering */
 #define WAVEOUT_NUM_BUFS 4

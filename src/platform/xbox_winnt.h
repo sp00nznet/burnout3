@@ -179,6 +179,11 @@ typedef struct _RTL_CRITICAL_SECTION {
 } RTL_CRITICAL_SECTION, *PRTL_CRITICAL_SECTION,
   CRITICAL_SECTION,     *PCRITICAL_SECTION, *LPCRITICAL_SECTION;
 
+/* CONDITION_VARIABLE: same single-pointer layout as Win32 (Ptr is a
+ * pthread_cond_t* on POSIX). */
+typedef struct { PVOID Ptr; } CONDITION_VARIABLE, *PCONDITION_VARIABLE;
+#define CONDITION_VARIABLE_INIT { NULL }
+
 /* ---- Common small structs ---------------------------------------------- */
 typedef struct _FILETIME   { DWORD dwLowDateTime; DWORD dwHighDateTime; }
         FILETIME, *PFILETIME, *LPFILETIME;

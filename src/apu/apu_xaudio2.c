@@ -6,12 +6,17 @@
  * Falls back gracefully if XAudio2 is unavailable.
  */
 
-#define COBJMACROS
-#include <windows.h>
-#include <xaudio2.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+
+/* The XAudio2 backend is Windows-only. On Linux all xa2_* functions are
+ * stubbed to report inactive; real audio output via SDL2 comes later. */
+#if defined(_WIN32)
+
+#define COBJMACROS
+#include <windows.h>
+#include <xaudio2.h>
 
 #pragma comment(lib, "xaudio2.lib")
 #pragma comment(lib, "ole32.lib")
@@ -144,3 +149,13 @@ int xa2_get_buffer_size(void)
 {
     return XA2_BUF_SAMPLES;
 }
+
+#else /* !_WIN32 -- POSIX stubs (no audio output yet) */
+
+int  xa2_init(void)                                   { return 0; }
+void xa2_shutdown(void)                               {}
+int  xa2_is_active(void)                              { return 0; }
+int  xa2_submit_samples(const int16_t *s, int n)      { (void)s; (void)n; return 0; }
+int  xa2_get_buffer_size(void)                        { return 0; }
+
+#endif /* _WIN32 */

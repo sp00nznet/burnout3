@@ -96,6 +96,12 @@ VOID LeaveCriticalSection(LPCRITICAL_SECTION cs);
 BOOL TryEnterCriticalSection(LPCRITICAL_SECTION cs);
 VOID DeleteCriticalSection(LPCRITICAL_SECTION cs);
 
+/* ---- Condition variables (paired with a CRITICAL_SECTION) ----------- */
+VOID InitializeConditionVariable(PCONDITION_VARIABLE cv);
+BOOL SleepConditionVariableCS(PCONDITION_VARIABLE cv, PCRITICAL_SECTION cs, DWORD ms);
+VOID WakeConditionVariable(PCONDITION_VARIABLE cv);
+VOID WakeAllConditionVariable(PCONDITION_VARIABLE cv);
+
 /* ---- Generic handle lifetime ------------------------------------------ */
 BOOL  CloseHandle(HANDLE h);
 BOOL  DuplicateHandle(HANDLE srcProc, HANDLE src, HANDLE dstProc,
@@ -320,6 +326,48 @@ WCHAR *xbox_wcscpy(WCHAR *dst, const WCHAR *src);
 /* ---- Time conversion ------------------------------------------------- */
 BOOL SystemTimeToFileTime(const SYSTEMTIME *st, LPFILETIME ft);
 BOOL FileTimeToSystemTime(const FILETIME *ft, LPSYSTEMTIME st);
+
+/* ---- Multimedia (winmm) shim: waveOut stubs that always report failure.
+ * The APU has a waveOut fallback path; on Linux it just stays inactive
+ * and the (real) SDL2 audio path will replace it later. */
+typedef DWORD  MMRESULT;
+typedef void  *HWAVEOUT;
+#define MMSYSERR_NOERROR     0
+#define MMSYSERR_INVALPARAM 11
+#define WAVE_FORMAT_PCM      1
+#define WAVE_MAPPER          ((UINT)-1)
+#define CALLBACK_NULL        0x00000000
+#define WHDR_DONE            0x00000001
+#define WHDR_INQUEUE         0x00000010
+
+typedef struct tWAVEFORMATEX {
+    WORD  wFormatTag, nChannels;
+    DWORD nSamplesPerSec, nAvgBytesPerSec;
+    WORD  nBlockAlign, wBitsPerSample, cbSize;
+} WAVEFORMATEX;
+
+typedef struct tWAVEHDR {
+    LPSTR     lpData;
+    DWORD     dwBufferLength;
+    DWORD     dwBytesRecorded;
+    DWORD_PTR dwUser;
+    DWORD     dwFlags;
+    DWORD     dwLoops;
+    struct tWAVEHDR *lpNext;
+    DWORD_PTR reserved;
+} WAVEHDR;
+
+static inline MMRESULT waveOutOpen(HWAVEOUT *h, UINT id, const WAVEFORMATEX *f,
+                                   DWORD_PTR cb, DWORD_PTR inst, DWORD flags)
+{ (void)h;(void)id;(void)f;(void)cb;(void)inst;(void)flags; return MMSYSERR_INVALPARAM; }
+static inline MMRESULT waveOutPrepareHeader(HWAVEOUT h, WAVEHDR *hdr, UINT sz)
+{ (void)h;(void)hdr;(void)sz; return MMSYSERR_NOERROR; }
+static inline MMRESULT waveOutUnprepareHeader(HWAVEOUT h, WAVEHDR *hdr, UINT sz)
+{ (void)h;(void)hdr;(void)sz; return MMSYSERR_NOERROR; }
+static inline MMRESULT waveOutWrite(HWAVEOUT h, WAVEHDR *hdr, UINT sz)
+{ (void)h;(void)hdr;(void)sz; return MMSYSERR_NOERROR; }
+static inline MMRESULT waveOutReset(HWAVEOUT h) { (void)h; return MMSYSERR_NOERROR; }
+static inline MMRESULT waveOutClose(HWAVEOUT h) { (void)h; return MMSYSERR_NOERROR; }
 
 #ifdef __cplusplus
 }

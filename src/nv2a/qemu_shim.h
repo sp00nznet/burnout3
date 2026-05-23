@@ -18,10 +18,9 @@
 #include <stdio.h>
 #include <assert.h>
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
+/* The QEMU shim uses Win32-style threading primitives. On Windows this comes
+ * from <windows.h>; on POSIX it comes from win32_compat (via xbox_winnt.h). */
+#include "platform/xbox_winnt.h"
 
 /* ============================================================
  * Basic QEMU types
@@ -99,10 +98,8 @@ static inline uint64_t muldiv64(uint64_t a, uint32_t b, uint32_t c) {
 #endif
 
 /* ============================================================
- * Threading (replace QEMU mutexes with Win32 equivalents)
+ * Threading (Win32-style; portable via win32_compat on POSIX)
  * ============================================================ */
-
-#ifdef _WIN32
 
 typedef struct QemuMutex {
     CRITICAL_SECTION cs;
@@ -144,8 +141,6 @@ static inline void qemu_cond_broadcast(QemuCond *c) {
 static inline void qemu_cond_wait(QemuCond *c, QemuMutex *m) {
     SleepConditionVariableCS(&c->cv, &m->cs, INFINITE);
 }
-
-#endif /* _WIN32 */
 
 /* ============================================================
  * Memory regions (stub)

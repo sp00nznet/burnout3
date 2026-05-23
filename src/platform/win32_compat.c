@@ -114,6 +114,58 @@ VOID DeleteCriticalSection(LPCRITICAL_SECTION cs)
 }
 
 /* ===================================================================== */
+/* Condition variables (paired with a CRITICAL_SECTION)                  */
+/* ===================================================================== */
+
+/* Forward decl; the definition lives further down with the wait helpers. */
+static void deadline_from_ms(DWORD ms, struct timespec *ts);
+
+static void cv_lazy_init(PCONDITION_VARIABLE cv)
+{
+    if (!cv->Ptr) {
+        pthread_cond_t *c = (pthread_cond_t *)malloc(sizeof(pthread_cond_t));
+        pthread_cond_init(c, NULL);
+        /* Race window OK for typical Win32 usage (the CS is held). */
+        cv->Ptr = c;
+    }
+}
+
+VOID InitializeConditionVariable(PCONDITION_VARIABLE cv)
+{
+    cv->Ptr = NULL;
+    cv_lazy_init(cv);
+}
+
+BOOL SleepConditionVariableCS(PCONDITION_VARIABLE cv, PCRITICAL_SECTION cs, DWORD ms)
+{
+    cv_lazy_init(cv);
+    if (!cs->LockSemaphore) InitializeCriticalSection(cs);
+    pthread_cond_t  *c = (pthread_cond_t  *)cv->Ptr;
+    pthread_mutex_t *m = (pthread_mutex_t *)cs->LockSemaphore;
+    if (ms == INFINITE) {
+        pthread_cond_wait(c, m);
+        return TRUE;
+    }
+    struct timespec ts;
+    deadline_from_ms(ms, &ts);
+    int rc = pthread_cond_timedwait(c, m, &ts);
+    if (rc == ETIMEDOUT) { SetLastError(WAIT_TIMEOUT); return FALSE; }
+    return TRUE;
+}
+
+VOID WakeConditionVariable(PCONDITION_VARIABLE cv)
+{
+    cv_lazy_init(cv);
+    pthread_cond_signal((pthread_cond_t *)cv->Ptr);
+}
+
+VOID WakeAllConditionVariable(PCONDITION_VARIABLE cv)
+{
+    cv_lazy_init(cv);
+    pthread_cond_broadcast((pthread_cond_t *)cv->Ptr);
+}
+
+/* ===================================================================== */
 /* Waitable kernel objects                                               */
 /* ===================================================================== */
 
