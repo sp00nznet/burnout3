@@ -119,6 +119,7 @@ typedef const void        *PCVOID, *LPCVOID;
 typedef void              *HANDLE;
 typedef void             **PHANDLE, **LPHANDLE;
 typedef void              *HMODULE, *HINSTANCE, *HKEY, *HLOCAL, *HGLOBAL;
+typedef void              *HWND, *HDC, *HBITMAP, *HICON, *HMENU, *HCURSOR;
 
 /* Xbox/UTF-16 wide char is 16-bit, unlike the 32-bit Linux wchar_t. */
 typedef uint16_t           WCHAR, *PWCHAR, *LPWSTR, *PWSTR;
