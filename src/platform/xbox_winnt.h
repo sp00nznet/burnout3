@@ -29,6 +29,17 @@
 #define XBOX_THREAD_LOCAL __thread
 #endif
 
+/* In-place backslash -> forward-slash normaliser for hard-coded Windows
+ * paths embedded in the game and asset loaders. No-op on Windows. */
+static inline void xbox_path_normalize(char *p)
+{
+#if !defined(_WIN32)
+    for (; p && *p; p++) if (*p == '\\') *p = '/';
+#else
+    (void)p;
+#endif
+}
+
 /* MSVC's __debugbreak() intrinsic -> gcc/clang equivalent on POSIX. */
 #if !defined(_MSC_VER)
 #define __debugbreak() __builtin_trap()

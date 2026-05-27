@@ -127,9 +127,12 @@ int bgv_load_lod(const char *path, BGV_Model *model, int lod)
     memset(model, 0, sizeof(*model));
 
     /* Read entire file */
-    f = fopen(path, "rb");
+    char norm[MAX_PATH];
+    snprintf(norm, sizeof(norm), "%s", path);
+    xbox_path_normalize(norm);
+    f = fopen(norm, "rb");
     if (!f) {
-        fprintf(stderr, "BGV: Cannot open '%s'\n", path);
+        fprintf(stderr, "BGV: Cannot open '%s'\n", norm);
         return -1;
     }
 

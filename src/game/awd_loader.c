@@ -36,9 +36,15 @@
 
 AWDFile *awd_load(const char *path)
 {
-    FILE *f = fopen(path, "rb");
+    char norm[1024];
+    snprintf(norm, sizeof(norm), "%s", path);
+    /* Convert Windows backslashes in hard-coded asset paths. */
+#if !defined(_WIN32)
+    for (char *p = norm; *p; p++) if (*p == '\\') *p = '/';
+#endif
+    FILE *f = fopen(norm, "rb");
     if (!f) {
-        fprintf(stderr, "[AWD] Cannot open: %s\n", path);
+        fprintf(stderr, "[AWD] Cannot open: %s\n", norm);
         return NULL;
     }
 

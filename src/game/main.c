@@ -833,7 +833,8 @@ static LONG crash_veh(PEXCEPTION_POINTERS info)
 /* ── Configuration ──────────────────────────────────────────── */
 
 /* Default path to the original XBE file */
-#define DEFAULT_XBE_PATH "Burnout 3 Takedown\\default.xbe"
+/* Forward slash works on both POSIX and Windows. */
+#define DEFAULT_XBE_PATH "Burnout 3 Takedown/default.xbe"
 
 /* Window properties */
 #define WINDOW_TITLE "Burnout 3: Takedown Recompiled"

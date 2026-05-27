@@ -1041,7 +1041,11 @@ HANDLE CreateFileA(LPCSTR name, DWORD access, DWORD share,
     }
     if ((extra & (O_CREAT | O_TRUNC)) && rw == O_RDONLY) rw = O_RDWR;
 
-    int fd = open(name, rw | extra, 0644);
+    /* Normalise embedded Windows-style backslashes before open(). */
+    char norm[1024];
+    snprintf(norm, sizeof(norm), "%s", name);
+    xbox_path_normalize(norm);
+    int fd = open(norm, rw | extra, 0644);
     if (fd < 0) { SetLastError(ERROR_FILE_NOT_FOUND); return INVALID_HANDLE_VALUE; }
     return w32_open_handle(fd, name);
 }
