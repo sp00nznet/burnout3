@@ -17,15 +17,17 @@
  * with the same calling convention and register usage.
  */
 
-#include <windows.h>
+#include "platform/xbox_winnt.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#if defined(_WIN32)
 #include <dbghelp.h>
 #include <xinput.h>
 #pragma comment(lib, "dbghelp.lib")
 #pragma comment(lib, "xinput.lib")
+#endif
 
 /* Compatibility layers */
 #include "../kernel/kernel.h"
@@ -74,6 +76,11 @@ AWDFile *g_awd_generic = NULL;
  */
 static int g_seh_skip_count = 0;
 
+#if defined(_WIN32)
+/* The VEH instruction decoder + crash handler is x86-64 + Win32 CONTEXT
+ * specific. On Linux the equivalent goes through sigaction(SIGSEGV/SIGFPE)
+ * with ucontext_t/mcontext_t (deferred); for now the registration is a
+ * no-op so the game links and runs without the recovery path. */
 static BOOL veh_skip_faulting_read(PCONTEXT ctx)
 {
     uint8_t *rip = (uint8_t *)ctx->Rip;
@@ -813,6 +820,16 @@ static LONG WINAPI crash_veh(PEXCEPTION_POINTERS info)
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
+#else /* !_WIN32 -- stub VEH handler (real port: sigaction + ucontext) */
+
+static LONG crash_veh(PEXCEPTION_POINTERS info)
+{
+    (void)info;
+    return EXCEPTION_CONTINUE_SEARCH;
+}
+
+#endif /* _WIN32 */
+
 /* ── Configuration ──────────────────────────────────────────── */
 
 /* Default path to the original XBE file */
@@ -1279,6 +1296,10 @@ static BOOL load_xbe(const char *path)
 
 /* ── Window management ──────────────────────────────────────── */
 
+#if defined(_WIN32)
+/* Win32 window / menu / message handling. The Linux build uses the SDL2
+ * window the d3d8_gl backend creates in CreateDevice; create_window
+ * below is a stub there. */
 static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg,
                                      WPARAM wParam, LPARAM lParam)
 {
@@ -1395,6 +1416,18 @@ static HWND create_window(HINSTANCE hInstance, int width, int height)
 }
 
 /* ── Subsystem initialization ───────────────────────────────── */
+
+#else /* !_WIN32 -- the d3d8_gl backend owns the SDL2 window. */
+
+static HWND create_window(HINSTANCE hInstance, int width, int height)
+{
+    (void)hInstance; (void)width; (void)height;
+    /* Return a non-NULL sentinel so the caller's NULL check passes.
+     * The real SDL window appears when CreateDevice runs later. */
+    return (HWND)(uintptr_t)1;
+}
+
+#endif /* _WIN32 */
 
 static BOOL init_subsystems(void)
 {
@@ -2537,8 +2570,8 @@ void game_frame_pump(void)
                 static int u_key_prev = 0;
                 int u_key_now = (GetAsyncKeyState('U') & 0x8000) ? 1 : 0;
                 if (u_key_now && !u_key_prev) {
-                    extern void mcpx_apu_play_test_tone(void *d);
-                    extern void *g_apu_state;
+                    extern void mcpx_apu_play_test_tone(MCPXAPUState *d);
+                    extern MCPXAPUState *g_apu_state;
                     if (g_apu_state) {
                         mcpx_apu_play_test_tone(g_apu_state);
                     } else {
@@ -5136,6 +5169,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     fprintf(stderr, "  JT verify pre-entry: [0x16CC8]=0x%08X (expect 0x000166D1)\n", MEM32(0x16CC8));
     fprintf(stderr, "  RW vtable BEFORE init: 0x36B860=0x%08X 0x36B89C=0x%08X\n",
             MEM32(0x36B860), MEM32(0x36B89C));
+#if defined(_WIN32)
     __try {
         PUSH32(g_esp, 0); /* simulate 'call' pushing return address */
         xbe_entry_point();
@@ -5188,6 +5222,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             break;
         }
     }
+#else /* !_WIN32 -- no SEH; call directly (crashes propagate as SIGSEGV) */
+    PUSH32(g_esp, 0);
+    xbe_entry_point();
+    fprintf(stderr, "xbe_entry_point returned normally (g_eax=0x%08X)\n", g_eax);
+#endif
 
     /* Run the game window loop */
     game_loop();
@@ -5198,3 +5237,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     fprintf(stderr, "\nBurnout 3 exited normally.\n");
     return 0;
 }
+
+#if !defined(_WIN32)
+/* POSIX entry point. Builds the WinMain-style command-line string from
+ * argv (just the first arg if any) and dispatches into WinMain. */
+int main(int argc, char **argv)
+{
+    LPSTR cmd = (argc > 1) ? (LPSTR)argv[1] : (LPSTR)"";
+    return WinMain(NULL, NULL, cmd, 0);
+}
+#endif

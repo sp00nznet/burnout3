@@ -17,7 +17,7 @@
 #include "awd_loader.h"
 #include "../d3d/d3d8_xbox.h"
 
-#include <windows.h>
+#include "platform/xbox_winnt.h"
 #include <stdio.h>
 #include <math.h>
 

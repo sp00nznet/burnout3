@@ -1010,6 +1010,121 @@ unsigned int _clearfp(void)
     return 0;
 }
 
+/* ===================================================================== */
+/* Win32 file API on POSIX (open/read/write/fstat-backed)                */
+/* ===================================================================== */
+
+#include <fcntl.h>
+#include <sys/stat.h>
+
+HANDLE CreateFileA(LPCSTR name, DWORD access, DWORD share,
+                   LPSECURITY_ATTRIBUTES sa, DWORD disp,
+                   DWORD flags, HANDLE templ)
+{
+    (void)share; (void)sa; (void)flags; (void)templ;
+    if (!name) { SetLastError(ERROR_INVALID_PARAMETER); return INVALID_HANDLE_VALUE; }
+
+    int rw = O_RDONLY;
+    int wantW = (access & (GENERIC_WRITE | GENERIC_ALL)) != 0;
+    int wantR = (access & (GENERIC_READ  | GENERIC_ALL)) != 0;
+    if (wantW && wantR) rw = O_RDWR;
+    else if (wantW)     rw = O_WRONLY;
+
+    int extra = 0;
+    switch (disp) {
+    case CREATE_NEW:        extra = O_CREAT | O_EXCL;  break;
+    case CREATE_ALWAYS:     extra = O_CREAT | O_TRUNC; break;
+    case OPEN_EXISTING:     extra = 0;                 break;
+    case OPEN_ALWAYS:       extra = O_CREAT;           break;
+    case TRUNCATE_EXISTING: extra = O_TRUNC;           break;
+    default:                extra = 0;                 break;
+    }
+    if ((extra & (O_CREAT | O_TRUNC)) && rw == O_RDONLY) rw = O_RDWR;
+
+    int fd = open(name, rw | extra, 0644);
+    if (fd < 0) { SetLastError(ERROR_FILE_NOT_FOUND); return INVALID_HANDLE_VALUE; }
+    return w32_open_handle(fd, name);
+}
+
+HANDLE CreateFileW(LPCWSTR name, DWORD access, DWORD share,
+                   LPSECURITY_ATTRIBUTES sa, DWORD disp,
+                   DWORD flags, HANDLE templ)
+{
+    /* Basic UTF-16 -> UTF-8 (ASCII path of WideCharToMultiByte). */
+    char buf[1024];
+    int len = WideCharToMultiByte(CP_UTF8, 0, name, -1, buf, sizeof(buf), NULL, NULL);
+    if (len <= 0) buf[0] = '\0';
+    return CreateFileA(buf, access, share, sa, disp, flags, templ);
+}
+
+BOOL ReadFile(HANDLE h, LPVOID buf, DWORD len, LPDWORD nread, void *overlapped)
+{
+    (void)overlapped;
+    int fd = w32_handle_fd(h);
+    if (fd < 0) { if (nread) *nread = 0; SetLastError(ERROR_INVALID_HANDLE); return FALSE; }
+    ssize_t n = read(fd, buf, len);
+    if (n < 0)  { if (nread) *nread = 0; SetLastError(ERROR_GEN_FAILURE);    return FALSE; }
+    if (nread)  *nread = (DWORD)n;
+    return TRUE;
+}
+
+BOOL WriteFile(HANDLE h, LPCVOID buf, DWORD len, LPDWORD nwritten, void *overlapped)
+{
+    (void)overlapped;
+    int fd = w32_handle_fd(h);
+    if (fd < 0) { if (nwritten) *nwritten = 0; SetLastError(ERROR_INVALID_HANDLE); return FALSE; }
+    ssize_t n = write(fd, buf, len);
+    if (n < 0)  { if (nwritten) *nwritten = 0; SetLastError(ERROR_GEN_FAILURE);    return FALSE; }
+    if (nwritten) *nwritten = (DWORD)n;
+    return TRUE;
+}
+
+DWORD GetFileSize(HANDLE h, LPDWORD high)
+{
+    int fd = w32_handle_fd(h);
+    if (fd < 0) return INVALID_FILE_SIZE;
+    struct stat st;
+    if (fstat(fd, &st) != 0) return INVALID_FILE_SIZE;
+    if (high) *high = (DWORD)(((uint64_t)st.st_size >> 32) & 0xFFFFFFFFu);
+    return (DWORD)(st.st_size & 0xFFFFFFFFu);
+}
+
+BOOL FlushFileBuffers(HANDLE h)
+{
+    int fd = w32_handle_fd(h);
+    if (fd < 0) return FALSE;
+    return fsync(fd) == 0;
+}
+
+/* ===================================================================== */
+/* Keyboard + window helpers -- stubs. Real keyboard polling will come   */
+/* via SDL_GetKeyboardState when main.c gets its SDL2 port.              */
+/* ===================================================================== */
+
+SHORT GetAsyncKeyState(int vKey)          { (void)vKey; return 0; }
+HWND  FindWindowA(LPCSTR c, LPCSTR w)     { (void)c; (void)w; return NULL; }
+HWND  GetActiveWindow(void)               { return NULL; }
+BOOL  SetWindowTextA(HWND h, LPCSTR t)    { (void)h; (void)t; return TRUE; }
+
+int MessageBoxA(HWND h, LPCSTR text, LPCSTR caption, UINT type)
+{
+    (void)h; (void)type;
+    fprintf(stderr, "[%s] %s\n", caption ? caption : "MessageBox",
+                                   text    ? text    : "");
+    return 1;   /* IDOK */
+}
+
+/* Message-loop stubs: no Win32 messages on POSIX (SDL events drive the
+ * d3d8_gl backend; this layer is just for the game's Win32 message pump). */
+BOOL    PeekMessageA(LPMSG m, HWND w, UINT a, UINT b, UINT f)
+{ (void)m; (void)w; (void)a; (void)b; (void)f; return FALSE; }
+BOOL    TranslateMessage(const MSG *m) { (void)m; return TRUE; }
+LRESULT DispatchMessageA(const MSG *m) { (void)m; return 0; }
+
+/* XInput stub: real gamepad is wired through input_compat (SDL2). */
+DWORD XInputGetState(DWORD idx, XINPUT_STATE *state)
+{ (void)idx; if (state) memset(state, 0, sizeof(*state)); return ERROR_DEVICE_NOT_CONNECTED; }
+
 BOOL TerminateProcess(HANDLE process, UINT exitCode)
 {
     (void)process;
@@ -1329,5 +1444,9 @@ VOID RaiseException(DWORD code, DWORD flags, DWORD nargs, const ULONG_PTR *args)
     fprintf(stderr, "[win32_compat] RaiseException(0x%08X): SEH not emulated\n", code);
     /* TODO: on Windows this does not return; SEH dispatch unimplemented. */
 }
+
+PVOID AddVectoredExceptionHandler(ULONG First, PVECTORED_EXCEPTION_HANDLER Handler)
+{ (void)First; (void)Handler; return NULL; }   /* TODO: wire to sigaction */
+ULONG RemoveVectoredExceptionHandler(PVOID h) { (void)h; return 1; }
 
 #endif /* !_WIN32 */

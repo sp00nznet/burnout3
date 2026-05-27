@@ -14,6 +14,10 @@
 #include <math.h>
 #include <stdio.h>
 
+/* xbox_HeapAlloc is defined further down in this file but is first
+ * referenced inside another function -- forward declare it. */
+extern uint32_t xbox_HeapAlloc(uint32_t size, uint32_t alignment);
+
 /* ICALL failure diagnostic (rate-limited) */
 void recomp_icall_fail_log(uint32_t va)
 {

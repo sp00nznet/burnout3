@@ -29,6 +29,11 @@
 #define XBOX_THREAD_LOCAL __thread
 #endif
 
+/* MSVC's __debugbreak() intrinsic -> gcc/clang equivalent on POSIX. */
+#if !defined(_MSC_VER)
+#define __debugbreak() __builtin_trap()
+#endif
+
 #if defined(_WIN32)
 
 /* ---- Windows host: use the real SDK ------------------------------------- */
@@ -121,6 +126,10 @@ typedef void             **PHANDLE, **LPHANDLE;
 typedef void              *HMODULE, *HINSTANCE, *HKEY, *HLOCAL, *HGLOBAL;
 typedef void              *HWND, *HDC, *HBITMAP, *HICON, *HMENU, *HCURSOR;
 
+/* PCONTEXT: Windows VEH register state. On Linux the equivalent is
+ * ucontext_t*; we leave it opaque here since Linux callers don't use it. */
+typedef void              *PCONTEXT;
+
 /* Xbox/UTF-16 wide char is 16-bit, unlike the 32-bit Linux wchar_t. */
 typedef uint16_t           WCHAR, *PWCHAR, *LPWSTR, *PWSTR;
 typedef const uint16_t    *LPCWSTR, *PCWSTR;
@@ -140,6 +149,11 @@ typedef uintptr_t          HALF_PTR;
 /* NT-flavoured aliases */
 typedef ULONG              ACCESS_MASK, *PACCESS_MASK;
 typedef DWORD              COLORREF;
+
+/* Win32 message types (LRESULT/WPARAM/LPARAM are pointer-sized) */
+typedef LONG_PTR           LRESULT;
+typedef UINT_PTR           WPARAM;
+typedef LONG_PTR           LPARAM;
 typedef LONG               HRESULT;
 typedef LONG               NTSTATUS;
 

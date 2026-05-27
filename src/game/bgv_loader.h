@@ -18,7 +18,7 @@
 #ifndef BGV_LOADER_H
 #define BGV_LOADER_H
 
-#include <windows.h>
+#include "platform/xbox_winnt.h"
 #include <stdint.h>
 #include "../d3d/d3d8_xbox.h"
 

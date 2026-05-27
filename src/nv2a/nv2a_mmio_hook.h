@@ -14,7 +14,7 @@
 #ifndef BURNOUT3_NV2A_MMIO_HOOK_H
 #define BURNOUT3_NV2A_MMIO_HOOK_H
 
-#include <windows.h>
+#include "platform/xbox_winnt.h"
 #include <stdint.h>
 #include <stdbool.h>
 

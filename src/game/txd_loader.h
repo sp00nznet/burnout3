@@ -13,7 +13,7 @@
 #ifndef TXD_LOADER_H
 #define TXD_LOADER_H
 
-#include <windows.h>
+#include "platform/xbox_winnt.h"
 #include <stdint.h>
 #include "../d3d/d3d8_xbox.h"
 

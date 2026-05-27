@@ -11,6 +11,7 @@
  * Then shows "Press Start" and transitions to gameplay.
  */
 
+#if defined(_WIN32)
 #define COBJMACROS
 #include <windows.h>
 #include <mfapi.h>
@@ -701,3 +702,25 @@ void boot_render(void)
         break;
     }
 }
+
+#else /* !_WIN32 -- Media Foundation path is Windows-only; stub on Linux.
+                     A real ffmpeg/libav backend is Stage 5. */
+
+#include "video_player.h"
+
+int  video_init(void)                  { return -1; }
+void video_shutdown(void)              {}
+int  video_open(const char *path)      { (void)path; return -1; }
+int  video_update(float dt)            { (void)dt;  return 1; /* finished */ }
+void video_render(void)                {}
+int  video_is_finished(void)           { return 1; }
+void video_close(void)                 {}
+
+/* Boot sequence: skip straight to gameplay phase. BOOT_PHASE_GAMEPLAY is
+ * defined in video_player.h; we return any value the caller treats as
+ * "past the boot videos" -- a large constant works. */
+int  boot_get_phase(void)              { return 9999; }
+int  boot_update(float dt, int skip)   { (void)dt; (void)skip; return 1; }
+void boot_render(void)                 {}
+
+#endif /* _WIN32 */

@@ -11,6 +11,15 @@
 #define COBJMACROS
 #include "d3d8_xbox.h"
 
+/* Portable: D3D8 device accessor used by recompiled code on both backends
+ * (d3d8_device.c on Windows, d3d8_gl.c on POSIX). */
+IDirect3DDevice8 *d3d8_GetDevice(void);
+
+#if defined(_WIN32)
+/* === Everything below is the D3D11 backend. The POSIX d3d8_compat
+ * library (d3d8_gl.c) implements its own internal state and does not
+ * need any of these declarations. === */
+
 #include <d3d11.h>
 #include <dxgi.h>
 
@@ -143,5 +152,7 @@ void    d3d8_states_apply(void);
 
 /* Create sampler state from TSS and apply to slot */
 void    d3d8_states_apply_sampler(DWORD stage);
+
+#endif /* _WIN32 -- end of D3D11 backend section */
 
 #endif /* BURNOUT3_D3D8_INTERNAL_H */

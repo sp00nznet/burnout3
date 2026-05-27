@@ -21,8 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "platform/xbox_winnt.h"
 #include "../d3d/d3d8_xbox.h"
 
 /* Captured push buffer data for each menu state */

@@ -10,6 +10,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+/* Global APU state pointer -- referenced from main.c regardless of which
+ * platform's MMIO hook is active, so define it before the #if guard. */
+MCPXAPUState *g_apu_state = NULL;
+
 /* The MMIO hook is a Win32-VEH x86-64 instruction decoder. On Linux the
  * equivalent goes through sigaction + ucontext_t (Stage 2 / main.c). For
  * now the whole body is Windows-only so apu_emu links on Debian. */
@@ -20,8 +24,7 @@
 #define APU_MMIO_BASE  0xFE800000u
 #define APU_MMIO_SIZE  0x00080000u  /* 512KB */
 
-/* Global APU state */
-MCPXAPUState *g_apu_state = NULL;
+/* (g_apu_state is defined above, outside the Win32 guard) */
 
 /* Statistics */
 static int g_apu_mmio_read_count = 0;

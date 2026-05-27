@@ -201,6 +201,143 @@ VOID  ExitProcess(UINT exitCode);
 BOOL  TerminateProcess(HANDLE process, UINT exitCode);
 VOID  SecureZeroMemory(PVOID ptr, SIZE_T cnt);
 unsigned int _clearfp(void);   /* clear pending FPU exception flags */
+
+/* MSVC stack alloca alias. <alloca.h> provides the underlying function. */
+#include <alloca.h>
+#define _alloca(n) alloca(n)
+
+/* ---- Win32 file API (POSIX-backed) ----------------------------------- */
+#define GENERIC_READ             0x80000000u
+#define GENERIC_WRITE            0x40000000u
+#define GENERIC_EXECUTE          0x20000000u
+#define GENERIC_ALL              0x10000000u
+#define FILE_SHARE_READ          0x00000001u
+#define FILE_SHARE_WRITE         0x00000002u
+#define FILE_SHARE_DELETE        0x00000004u
+#define CREATE_NEW               1
+#define CREATE_ALWAYS            2
+#define OPEN_EXISTING            3
+#define OPEN_ALWAYS              4
+#define TRUNCATE_EXISTING        5
+#define FILE_ATTRIBUTE_READONLY  0x00000001u
+#define FILE_ATTRIBUTE_HIDDEN    0x00000002u
+#define FILE_ATTRIBUTE_SYSTEM    0x00000004u
+#define FILE_ATTRIBUTE_DIRECTORY 0x00000010u
+#define FILE_ATTRIBUTE_ARCHIVE   0x00000020u
+#define FILE_ATTRIBUTE_NORMAL    0x00000080u
+#define INVALID_FILE_SIZE        0xFFFFFFFFu
+
+HANDLE CreateFileA(LPCSTR name, DWORD access, DWORD share,
+                   LPSECURITY_ATTRIBUTES sa, DWORD disp,
+                   DWORD flags, HANDLE templ);
+HANDLE CreateFileW(LPCWSTR name, DWORD access, DWORD share,
+                   LPSECURITY_ATTRIBUTES sa, DWORD disp,
+                   DWORD flags, HANDLE templ);
+BOOL   ReadFile(HANDLE h, LPVOID buf, DWORD len, LPDWORD nread, void *overlapped);
+BOOL   WriteFile(HANDLE h, LPCVOID buf, DWORD len, LPDWORD nwritten, void *overlapped);
+DWORD  GetFileSize(HANDLE h, LPDWORD high);
+BOOL   FlushFileBuffers(HANDLE h);
+
+/* ---- Keyboard + window helpers (stubs on POSIX) --------------------- */
+SHORT GetAsyncKeyState(int vKey);
+HWND  FindWindowA(LPCSTR className, LPCSTR windowName);
+HWND  GetActiveWindow(void);
+BOOL  SetWindowTextA(HWND hwnd, LPCSTR text);
+
+/* MessageBox + flags (stderr stub on POSIX). */
+int   MessageBoxA(HWND hwnd, LPCSTR text, LPCSTR caption, UINT type);
+#define MB_OK              0x00000000u
+#define MB_OKCANCEL        0x00000001u
+#define MB_ICONERROR       0x00000010u
+#define MB_ICONWARNING     0x00000030u
+#define MB_ICONINFORMATION 0x00000040u
+
+/* Win32 virtual-key codes (subset the game checks via GetAsyncKeyState) */
+#define VK_LBUTTON   0x01
+#define VK_RBUTTON   0x02
+#define VK_CANCEL    0x03
+#define VK_MBUTTON   0x04
+#define VK_BACK      0x08
+#define VK_TAB       0x09
+#define VK_RETURN    0x0D
+#define VK_SHIFT     0x10
+#define VK_CONTROL   0x11
+#define VK_MENU      0x12
+#define VK_PAUSE     0x13
+#define VK_CAPITAL   0x14
+#define VK_ESCAPE    0x1B
+#define VK_SPACE     0x20
+#define VK_PRIOR     0x21
+#define VK_NEXT      0x22
+#define VK_END       0x23
+#define VK_HOME      0x24
+#define VK_LEFT      0x25
+#define VK_UP        0x26
+#define VK_RIGHT     0x27
+#define VK_DOWN      0x28
+#define VK_INSERT    0x2D
+#define VK_DELETE    0x2E
+#define VK_MULTIPLY  0x6A
+#define VK_ADD       0x6B
+#define VK_SUBTRACT  0x6D
+#define VK_DIVIDE    0x6F
+#define VK_F1        0x70
+#define VK_F2        0x71
+#define VK_F3        0x72
+#define VK_F4        0x73
+#define VK_F5        0x74
+#define VK_F12       0x7B
+#define VK_OEM_PLUS  0xBB
+#define VK_OEM_COMMA 0xBC
+#define VK_OEM_MINUS 0xBD
+#define VK_OEM_PERIOD 0xBE
+
+/* ---- Message-loop shims (PeekMessage etc. -- always "no messages") ---- */
+typedef struct tagMSG {
+    HWND     hwnd;
+    UINT     message;
+    WPARAM   wParam;
+    LPARAM   lParam;
+    DWORD    time;
+    POINT    pt;
+} MSG, *PMSG, *LPMSG;
+#define PM_NOREMOVE  0x0000
+#define PM_REMOVE    0x0001
+#define WM_QUIT      0x0012
+#define WM_KEYDOWN   0x0100
+#define WM_KEYUP     0x0101
+#define WM_CHAR      0x0102
+BOOL    PeekMessageA(LPMSG msg, HWND wnd, UINT min, UINT max, UINT flags);
+BOOL    TranslateMessage(const MSG *msg);
+LRESULT DispatchMessageA(const MSG *msg);
+
+/* ---- XInput (stub on POSIX -- real gamepad goes through input_compat) -- */
+typedef struct _XINPUT_GAMEPAD {
+    WORD  wButtons;
+    BYTE  bLeftTrigger;
+    BYTE  bRightTrigger;
+    SHORT sThumbLX, sThumbLY, sThumbRX, sThumbRY;
+} XINPUT_GAMEPAD;
+typedef struct _XINPUT_STATE {
+    DWORD          dwPacketNumber;
+    XINPUT_GAMEPAD Gamepad;
+} XINPUT_STATE;
+DWORD XInputGetState(DWORD idx, XINPUT_STATE *state);
+
+#define XINPUT_GAMEPAD_DPAD_UP        0x0001
+#define XINPUT_GAMEPAD_DPAD_DOWN      0x0002
+#define XINPUT_GAMEPAD_DPAD_LEFT      0x0004
+#define XINPUT_GAMEPAD_DPAD_RIGHT     0x0008
+#define XINPUT_GAMEPAD_START          0x0010
+#define XINPUT_GAMEPAD_BACK           0x0020
+#define XINPUT_GAMEPAD_LEFT_THUMB     0x0040
+#define XINPUT_GAMEPAD_RIGHT_THUMB    0x0080
+#define XINPUT_GAMEPAD_LEFT_SHOULDER  0x0100
+#define XINPUT_GAMEPAD_RIGHT_SHOULDER 0x0200
+#define XINPUT_GAMEPAD_A              0x1000
+#define XINPUT_GAMEPAD_B              0x2000
+#define XINPUT_GAMEPAD_X              0x4000
+#define XINPUT_GAMEPAD_Y              0x8000
 int   MultiByteToWideChar(UINT cp, DWORD flags, LPCSTR mb, int mbCount,
                           LPWSTR wide, int wideCount);
 int   WideCharToMultiByte(UINT cp, DWORD flags, LPCWSTR wide, int wideCount,
@@ -264,6 +401,29 @@ typedef struct _EXCEPTION_RECORD {
 VOID RtlUnwind(PVOID TargetFrame, PVOID TargetIp,
                PEXCEPTION_RECORD ExceptionRecord, PVOID ReturnValue);
 VOID RaiseException(DWORD code, DWORD flags, DWORD nargs, const ULONG_PTR *args);
+
+/* Win32 VEH: opaque PEXCEPTION_POINTERS + AddVectoredExceptionHandler stub.
+ * On Linux the equivalent goes through sigaction(SIGSEGV/SIGFPE) +
+ * ucontext_t; for now we accept the registration and never fire. */
+typedef void *PEXCEPTION_POINTERS;
+typedef LONG (*PVECTORED_EXCEPTION_HANDLER)(PEXCEPTION_POINTERS info);
+PVOID AddVectoredExceptionHandler(ULONG FirstHandler, PVECTORED_EXCEPTION_HANDLER Handler);
+ULONG RemoveVectoredExceptionHandler(PVOID Handle);
+
+#define EXCEPTION_CONTINUE_SEARCH       0
+#define EXCEPTION_EXECUTE_HANDLER       1
+#define EXCEPTION_CONTINUE_EXECUTION  (-1)
+#define EXCEPTION_ACCESS_VIOLATION       0xC0000005u
+#define EXCEPTION_STACK_OVERFLOW         0xC00000FDu
+#define EXCEPTION_ILLEGAL_INSTRUCTION    0xC000001Du
+#define EXCEPTION_INT_DIVIDE_BY_ZERO     0xC0000094u
+#define EXCEPTION_FLT_DIVIDE_BY_ZERO     0xC000008Eu
+#define EXCEPTION_FLT_INVALID_OPERATION  0xC0000090u
+#define EXCEPTION_FLT_STACK_CHECK        0xC0000092u
+#define EXCEPTION_FLT_OVERFLOW           0xC0000091u
+#define EXCEPTION_FLT_UNDERFLOW          0xC0000093u
+#define EXCEPTION_FLT_INEXACT_RESULT     0xC000008Fu
+#define EXCEPTION_FLT_DENORMAL_OPERAND   0xC000008Du
 
 /* ---- Memory query ----------------------------------------------------- */
 typedef struct _MEMORY_BASIC_INFORMATION {
