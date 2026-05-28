@@ -837,8 +837,14 @@ static HANDLE bridge_read_handle(uint32_t va)
         uint32_t i = token & BRIDGE_HANDLE_MASK;
         return (i > 0 && i < BRIDGE_HANDLE_MAX) ? s_handle_table[i] : NULL;
     }
-    /* Untagged value: synthetic/dummy handle -- pass through unchanged. */
-    return (HANDLE)(uintptr_t)token;
+    /* Synthetic dummy handles set up elsewhere -- pass through so callers
+     * can still recognise them. */
+    if (token == 0xDEAD0001u || token == 0xBEEF0001u || token == 0xBEEF0010u)
+        return (HANDLE)(uintptr_t)token;
+    /* Anything else (raw sentinels like 0xFFFFFFFF, 0, garbage) is not a
+     * real handle. Returning NULL makes downstream w32_* funcs fail
+     * gracefully instead of dereferencing arbitrary memory. */
+    return NULL;
 }
 
 /* Resolve a token to a HANDLE and release its table slot (for NtClose). */

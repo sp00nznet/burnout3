@@ -138,11 +138,17 @@ BOOL xbox_MemoryLayoutInit(const void *xbe_data, size_t xbe_size)
      */
     {
         static const uintptr_t try_bases[] = {
-            XBOX_BASE_ADDRESS,      /* 0x00010000 - original Xbox address */
-            0x00800000,             /* 8 MB - above typical PEB/TEB region */
-            0x01000000,             /* 16 MB */
-            0x02000000,             /* 32 MB */
-            0x10000000,             /* 256 MB */
+            /* Map well above the Xbox VA range (which tops out at 64 MB).
+             * If the native base overlaps Xbox VAs, xbox_ptr_resolve's
+             * "is this a native pointer?" heuristic misidentifies every
+             * Xbox VA as native and reads from the wrong address. Linux
+             * mmap_min_addr is 0x10000, so 0x00010000 would otherwise
+             * succeed first and break the heuristic. */
+            0x10000000,             /* 256 MB - first choice on both OSes */
+            0x20000000,             /* 512 MB */
+            0x40000000,             /* 1 GB */
+            0x00800000,             /* 8 MB - small-overlap fallback */
+            XBOX_BASE_ADDRESS,      /* 0x00010000 - last-resort (heuristic-breaking) */
             0,                      /* sentinel - let OS choose */
         };
 
@@ -503,8 +509,8 @@ uint32_t xbox_HeapAlloc(uint32_t size, uint32_t alignment)
     result = (g_heap_next + alignment - 1) & ~(alignment - 1);
 
     if (result + size > XBOX_HEAP_BASE + XBOX_HEAP_SIZE) {
-        fprintf(stderr, "xbox_HeapAlloc: out of memory (requested %u, used %u/%u)\n",
-                size, g_heap_next - XBOX_HEAP_BASE, XBOX_HEAP_SIZE);
+        fprintf(stderr, "xbox_HeapAlloc: OOM size=%u (0x%X), used %u/%u\n",
+                size, size, g_heap_next - XBOX_HEAP_BASE, XBOX_HEAP_SIZE);
         return 0;
     }
 

@@ -278,8 +278,14 @@ HANDLE w32_open_handle(int fd, const char *host_path)
 
 int w32_handle_fd(HANDLE h)
 {
+    /* Reject NULL, INVALID_HANDLE_VALUE, and small sentinel values
+     * that the recompiled game sometimes passes as pseudo handles
+     * (e.g. 0xDEAD0001, 0xBEEF0010, 0xFFFFFFFF). Any "handle" below
+     * a real heap allocation cannot be a w32_object*. */
+    if (!h || h == INVALID_HANDLE_VALUE) return -1;
+    if ((uintptr_t)h < 0x10000) return -1;
     w32_object *o = (w32_object *)h;
-    return (o && o->kind == K_FILE) ? o->fd : -1;
+    return (o->kind == K_FILE) ? o->fd : -1;
 }
 
 const char *w32_handle_path(HANDLE h)

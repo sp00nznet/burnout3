@@ -105356,13 +105356,9 @@ loc_001D193D:
 
 }
 
-/**
- * sub_001D1953
- * Original: 0x001D1953 - 0x001D1981 (46 bytes, 10 insns)
- * Category: rw_driver_xbox
- * CC: stdcall, 0 params, returns int_or_void
- * Frame: fpo_leaf
- */
+/* sub_001D1953 and sub_001D1981 overridden in recomp_manual.c
+ * (FS-segment TLS access dropped by recompiler — see manual file). */
+#if 0
 void sub_001D1953(void)
 {
     int _flags = 0; /* fallback flag var */
@@ -105384,13 +105380,6 @@ loc_001D1965:
 
 }
 
-/**
- * sub_001D1981
- * Original: 0x001D1981 - 0x001D1998 (23 bytes, 7 insns)
- * Category: rw_driver_xbox
- * CC: stdcall, 0 params, returns int_or_void
- * Frame: fpo_leaf
- */
 void sub_001D1981(void)
 {
 
@@ -105410,6 +105399,7 @@ loc_001D1993:
     esp += 8; return; /* ret 4 */
 
 }
+#endif
 
 /**
  * sub_001D1998

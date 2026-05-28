@@ -20,6 +20,7 @@ PKGS=(
     libavformat-dev     # video demux           (Stage 5)
     libavutil-dev       # video support         (Stage 5)
     libswscale-dev      # video colour convert  (Stage 5)
+    gdb                 # debugger -- needed to inspect runtime stalls
 )
 
 echo "Installing ${#PKGS[@]} packages: ${PKGS[*]}"

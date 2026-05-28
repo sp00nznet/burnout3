@@ -512,6 +512,90 @@ void sub_001CFDD0(void)
     return;
 }
 
+/* ============================================================
+ * RenderWare per-thread last-error storage
+ * ============================================================
+ * sub_001D1953 and sub_001D1981 use fs:[0x24], fs:[0x28], fs:[0x04]
+ * (Xbox KPCR/TEB) to look up the per-thread error slot in the array
+ * at 0x41A7D4 and store the error code at +8.
+ *
+ * The static recompiler drops the FS segment override and walks
+ * absolute VAs 0x04/0x24/0x28 instead, which causes a downstream
+ * SIGSEGV when the chained dereferences point at unmapped memory.
+ *
+ * Replace both with a single-slot global since we don't model FS-relative
+ * TLS. The error code is rarely consulted in practice and the original
+ * Xbox build worked the same way after thread 1 init.
+ *
+ * sub_001D1953: stdcall, 1 param ([esp+4] = error code)
+ * sub_001D1981: stdcall, 1 param ([esp+4] = NTSTATUS); calls
+ *               xbox_RtlNtStatusToDosError then sub_001D1953,
+ *               returns the converted Win32 error in eax.
+ */
+extern uint32_t xbox_RtlNtStatusToDosError(uint32_t Status);
+static uint32_t g_rw_last_error = 0;
+
+void sub_001D1953(void)
+{
+    uint32_t err = MEM32(esp + 4);
+    g_rw_last_error = err;
+    esp += 8;   /* ret 4: return addr + 1 stdcall arg */
+}
+
+void sub_001D1981(void)
+{
+    uint32_t status = MEM32(esp + 4);
+    uint32_t dos_err = xbox_RtlNtStatusToDosError(status);
+    g_rw_last_error = dos_err;
+    eax = dos_err;
+    esp += 8;   /* ret 4: return addr + 1 stdcall arg */
+}
+
+/* ============================================================
+ * sub_00352560 - D3D8LTCG "GetResourceMemorySize" entry point
+ * ============================================================
+ * One of many entry points into the giant D3D8LTCG state-flush
+ * routine (0x00352560-0x00360A54, ~58 KB, ~12,000 insns). When
+ * the auto-generated body is left in place, the function walks
+ * deep pointer chains in the (uninitialised) D3D device context
+ * and returns garbage. Two callers feed that garbage directly
+ * into RW heap-alloc:
+ *
+ *   sub_0003D890 @ 0x3D91F:  call sub_00352560
+ *                            push 0x64800000
+ *                            push 0x14
+ *                            mov edi, eax           ; size!
+ *                            call sub_001D2879      ; alloc(20)
+ *                            push 0xB7800000
+ *                            push edi               ; alloc(garbage!)
+ *
+ *   sub_00040B90 @ 0x40BD3:  same pattern
+ *
+ * Either alloc consumes the entire heap (request 178 MB+) and
+ * subsequent setup code dereferences NULL and crashes deep in
+ * sub_00040B90 / sub_0003D890.
+ *
+ * Returning a small constant (0x10000 = 64 KB) gives the caller
+ * a reasonable buffer to attach to its resource descriptor.
+ * Stride and width info read by the caller from out params is
+ * left zero, which downstream code already tolerates.
+ *
+ * Calling convention is non-standard (8 stack args + eax + edx
+ * + ecx fast-call). Caller pops the 8 stack args (esp+=0x20) and
+ * the function returns 4-byte "ret 0x18" worth, so we adjust
+ * esp by 0x1C (ret addr + 24 stack bytes worth of cleanup the
+ * gen code would have done in its prologue/epilogue dance).
+ *
+ * Callers push 8 stack args and DO NOT clean them — sub_001D2879
+ * is called immediately after with its own pushes, so sub_00352560
+ * must clean the 8 args itself: `ret 0x20` (32 bytes).
+ */
+void sub_00352560(void)
+{
+    eax = 0x10000;   /* 64 KB - reasonable resource size */
+    esp += 4 + 32;   /* ret 0x20: pop ret addr + 8 stdcall args */
+}
+
 /**
  * sub_001D1818 - Thread start routine (RenderWare initialization)
  *
