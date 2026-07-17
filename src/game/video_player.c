@@ -667,18 +667,16 @@ int boot_update(float dt, int skip)
             break;
         }
 
-        /* Any button press advances to the menu.
+        /* Any button press hands off to the game.
          *
-         * This used to jump straight to BOOT_PHASE_GAMEPLAY, skipping
-         * BOOT_PHASE_MENU entirely -- which is why the boot sequence appeared
-         * to "drop to nothing" after the press-start bar: there was no menu
-         * phase, and gameplay has nothing to show until the game finishes
-         * booting. fe_menu renders the real frontend and does not need the
-         * game's state machine to get there. */
+         * Deliberately NOT routed through fe_menu: that is a hand-written
+         * stand-in for the frontend, not Burnout 3's menus. The real menus are
+         * the game's own code, and the only way to get them is for the game to
+         * reach its frontend state itself. Anything else is a mock-up that
+         * looks like progress and isn't. */
         if (skip) {
-            g_boot.phase = BOOT_PHASE_MENU;
-            g_boot.debounce = 0.5f;
-            fprintf(stderr, "  [BOOT] Press Start -> Menu\n");
+            g_boot.phase = BOOT_PHASE_GAMEPLAY;
+            fprintf(stderr, "  [BOOT] Press Start -> game\n");
         }
         break;
 
