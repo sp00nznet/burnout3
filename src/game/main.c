@@ -1942,6 +1942,54 @@ static DWORD WINAPI tick_count_thread_func(LPVOID param)
 
 /* ── Watchdog thread: periodically dumps register state ──── */
 
+/* Fast RIP sampler: the game thread runs so hot the 2s watchdog barely gets
+ * scheduled, so this samples where the game thread actually IS at 50 Hz and
+ * reports the hottest 64 KB bucket every couple of seconds. That is enough to
+ * name a tight loop the ICALL counter can't see. */
+static DWORD WINAPI rip_profiler_func(LPVOID param)
+{
+    (void)param;
+    static uint32_t bucket[0x800];   /* 0x800 * 64KB covers the 128MB image */
+    static uint64_t exemplar[0x800]; /* one real RIP seen in each bucket */
+    /* The game thread starves everything; run above it so we get samples. */
+    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
+    uint64_t last_report = GetTickCount64();
+    for (;;) {
+        Sleep(20);
+        HANDLE gt = xbox_thread_debug_handle();
+        if (gt && SuspendThread(gt) != (DWORD)-1) {
+            CONTEXT ctx; memset(&ctx, 0, sizeof(ctx));
+            ctx.ContextFlags = CONTEXT_CONTROL;
+            if (GetThreadContext(gt, &ctx)) {
+                uint64_t base = 0x140000000ull;
+                if (ctx.Rip >= base && ctx.Rip < base + 0x8000000ull) {
+                    uint32_t b = (uint32_t)((ctx.Rip - base) >> 16);
+                    bucket[b]++;
+                    exemplar[b] = ctx.Rip;
+                }
+            }
+            ResumeThread(gt);
+        }
+        uint64_t now = GetTickCount64();
+        if (now - last_report >= 2000) {
+            last_report = now;
+            /* Report the top 3 buckets, finer: 4KB each within the hot 64KB. */
+            for (int top = 0; top < 3; top++) {
+                int hot = 0;
+                for (int i = 1; i < 0x800; i++)
+                    if (bucket[i] > bucket[hot]) hot = i;
+                if (!bucket[hot]) break;
+                fprintf(stderr, "  [PROFILE] hot RIP=0x%016llX (%u samples)\n",
+                        0x140000000ull + ((uint64_t)hot << 16), bucket[hot]);
+                bucket[hot] = 0;
+            }
+            fflush(stderr);
+            memset(bucket, 0, sizeof(bucket));
+        }
+    }
+    return 0;
+}
+
 static DWORD WINAPI watchdog_thread_func(LPVOID param)
 {
     (void)param;
@@ -1976,19 +2024,22 @@ static DWORD WINAPI watchdog_thread_func(LPVOID param)
          * Suspend it and read RIP: bin/burnout3.map turns that straight into a
          * function name. (The old Xbox-stack dump here read g_esp, which is
          * thread-local now, so on this thread it was always 0.) */
-        if (count == prev_count) {
+        /* Always sample the game thread's RIP, whether or not ICALLs moved:
+         * plenty of real work (direct calls, tight loops) never touches the
+         * counter, so "count unchanged" is not the same as "stopped". */
+        {
             HANDLE gt = xbox_thread_debug_handle();
             if (gt) {
                 CONTEXT ctx;
                 memset(&ctx, 0, sizeof(ctx));
                 ctx.ContextFlags = CONTEXT_CONTROL;
                 if (SuspendThread(gt) != (DWORD)-1) {
-                    if (GetThreadContext(gt, &ctx)) {
-                        fprintf(stderr, "  [WATCHDOG] game thread parked at "
-                                "RIP=0x%016llX RSP=0x%016llX\n",
+                    if (GetThreadContext(gt, &ctx))
+                        fprintf(stderr, "  [WATCHDOG] game thread RIP=0x%016llX "
+                                "RSP=0x%016llX (icalls %s)\n",
                                 (unsigned long long)ctx.Rip,
-                                (unsigned long long)ctx.Rsp);
-                    }
+                                (unsigned long long)ctx.Rsp,
+                                count == prev_count ? "STALLED" : "moving");
                     ResumeThread(gt);
                 }
             }
@@ -5240,6 +5291,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     /* Start watchdog thread for periodic register dumps */
     CreateThread(NULL, 0, watchdog_thread_func, NULL, 0, NULL);
+    CreateThread(NULL, 0, rip_profiler_func, NULL, 0, NULL);
 
     /* Call the recompiled game entry point with crash protection.
      * We push a dummy return address (simulating x86 'call' instruction)
