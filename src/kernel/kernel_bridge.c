@@ -877,6 +877,23 @@ static HANDLE bridge_read_handle(uint32_t va)
     return NULL;
 }
 
+/* Resolve a token to a HANDLE, keeping its table slot.
+ *
+ * bridge_read_handle takes the ADDRESS of a handle and dereferences it;
+ * bridge_take_handle takes the value but frees the slot, which is right for
+ * NtClose and wrong for everyone else. This is the plain "value in, handle
+ * out" lookup. */
+static HANDLE bridge_peek_handle(uint32_t token)
+{
+    if ((token & 0xFF000000u) == BRIDGE_HANDLE_TAG) {
+        uint32_t i = token & BRIDGE_HANDLE_MASK;
+        return (i > 0 && i < BRIDGE_HANDLE_MAX) ? s_handle_table[i] : NULL;
+    }
+    if (token == 0xDEAD0001u || token == 0xBEEF0001u || token == 0xBEEF0010u)
+        return (HANDLE)(uintptr_t)token;
+    return NULL;
+}
+
 /* Resolve a token to a HANDLE and release its table slot (for NtClose). */
 static HANDLE bridge_take_handle(uint32_t token)
 {
@@ -967,6 +984,59 @@ static void bridge_NtOpenFile(void)
     g_eax = (uint32_t)bridge_create_file_impl(
         handle_va, access, obj_attrs, iostatus,
         0, share, 1 /* FILE_OPEN */, options);
+}
+
+/* ── NtDuplicateObject (ordinal 197, 3 args = 12 bytes) ──────
+ *
+ * NTSTATUS NtDuplicateObject(HANDLE Source, PHANDLE Target, ULONG Options)
+ *
+ * xbox_NtDuplicateObject has existed in kernel_thread.c the whole time; it was
+ * simply never dispatched, so the generic path answered instead -- and that
+ * path returns 0, which is STATUS_SUCCESS. We were telling the game its handle
+ * had duplicated fine while never writing the output handle, so it went on to
+ * use whatever was already in that memory. Failing would have been kinder.
+ * It is the last thing the game calls before the boot stalls.
+ */
+static void bridge_NtDuplicateObject(void)
+{
+    uint32_t src_token = STACK_ARG(0);
+    uint32_t target_va = STACK_ARG(1);
+    uint32_t options   = STACK_ARG(2);
+    HANDLE   source;
+    HANDLE   target    = NULL;
+    NTSTATUS st;
+
+    /* NT pseudo-handles: -1 is the current process, -2 the current thread.
+     * "Duplicate the current thread pseudo-handle into a real one" is the
+     * standard way to get a usable handle to yourself, and it is exactly what
+     * the game does here (src_token = 0xFFFFFFFE).
+     *
+     * bridge_peek_handle deliberately maps raw sentinels to NULL so that
+     * downstream calls fail gracefully rather than dereference nonsense. That
+     * is right in general and wrong here: DuplicateHandle understands
+     * pseudo-handles natively, so pass them through. Sign-extend -- the token
+     * is 32-bit and HANDLE is 64-bit, so a zero-extended 0xFFFFFFFE is not -2.
+     */
+    if (src_token == 0xFFFFFFFFu || src_token == 0xFFFFFFFEu)
+        source = (HANDLE)(intptr_t)(int32_t)src_token;
+    else
+        source = bridge_peek_handle(src_token);
+
+    st = xbox_NtDuplicateObject(source, &target, options);
+
+    if (NT_SUCCESS(st) && target_va)
+        bridge_write_handle(target_va, target);
+    else if (target_va)
+        BRIDGE_MEM32(target_va) = 0;
+
+    if (g_kernel_call_count <= 200) {
+        fprintf(stderr, "  [KERNEL] NtDuplicateObject: src_token=0x%08X (->%p) "
+                "target_va=0x%08X options=0x%X status=0x%08X\n",
+                src_token, source, target_va, options, (uint32_t)st);
+        fflush(stderr);
+    }
+
+    g_eax = (uint32_t)st;
 }
 
 /* ── NtReadFile (ordinal 219, 8 args = 32 bytes) ──────── */
@@ -1507,6 +1577,7 @@ static bridge_func_t bridge_for_ordinal(ULONG ordinal)
     case 190: return bridge_NtCreateFile;
     case 195: return bridge_NtDeleteFile;
     case 196: return bridge_NtDeviceIoControlFile;
+    case 197: return bridge_NtDuplicateObject;
     case 198: return bridge_NtFlushBuffersFile;
     case 200: return bridge_NtFsControlFile;
     case 202: return bridge_NtOpenFile;
