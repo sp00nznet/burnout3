@@ -130,6 +130,15 @@ static __forceinline uintptr_t xbox_ptr_resolve(uint32_t addr)
             return (uintptr_t)addr;
         }
     }
+    /* Xbox tiled/AGP framebuffer aperture (0xF0000000-0xFFFFFFFF) aliases
+     * physical RAM. In our flat (untiled) memory model, fold it back to the
+     * 64 MB RAM base so D3D8LTCG render-target setup (e.g. sub_00040B90's
+     * `edi |= 0xF0000000` zero-fill) hits real pages instead of faulting
+     * past the end of the mapping (0xF......+base). The tiling swizzle is a
+     * no-op for the zero-fills/clears this path performs. */
+    if (addr >= 0xF0000000u) {
+        return (uintptr_t)(addr & 0x03FFFFFFu) + g_xbox_mem_offset;
+    }
     return (uintptr_t)addr + g_xbox_mem_offset;
 }
 #define XBOX_PTR(addr) xbox_ptr_resolve((uint32_t)(addr))

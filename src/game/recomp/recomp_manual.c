@@ -6072,7 +6072,8 @@ void sub_0034C2E0(void)
                 call_count, p_flags, p_color, MEM32(0x35D6A0));
     }
 
-    esp += 4; return;
+    esp += 28; /* ret 24: pop return addr (4) + 6 cdecl params (24) */
+    return;
 }
 
 /**

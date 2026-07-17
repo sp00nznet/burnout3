@@ -145,8 +145,21 @@ elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang
     # functions that the recompiler did not emit declarations for, and does
     # a lot of int<->pointer punning. Modern gcc treats these as errors;
     # demote them to warnings on gen sources only.
+    # Dev iteration: the giant generated files (esp. recomp_0022.c, ~1.4M lines)
+    # take many minutes each at -O2, so every header change is a 30-60 min rebuild.
+    # BURNOUT3_GEN_O0=ON compiles the generated sources at -O0 (much faster, and
+    # safer for this UB-heavy translated code). Leave OFF for release/perf builds.
+    set(_b3_gen_flags "-w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types")
+    if(BURNOUT3_GEN_O0)
+        # -O0 for fast dev rebuilds (giant 20K-insn translated funcs are slow at
+        # -O2). For a from-scratch full rebuild you can additionally pass, via
+        # CMAKE_C_FLAGS, "-g0 -fno-var-tracking -fno-asynchronous-unwind-tables"
+        # to cut gcc's per-giant-function overhead -- omitted here so toggling
+        # this option doesn't change flags and force the giants to recompile.
+        set(_b3_gen_flags "${_b3_gen_flags} -O0")
+    endif()
     set_source_files_properties(${RECOMP_GEN_SOURCES} PROPERTIES
-        COMPILE_FLAGS "-w -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types"
+        COMPILE_FLAGS "${_b3_gen_flags}"
     )
 endif()
 

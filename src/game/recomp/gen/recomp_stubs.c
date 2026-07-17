@@ -3173,289 +3173,289 @@ void sub_003383E2(void) { }
 void sub_003383FC(void) { }
 void sub_00338619(void) { }
 void sub_0033880D(void) { }
-void sub_003388AA(void) { }
-void sub_0033907E(void) { }
-void sub_003390C9(void) { }
+/* sub_003388AA: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033907E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003390C9: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
 void sub_003391E0(void) { }
 void sub_003391F1(void) { }
 void sub_0033921F(void) { }
 void sub_0033922E(void) { }
-void sub_0033923F(void) { }
+/* sub_0033923F: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
 void sub_00339255(void) { }
-void sub_00339288(void) { }
-void sub_00339293(void) { }
-void sub_0033929E(void) { }
-void sub_003392BF(void) { }
-void sub_003392D6(void) { }
-void sub_00339365(void) { }
-void sub_00339374(void) { }
-void sub_0033937F(void) { }
-void sub_003393A0(void) { }
-void sub_003393C9(void) { }
-void sub_003393DF(void) { }
-void sub_00339408(void) { }
-void sub_00339426(void) { }
-void sub_003394D9(void) { }
-void sub_0033951C(void) { }
-void sub_00339739(void) { }
-void sub_00339754(void) { }
-void sub_00339841(void) { }
-void sub_003398C9(void) { }
-void sub_003398DB(void) { }
-void sub_00339933(void) { }
-void sub_0033997A(void) { }
-void sub_003399AE(void) { }
-void sub_003399DB(void) { }
-void sub_003399F6(void) { }
-void sub_00339B8C(void) { }
-void sub_00339CD7(void) { }
-void sub_00339DF0(void) { }
-void sub_00339ECE(void) { }
-void sub_0033A048(void) { }
-void sub_0033A114(void) { }
-void sub_0033A289(void) { }
-void sub_0033A30C(void) { }
-void sub_0033A35E(void) { }
-void sub_0033A3DC(void) { }
-void sub_0033ADEC(void) { }
-void sub_0033AFA8(void) { }
-void sub_0033B15C(void) { }
-void sub_0033B308(void) { }
-void sub_0033B4F6(void) { }
-void sub_0033B609(void) { }
-void sub_0033B659(void) { }
-void sub_0033B93C(void) { }
-void sub_0033BAB7(void) { }
-void sub_0033BB05(void) { }
-void sub_0033BB1C(void) { }
-void sub_0033BB27(void) { }
-void sub_0033BB32(void) { }
-void sub_0033BB3D(void) { }
-void sub_0033BB48(void) { }
-void sub_0033BB53(void) { }
-void sub_0033BB5E(void) { }
-void sub_0033BB69(void) { }
-void sub_0033BB78(void) { }
-void sub_0033BB83(void) { }
-void sub_0033BB8E(void) { }
-void sub_0033BB99(void) { }
-void sub_0033BBA4(void) { }
-void sub_0033BBAF(void) { }
-void sub_0033BBD9(void) { }
-void sub_0033BC90(void) { }
-void sub_0033BD33(void) { }
-void sub_0033BDC9(void) { }
-void sub_0033BDD4(void) { }
-void sub_0033BDDF(void) { }
-void sub_0033BE79(void) { }
-void sub_0033BEE3(void) { }
-void sub_0033BF31(void) { }
-void sub_0033BF68(void) { }
-void sub_0033BFAF(void) { }
-void sub_0033BFF3(void) { }
-void sub_0033C01F(void) { }
-void sub_0033C052(void) { }
-void sub_0033C0E6(void) { }
-void sub_0033C13B(void) { }
-void sub_0033C202(void) { }
-void sub_0033C245(void) { }
-void sub_0033C46C(void) { }
-void sub_0033C54F(void) { }
-void sub_0033C5A5(void) { }
-void sub_0033C5C6(void) { }
-void sub_0033C5F1(void) { }
-void sub_0033C677(void) { }
-void sub_0033C8DE(void) { }
-void sub_0033C934(void) { }
-void sub_0033C9A9(void) { }
-void sub_0033C9E6(void) { }
-void sub_0033CA18(void) { }
-void sub_0033CB4F(void) { }
-void sub_0033CCB2(void) { }
-void sub_0033CDC0(void) { }
-void sub_0033CF2F(void) { }
-void sub_0033D247(void) { }
-void sub_0033D47B(void) { }
-void sub_0033D4F1(void) { }
-void sub_0033D7DD(void) { }
-void sub_0033D9AC(void) { }
-void sub_0033DB91(void) { }
-void sub_0033DC3E(void) { }
-void sub_0033DC5A(void) { }
-void sub_0033DD80(void) { }
-void sub_0033DE75(void) { }
-void sub_0033DE8C(void) { }
-void sub_0033DF72(void) { }
-void sub_0033DF92(void) { }
-void sub_0033DFF6(void) { }
-void sub_0033E4DF(void) { }
-void sub_0033E614(void) { }
-void sub_0033E664(void) { }
-void sub_0033E9B3(void) { }
-void sub_0033EB03(void) { }
-void sub_0033EBC4(void) { }
-void sub_0033ED69(void) { }
-void sub_0033EE49(void) { }
-void sub_0033F3D5(void) { }
-void sub_0033F479(void) { }
-void sub_0033F56F(void) { }
-void sub_0033F5DC(void) { }
-void sub_0033F61C(void) { }
-void sub_0033F644(void) { }
-void sub_0033F699(void) { }
-void sub_0033FB9E(void) { }
-void sub_0033FE97(void) { }
-void sub_00340238(void) { }
-void sub_00340340(void) { }
-void sub_003405A2(void) { }
-void sub_00340B35(void) { }
-void sub_00340C5B(void) { }
-void sub_00340E30(void) { }
-void sub_003410ED(void) { }
-void sub_003411E4(void) { }
-void sub_00341200(void) { }
-void sub_0034124E(void) { }
-void sub_003412B3(void) { }
-void sub_003412D4(void) { }
-void sub_00341355(void) { }
-void sub_00341395(void) { }
-void sub_003413CE(void) { }
-void sub_00341406(void) { }
-void sub_00341430(void) { }
-void sub_00341482(void) { }
-void sub_00341585(void) { }
-void sub_003415B7(void) { }
-void sub_0034166D(void) { }
-void sub_003416E0(void) { }
-void sub_0034170D(void) { }
-void sub_00341721(void) { }
-void sub_0034173C(void) { }
-void sub_00341750(void) { }
-void sub_00341760(void) { }
-void sub_00341853(void) { }
-void sub_003418F9(void) { }
-void sub_00341935(void) { }
-void sub_00341A1B(void) { }
-void sub_00341A84(void) { }
-void sub_00341B98(void) { }
-void sub_00341D66(void) { }
-void sub_00341D8E(void) { }
-void sub_00341E01(void) { }
-void sub_00341E98(void) { }
-void sub_00341F51(void) { }
-void sub_00341FBD(void) { }
-void sub_00342116(void) { }
-void sub_00342310(void) { }
-void sub_0034233E(void) { }
-void sub_003423EF(void) { }
-void sub_00342456(void) { }
-void sub_00342A49(void) { }
-void sub_00342ACF(void) { }
-void sub_00342BA6(void) { }
-void sub_00342BBD(void) { }
-void sub_00342C0A(void) { }
-void sub_00342CAE(void) { }
-void sub_00342DC3(void) { }
-void sub_003430F4(void) { }
-void sub_0034310D(void) { }
-void sub_00343146(void) { }
-void sub_00343166(void) { }
-void sub_0034318E(void) { }
-void sub_003431B0(void) { }
-void sub_0034322F(void) { }
-void sub_00343423(void) { }
-void sub_003436CB(void) { }
-void sub_003437A6(void) { }
-void sub_003439FB(void) { }
-void sub_00343B19(void) { }
-void sub_00343CF1(void) { }
-void sub_00343E09(void) { }
-void sub_00343E4D(void) { }
-void sub_00343E71(void) { }
-void sub_0034411C(void) { }
-void sub_00344153(void) { }
-void sub_003441DF(void) { }
-void sub_0034446B(void) { }
-void sub_00344699(void) { }
-void sub_003449A4(void) { }
-void sub_00344A73(void) { }
-void sub_00344D52(void) { }
-void sub_00344E14(void) { }
-void sub_0034500F(void) { }
-void sub_003453C6(void) { }
-void sub_003453ED(void) { }
-void sub_003454CD(void) { }
-void sub_00345653(void) { }
-void sub_00345726(void) { }
-void sub_00345871(void) { }
-void sub_0034590A(void) { }
-void sub_00345B3C(void) { }
-void sub_00345BCD(void) { }
-void sub_00345D82(void) { }
-void sub_00345DF7(void) { }
-void sub_00346060(void) { }
-void sub_003461A8(void) { }
-void sub_00346232(void) { }
-void sub_003462B7(void) { }
-void sub_00346391(void) { }
-void sub_0034671D(void) { }
-void sub_003468ED(void) { }
-void sub_003469B2(void) { }
-void sub_00346F54(void) { }
-void sub_00346FA4(void) { }
-void sub_003484B9(void) { }
-void sub_00348554(void) { }
-void sub_003485C3(void) { }
-void sub_00348730(void) { }
-void sub_00348BD3(void) { }
-void sub_00348C17(void) { }
-void sub_00348CE5(void) { }
-void sub_00348E95(void) { }
-void sub_00348F05(void) { }
-void sub_00349798(void) { }
-void sub_003497C7(void) { }
-void sub_003497E3(void) { }
-void sub_00349D47(void) { }
-void sub_0034A2D4(void) { }
-void sub_0034A3D1(void) { }
-void sub_0034AAD2(void) { }
-void sub_0034AB67(void) { }
-void sub_0034AE6D(void) { }
-void sub_0034B15E(void) { }
-void sub_0034B1C2(void) { }
-void sub_0034B281(void) { }
-void sub_0034B4EB(void) { }
-void sub_0034B7A2(void) { }
-void sub_0034B8EC(void) { }
-void sub_0034BA28(void) { }
-void sub_0034BDD8(void) { }
-void sub_0034BE16(void) { }
-void sub_0034BF44(void) { }
-void sub_0034C700(void) { }
-void sub_0034C800(void) { }
-void sub_0034C8F0(void) { }
-void sub_0034CA10(void) { }
-void sub_0034CA70(void) { }
-void sub_0034D060(void) { }
-void sub_0034D390(void) { }
-void sub_0034D3D0(void) { }
-void sub_0034DF80(void) { }
-void sub_0034E0A0(void) { }
-void sub_0034E0E0(void) { }
-void sub_0034E4A0(void) { }
-void sub_0034E4E0(void) { }
-void sub_0034EC70(void) { }
-void sub_0034EE40(void) { }
-void sub_0034EEF0(void) { }
-void sub_0034EF50(void) { }
-void sub_0034EFE0(void) { }
-void sub_0034F1A0(void) { }
-void sub_0034F340(void) { }
-void sub_0034F8A0(void) { }
-void sub_0034FCF0(void) { }
-void sub_003502E0(void) { }
-void sub_00350370(void) { }
-void sub_003504C0(void) { }
+/* sub_00339288: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339293: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033929E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003392BF: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003392D6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339365: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339374: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033937F: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003393A0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003393C9: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003393DF: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339408: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339426: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003394D9: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033951C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339739: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339754: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339841: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003398C9: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003398DB: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339933: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033997A: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003399AE: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003399DB: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003399F6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339B8C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339CD7: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339DF0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00339ECE: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033A048: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033A114: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033A289: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033A30C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033A35E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033A3DC: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033ADEC: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033AFA8: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033B15C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033B308: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033B4F6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033B609: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033B659: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033B93C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BAB7: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB05: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB1C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB27: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB32: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB3D: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB48: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB53: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB5E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB69: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB78: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB83: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB8E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BB99: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BBA4: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BBAF: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BBD9: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BC90: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BD33: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BDC9: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BDD4: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BDDF: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BE79: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BEE3: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BF31: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BF68: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BFAF: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033BFF3: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C01F: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C052: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C0E6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C13B: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C202: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C245: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C46C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C54F: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C5A5: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C5C6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C5F1: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C677: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C8DE: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C934: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C9A9: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033C9E6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033CA18: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033CB4F: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033CCB2: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033CDC0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033CF2F: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033D247: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033D47B: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033D4F1: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033D7DD: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033D9AC: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033DB91: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033DC3E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033DC5A: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033DD80: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033DE75: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033DE8C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033DF72: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033DF92: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033DFF6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033E4DF: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033E614: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033E664: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033E9B3: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033EB03: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033EBC4: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033ED69: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033EE49: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033F3D5: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033F479: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033F56F: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033F5DC: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033F61C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033F644: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033F699: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033FB9E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0033FE97: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00340238: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00340340: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003405A2: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00340B35: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00340C5B: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00340E30: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003410ED: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003411E4: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341200: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034124E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003412B3: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003412D4: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341355: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341395: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003413CE: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341406: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341430: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341482: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341585: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003415B7: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034166D: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003416E0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034170D: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341721: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034173C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341750: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341760: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341853: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003418F9: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341935: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341A1B: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341A84: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341B98: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341D66: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341D8E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341E01: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341E98: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341F51: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00341FBD: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00342116: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00342310: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034233E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003423EF: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00342456: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00342A49: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00342ACF: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00342BA6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00342BBD: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00342C0A: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00342CAE: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00342DC3: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003430F4: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034310D: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00343146: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00343166: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034318E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003431B0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034322F: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00343423: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003436CB: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003437A6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003439FB: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00343B19: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00343CF1: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00343E09: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00343E4D: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00343E71: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034411C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00344153: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003441DF: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034446B: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00344699: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003449A4: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00344A73: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00344D52: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00344E14: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034500F: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003453C6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003453ED: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003454CD: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00345653: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00345726: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00345871: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034590A: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00345B3C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00345BCD: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00345D82: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00345DF7: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00346060: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003461A8: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00346232: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003462B7: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00346391: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034671D: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003468ED: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003469B2: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00346F54: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00346FA4: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003484B9: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00348554: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003485C3: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00348730: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00348BD3: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00348C17: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00348CE5: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00348E95: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00348F05: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00349798: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003497C7: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003497E3: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00349D47: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034A2D4: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034A3D1: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034AAD2: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034AB67: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034AE6D: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034B15E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034B1C2: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034B281: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034B4EB: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034B7A2: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034B8EC: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034BA28: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034BDD8: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034BE16: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034BF44: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034C700: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034C800: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034C8F0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034CA10: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034CA70: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034D060: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034D390: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034D3D0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034DF80: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034E0A0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034E0E0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034E4A0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034E4E0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034EC70: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034EE40: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034EEF0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034EF50: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034EFE0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034F1A0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034F340: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034F8A0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0034FCF0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003502E0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00350370: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003504C0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
 /* ═══════════════════════════════════════════════════════════════════════
  * D3D8LTCG push buffer management stubs (0x3505A0 - 0x351DC0)
  *
@@ -3500,108 +3500,108 @@ void sub_00351C80(void) { esp += 4; return; }   /* 0 params, ret 0 */
 void sub_00351C90(void) { esp += 4; return; }   /* 0 params, ret 0 */
 void sub_00351DB0(void) { esp += 8; return; }   /* 1 param, ret 4 */
 void sub_00351DC0(void) { esp += 4; return; }   /* 0 params, ret 0 */
-void sub_00351DD0(void) { }
-void sub_00351E30(void) { }
-void sub_00351E40(void) { }
-void sub_00351E50(void) { }
+/* sub_00351DD0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00351E30: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00351E40: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00351E50: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
 void sub_00351EF0(void) { }
-void sub_00351F30(void) { }
-void sub_00352040(void) { }
-void sub_00352090(void) { }
-void sub_003524D0(void) { }
-void sub_00352770(void) { }
-void sub_003527D0(void) { }
-void sub_00352810(void) { }
-void sub_00352870(void) { }
-void sub_00352970(void) { }
-void sub_00352EA0(void) { }
-void sub_00353060(void) { }
-void sub_00353180(void) { }
-void sub_00353360(void) { }
-void sub_00353FB0(void) { }
-void sub_003541A0(void) { }
-void sub_003543B0(void) { }
-void sub_00354E20(void) { }
-void sub_003553F0(void) { }
-void sub_00355500(void) { }
-void sub_00355570(void) { }
-void sub_003555C0(void) { }
-void sub_00355700(void) { }
-void sub_00355770(void) { }
-void sub_00355AA0(void) { }
-void sub_00355B00(void) { }
-void sub_00355C30(void) { }
+/* sub_00351F30: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00352040: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00352090: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003524D0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00352770: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003527D0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00352810: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00352870: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00352970: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00352EA0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00353060: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00353180: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00353360: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00353FB0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003541A0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003543B0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00354E20: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003553F0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00355500: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00355570: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003555C0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00355700: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00355770: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00355AA0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00355B00: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00355C30: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
 /* sub_00355F50 now in recomp_355f50.c (generated dirty flag processor) */
-void sub_00356090(void) { }
-void sub_003561F0(void) { }
-void sub_0035621B(void) { }
-void sub_0035625E(void) { }
-void sub_003562DF(void) { }
-void sub_0035637E(void) { }
-void sub_003563FF(void) { }
-void sub_003564C8(void) { }
-void sub_00356526(void) { }
-void sub_003566DA(void) { }
-void sub_003568C5(void) { }
-void sub_003569E8(void) { }
-void sub_00356AC0(void) { }
-void sub_00356CD0(void) { }
-void sub_00356DA0(void) { }
-void sub_00356EB0(void) { }
-void sub_00357000(void) { }
-void sub_003570C0(void) { }
-void sub_00357250(void) { }
-void sub_00357510(void) { }
-void sub_00357558(void) { }
-void sub_003575D6(void) { }
-void sub_00357629(void) { }
-void sub_00357648(void) { }
-void sub_003576C1(void) { }
-void sub_00357930(void) { }
-void sub_00357A90(void) { }
-void sub_00357E10(void) { }
-void sub_00358010(void) { }
-void sub_00358200(void) { }
-void sub_003585D0(void) { }
-void sub_00358670(void) { }
-void sub_00358760(void) { }
-void sub_00358910(void) { }
-void sub_00358A30(void) { }
-void sub_00358DA0(void) { }
-void sub_00359040(void) { }
-void sub_003591F0(void) { }
-void sub_00359340(void) { }
-void sub_00359390(void) { }
-void sub_00359740(void) { }
-void sub_003597F0(void) { }
-void sub_00359EF6(void) { }
-void sub_00359FF6(void) { }
-void sub_0035A0C5(void) { }
-void sub_0035A0FB(void) { }
-void sub_0035A12B(void) { }
-void sub_0035A418(void) { }
-void sub_0035A457(void) { }
-void sub_0035A578(void) { }
-void sub_0035A5B1(void) { }
-void sub_0035A636(void) { }
-void sub_0035A9C8(void) { }
-void sub_0035B450(void) { }
-void sub_0035B490(void) { }
-void sub_0035B530(void) { }
-void sub_00360A60(void) { }
-void sub_00360A75(void) { }
-void sub_00360C2A(void) { }
-void sub_00360C9D(void) { }
-void sub_003613E0(void) { }
+/* sub_00356090: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003561F0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035621B: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035625E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003562DF: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035637E: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003563FF: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003564C8: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00356526: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003566DA: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003568C5: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003569E8: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00356AC0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00356CD0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00356DA0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00356EB0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00357000: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003570C0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00357250: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00357510: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00357558: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003575D6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00357629: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00357648: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003576C1: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00357930: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00357A90: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00357E10: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00358010: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00358200: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003585D0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00358670: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00358760: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00358910: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00358A30: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00358DA0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00359040: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003591F0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00359340: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00359390: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00359740: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003597F0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00359EF6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00359FF6: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035A0C5: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035A0FB: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035A12B: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035A418: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035A457: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035A578: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035A5B1: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035A636: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035A9C8: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035B450: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035B490: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0035B530: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00360A60: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00360A75: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00360C2A: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00360C9D: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003613E0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
 void sub_00361454(void) { }
 void sub_00362F6F(void) { }
-void sub_00363E55(void) { }
-void sub_0036465C(void) { }
-void sub_003646F0(void) { }
-void sub_003649F0(void) { }
-void sub_003656D5(void) { }
-void sub_00369A50(void) { }
-void sub_00369EB3(void) { }
+/* sub_00363E55: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_0036465C: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003646F0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003649F0: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_003656D5: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00369A50: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
+/* sub_00369EB3: moved to recomp_midfuncs.c (real fn, adopted from FridiNaTor1) */
 void sub_00060151(void) { }
 void sub_000820EF(void) { }
 void sub_00092F1F(void) { }
