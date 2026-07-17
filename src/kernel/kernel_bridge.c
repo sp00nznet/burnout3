@@ -986,6 +986,91 @@ static void bridge_NtOpenFile(void)
         0, share, 1 /* FILE_OPEN */, options);
 }
 
+/* ── ExQueryNonVolatileSetting (ordinal 24, 5 args = 20 bytes) ──
+ *
+ * NTSTATUS ExQueryNonVolatileSetting(ULONG ValueIndex, PULONG Type,
+ *                                    PVOID Value, ULONG ValueLength,
+ *                                    PULONG ResultLength)
+ *
+ * Reads a setting out of the console's EEPROM: language, video mode, audio
+ * mode, clock, parental controls. It was unbridged, so the generic path
+ * answered 0 -- STATUS_SUCCESS -- without writing Value, Type or
+ * ResultLength. The game therefore read whatever was already in that buffer
+ * and believed it. It is the last kernel call before the boot stalls.
+ *
+ * We have no EEPROM, so answer with the defaults a healthy console would give:
+ * English, NTSC-M, stereo, no parental lock.
+ */
+/* Real EEPROM index layout. 0x0D-0x10 are the network addresses, so MISC_FLAGS
+ * is 0x11 and DVD_REGION 0x12 -- the game asked for 0x11 and 0x103, which is
+ * how the first guess at these got caught. */
+#define XC_TIMEZONE_BIAS            0x00
+#define XC_LANGUAGE                 0x07
+#define XC_VIDEO_FLAGS              0x08
+#define XC_AUDIO_FLAGS              0x09
+#define XC_PARENTAL_CONTROL_GAMES   0x0A
+#define XC_ONLINE_IP_ADDRESS        0x0D
+#define XC_ONLINE_DNS_ADDRESS       0x0E
+#define XC_ONLINE_GATEWAY_ADDRESS   0x0F
+#define XC_ONLINE_SUBNET_ADDRESS    0x10
+#define XC_MISC_FLAGS               0x11
+#define XC_DVD_REGION               0x12
+#define XC_FACTORY_SERIAL_NUMBER    0x100
+#define XC_FACTORY_ETHERNET_ADDR    0x101
+#define XC_FACTORY_ONLINE_KEY       0x102
+#define XC_FACTORY_AV_REGION        0x103
+#define XC_FACTORY_GAME_REGION      0x104
+
+static void bridge_ExQueryNonVolatileSetting(void)
+{
+    uint32_t value_index   = STACK_ARG(0);
+    uint32_t type_va       = STACK_ARG(1);
+    uint32_t value_va      = STACK_ARG(2);
+    uint32_t value_length  = STACK_ARG(3);
+    uint32_t result_len_va = STACK_ARG(4);
+
+    uint32_t val = 0;
+    uint32_t ok  = 1;
+
+    switch (value_index) {
+    case XC_LANGUAGE:               val = 1; break;  /* English */
+    case XC_VIDEO_FLAGS:            val = 0x00080000; break;  /* NTSC-M, 4:3 */
+    case XC_AUDIO_FLAGS:            val = 0; break;  /* stereo, no AC3/DTS */
+    case XC_PARENTAL_CONTROL_GAMES: val = 0; break;  /* unlocked */
+    case XC_DVD_REGION:             val = 1; break;  /* region 1 */
+    case XC_FACTORY_AV_REGION:      val = 0x00400100; break;  /* NTSC-M */
+    case XC_FACTORY_GAME_REGION:    val = 0x00000001; break;  /* North America */
+    case XC_TIMEZONE_BIAS:          val = 0; break;
+    case XC_MISC_FLAGS:             val = 0; break;
+    case XC_ONLINE_IP_ADDRESS:      val = 0; break;  /* DHCP */
+    case XC_ONLINE_DNS_ADDRESS:     val = 0; break;
+    case XC_ONLINE_GATEWAY_ADDRESS: val = 0; break;
+    case XC_ONLINE_SUBNET_ADDRESS:  val = 0; break;
+    default:
+        /* Unknown index: say so rather than hand back a confident zero. */
+        ok = 0;
+        break;
+    }
+
+    if (type_va)       BRIDGE_MEM32(type_va) = 4;  /* REG_DWORD */
+    if (result_len_va) BRIDGE_MEM32(result_len_va) = 4;
+    if (value_va && value_length >= 4) BRIDGE_MEM32(value_va) = val;
+
+    if (g_kernel_call_count <= 200) {
+        fprintf(stderr, "  [KERNEL] ExQueryNonVolatileSetting: index=0x%X -> "
+                "0x%08X%s\n", value_index, val, ok ? "" : " (UNKNOWN index)");
+        fflush(stderr);
+    }
+
+    /* 0xC0000023 = STATUS_BUFFER_TOO_SMALL, 0xC000000D = INVALID_PARAMETER */
+    if (!ok)
+        g_eax = 0xC000000Du;
+    else if (value_va && value_length < 4)
+        g_eax = 0xC0000023u;
+    else
+        g_eax = 0;  /* STATUS_SUCCESS */
+}
+
 /* ── NtDuplicateObject (ordinal 197, 3 args = 12 bytes) ──────
  *
  * NTSTATUS NtDuplicateObject(HANDLE Source, PHANDLE Target, ULONG Options)
@@ -1396,28 +1481,31 @@ static int stdcall_args_for_ordinal(ULONG ordinal)
 
     /* ── Unknown stubs ── */
     case   8: return  0;  /* Unknown_8(void) */
-    case  23: return  0;  /* Unknown_23(void) */
     case  42: return  0;  /* Unknown_42(void) */
 
     /* ── Pool Allocator ── */
-    case  15: return  4;  /* ExAllocatePool(1) */
-    case  16: return  8;  /* ExAllocatePoolWithTag(2) */
+    case  14: return  4;  /* ExAllocatePool(1) */
+    case  15: return  8;  /* ExAllocatePoolWithTag(2) */
     /* case  17: DATA export - ExEventObjectType */
-    case  24: return  4;  /* ExQueryPoolBlockSize(1) */
+    case  23: return  4;  /* ExQueryPoolBlockSize(1) */
+    case  24: return 20;  /* ExQueryNonVolatileSetting(5) */
 
     /* ── HAL ── */
     case  40: return  4;  /* HalClearSoftwareInterrupt(1) */
     case  41: return  8;  /* HalDisableSystemInterrupt(2) */
     case  44: return  8;  /* HalGetInterruptVector(2) */
-    case  46: return  8;  /* HalReadSMCTrayState(2) */
-    case  47: return 24;  /* HalReadWritePCISpace(6) */
+    case   9: return  8;  /* HalReadSMCTrayState(2) */
+    case  46: return 24;  /* HalReadWritePCISpace(6) -- no bridge, size only */
+    case  47: return  8;  /* HalRegisterShutdownNotification(2) */
     case  49: return  4;  /* HalRequestSoftwareInterrupt(1) */
     case 358: return  0;  /* HalIsResetOrShutdownPending(void) */
 
     /* ── I/O Manager ── */
     case  62: return 36;  /* IoBuildDeviceIoControlRequest(9) */
     /* case  65: DATA export - IoCompletionObjectType */
-    case  67: return 40;  /* IoCreateFile(10) */
+    case  63: return 20;  /* IoCheckShareAccess(5) -- no bridge, size only */
+    case  66: return 40;  /* IoCreateFile(10) */
+    case  67: return  8;  /* IoCreateSymbolicLink(2) */
     case  69: return  4;  /* IoDeleteDevice(1) */
     /* case  71: DATA export - IoDeviceObjectType */
     case  74: return 12;  /* IoInitializeIrp(3) */
@@ -1603,9 +1691,14 @@ static bridge_func_t bridge_for_ordinal(ULONG ordinal)
     case 199: return bridge_NtFreeVirtualMemory;
 
     /* Pool */
-    case  15: return bridge_ExAllocatePool;
-    case  16: return bridge_ExAllocatePoolWithTag;
-    case  24: return bridge_ExQueryPoolBlockSize;
+    /* Corrected against xboxkrnl.exe: this block was shifted by one, so
+     * every call ran the wrong function AND popped the wrong stack.
+     * Ordinal 16 is ExEventObjectType, a DATA export -- it was being
+     * dispatched as a function. */
+    case  14: return bridge_ExAllocatePool;
+    case  15: return bridge_ExAllocatePoolWithTag;
+    case  23: return bridge_ExQueryPoolBlockSize;
+    case  24: return bridge_ExQueryNonVolatileSetting;
 
     /* IRQL */
     case 160: return bridge_KfRaiseIrql;
@@ -1635,14 +1728,18 @@ static bridge_func_t bridge_for_ordinal(ULONG ordinal)
     case 238: return bridge_NtYieldExecution;
 
     /* Hardware */
-    case  47: return bridge_HalReadSMCTrayState;
+    /* Corrected against xboxkrnl.exe. HalReadSMCTrayState is ordinal 9;
+     * 47 is HalRegisterShutdownNotification, which we do not implement --
+     * left unbridged rather than running the tray-state reader. Its arg
+     * size still matters: the dispatcher pops whether or not we bridge. */
+    case   9: return bridge_HalReadSMCTrayState;
 
     /* Display */
     case   3: return bridge_AvSetDisplayMode;
 
     /* I/O */
-    case  63: return bridge_IoCreateSymbolicLink;
-    case  67: return bridge_IoCreateFile;
+    case  66: return bridge_IoCreateFile;
+    case  67: return bridge_IoCreateSymbolicLink;
     case 188: return bridge_NtCreateDirectoryObject;
     case 246: return bridge_ObReferenceObjectByHandle;
 
