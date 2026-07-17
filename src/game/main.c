@@ -1949,8 +1949,8 @@ static DWORD WINAPI tick_count_thread_func(LPVOID param)
 static DWORD WINAPI rip_profiler_func(LPVOID param)
 {
     (void)param;
-    static uint32_t bucket[0x800];   /* 0x800 * 64KB covers the 128MB image */
-    static uint64_t exemplar[0x800]; /* one real RIP seen in each bucket */
+    static uint32_t bucket[0x8000];   /* 4KB buckets, one per function-ish */
+    static uint64_t exemplar[0x8000]; /* one real RIP seen in each bucket */
     /* The game thread starves everything; run above it so we get samples. */
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
     uint64_t last_report = GetTickCount64();
@@ -1963,7 +1963,7 @@ static DWORD WINAPI rip_profiler_func(LPVOID param)
             if (GetThreadContext(gt, &ctx)) {
                 uint64_t base = 0x140000000ull;
                 if (ctx.Rip >= base && ctx.Rip < base + 0x8000000ull) {
-                    uint32_t b = (uint32_t)((ctx.Rip - base) >> 16);
+                    uint32_t b = (uint32_t)((ctx.Rip - base) >> 12);
                     bucket[b]++;
                     exemplar[b] = ctx.Rip;
                 }
@@ -1973,15 +1973,27 @@ static DWORD WINAPI rip_profiler_func(LPVOID param)
         uint64_t now = GetTickCount64();
         if (now - last_report >= 2000) {
             last_report = now;
-            /* Report the top 3 buckets, finer: 4KB each within the hot 64KB. */
+            /* Top 3 hot buckets, reported by the real RIP sampled in each. */
             for (int top = 0; top < 3; top++) {
                 int hot = 0;
-                for (int i = 1; i < 0x800; i++)
+                for (int i = 1; i < 0x8000; i++)
                     if (bucket[i] > bucket[hot]) hot = i;
                 if (!bucket[hot]) break;
                 fprintf(stderr, "  [PROFILE] hot RIP=0x%016llX (%u samples)\n",
-                        0x140000000ull + ((uint64_t)hot << 16), bucket[hot]);
+                        (unsigned long long)exemplar[hot], bucket[hot]);
                 bucket[hot] = 0;
+            }
+            /* The load-time registration loop (sub_0006B130) iterates a count
+             * at 0x5729A8 and appends to a table whose length is at 0x5A3400.
+             * Print both: if the outer count is garbage the loop never ends,
+             * and if the registered length is not climbing it is spinning on
+             * one object rather than making progress. */
+            if (g_xbox_mem_offset) {
+                #define PROBE(va) (*(volatile uint32_t*)((uintptr_t)(va) + g_xbox_mem_offset))
+                fprintf(stderr, "  [PROFILE] outer_count@0x5729A8=%u "
+                        "registered@0x5A3400=%u first_obj@0x572988=0x%08X\n",
+                        PROBE(0x5729A8), PROBE(0x5A3400), PROBE(0x572988));
+                #undef PROBE
             }
             fflush(stderr);
             memset(bucket, 0, sizeof(bucket));
