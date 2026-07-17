@@ -18,10 +18,31 @@
  * referenced inside another function -- forward declare it. */
 extern uint32_t xbox_HeapAlloc(uint32_t size, uint32_t alignment);
 
-/* ICALL failure diagnostic (rate-limited) */
+/* ICALL failure diagnostic (rate-limited).
+ *
+ * A failed indirect call silently pops its dummy return address, sets eax = 0
+ * and carries on. That is the right thing for a game that pokes garbage
+ * function pointers -- but it also means a function stuck calling a NULL
+ * pointer spins for ever in total silence. Which is exactly what happens after
+ * the boot: 32M failed ICALLs a second, all to VA 0.
+ *
+ * _ReturnAddress() gives the address inside the GENERATED function that made
+ * the call, which bin/burnout3.map turns straight back into a name. */
 void recomp_icall_fail_log(uint32_t va)
 {
-    (void)va; /* diagnostics disabled - macro early-out handles garbage VAs */
+    static volatile LONG s_count = 0;
+    LONG n = InterlockedIncrement(&s_count);
+
+    /* Loud for the first few, then once a million so a spin is visible without
+     * drowning the log. */
+    if (n <= 12 || (n % 1000000) == 0) {
+        /* We run on the calling thread, so the register set here is the
+         * caller's. edi/esi are the object and index in sub_001CA530's loop. */
+        fprintf(stderr, "  [ICALL-FAIL #%ld] target va=0x%08X, from native %p "
+                "(edi=0x%08X esi=0x%08X ecx=0x%08X)\n",
+                (long)n, va, _ReturnAddress(), g_edi, g_esi, g_ecx);
+        fflush(stderr);
+    }
 }
 
 /* D3D8 frame pump (implemented in d3d8_device.c) */

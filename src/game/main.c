@@ -1962,10 +1962,13 @@ static DWORD WINAPI watchdog_thread_func(LPVOID param)
                     g_d3d_render_count, g_present_count, g_tick_110e0_count);
         }
         /* Print last ICALL targets */
-        fprintf(stderr, "  [WATCHDOG] ICALLs:");
+        /* Print every slot, zeros included: "nothing printed" is ambiguous
+         * between an empty ring and a ring full of VA 0, and those mean very
+         * different things. */
+        fprintf(stderr, "  [WATCHDOG] ICALLs (idx=%u):", idx);
         for (int j = ICALL_TRACE_SIZE - 1; j >= 0; j--) {
             uint32_t va = g_icall_trace[(idx - 1 - j) & (ICALL_TRACE_SIZE - 1)];
-            if (va) fprintf(stderr, " 0x%06X", va);
+            fprintf(stderr, " %08X", va);
         }
         fprintf(stderr, "\n");
         /* Dump Xbox stack to identify stuck function */
