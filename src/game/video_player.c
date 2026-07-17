@@ -280,8 +280,15 @@ int video_open(const char *path)
     g_vp.tex_width  = next_pot(g_vp.width);
     g_vp.tex_height = next_pot(g_vp.height);
 
+    /* LIN_A8R8G8B8, not A8R8G8B8.
+     *
+     * On Xbox the plain format is SWIZZLED -- only the LIN_ variants are
+     * linear (see d3d8_format_is_swizzled). We write plain linear BGRA rows
+     * here, so asking for A8R8G8B8 made the d3d8 layer faithfully unswizzle
+     * data that was never swizzled, which scrambled every frame into a grid of
+     * blocks. */
     hr = d3d8_CreateTextureImpl(g_vp.tex_width, g_vp.tex_height, 1, 0,
-                                D3DFMT_A8R8G8B8, &g_vp.texture);
+                                D3DFMT_LIN_A8R8G8B8, &g_vp.texture);
     if (FAILED(hr)) {
         fprintf(stderr, "  [VIDEO] Failed to create texture %ux%u (hr=0x%08lX)\n",
                 g_vp.tex_width, g_vp.tex_height, hr);
