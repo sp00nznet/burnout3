@@ -1971,13 +1971,27 @@ static DWORD WINAPI watchdog_thread_func(LPVOID param)
             fprintf(stderr, " %08X", va);
         }
         fprintf(stderr, "\n");
-        /* Dump Xbox stack to identify stuck function */
-        {
-            uint32_t sp = g_esp;
-            fprintf(stderr, "  [WATCHDOG] Stack@0x%08X:", sp);
-            for (int k = 0; k < 12; k++)
-                fprintf(stderr, " %08X", MEM32(sp + k * 4));
-            fprintf(stderr, "\n");
+        /* If the game thread has stopped executing recompiled code entirely,
+         * it is parked in native code and nothing above will say where.
+         * Suspend it and read RIP: bin/burnout3.map turns that straight into a
+         * function name. (The old Xbox-stack dump here read g_esp, which is
+         * thread-local now, so on this thread it was always 0.) */
+        if (count == prev_count) {
+            HANDLE gt = xbox_thread_debug_handle();
+            if (gt) {
+                CONTEXT ctx;
+                memset(&ctx, 0, sizeof(ctx));
+                ctx.ContextFlags = CONTEXT_CONTROL;
+                if (SuspendThread(gt) != (DWORD)-1) {
+                    if (GetThreadContext(gt, &ctx)) {
+                        fprintf(stderr, "  [WATCHDOG] game thread parked at "
+                                "RIP=0x%016llX RSP=0x%016llX\n",
+                                (unsigned long long)ctx.Rip,
+                                (unsigned long long)ctx.Rsp);
+                    }
+                    ResumeThread(gt);
+                }
+            }
         }
         fflush(stderr);
         prev_count = count;

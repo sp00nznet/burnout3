@@ -640,6 +640,10 @@ NTSTATUS __stdcall xbox_NtQuerySymbolicLinkObject(HANDLE LinkHandle, PXBOX_ANSI_
  */
 BOOL xbox_thread_spawn(void (*fn)(void), uint32_t ctx1, uint32_t ctx2);
 
+/** The game's own thread handle, or NULL. For diagnostics only: when the boot
+ *  wedges, suspending this and reading RIP is the only way to see where. */
+HANDLE xbox_thread_debug_handle(void);
+
 /**
  * As xbox_thread_spawn, but on a caller-chosen Xbox stack (stack_top == 0
  * means take a worker slice). The game's own main thread uses this with

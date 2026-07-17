@@ -371,6 +371,12 @@ NTSTATUS __stdcall xbox_NtDuplicateObject(
 
 typedef void (*xbox_recomp_func_t)(void);
 
+/* The game's own thread, kept so a wedged boot can be inspected. */
+static HANDLE g_game_thread = NULL;
+
+HANDLE xbox_thread_debug_handle(void) { return g_game_thread; }
+
+
 typedef struct {
     xbox_recomp_func_t fn;
     uint32_t           ctx1;
@@ -459,7 +465,17 @@ BOOL xbox_thread_spawn_on(void (*fn)(void), uint32_t ctx1, uint32_t ctx2,
         xbox_worker_stack_free(slot);
         return FALSE;
     }
-    CloseHandle(h);  /* fire and forget; the game waits on its own objects */
+    /* Keep the first thread's handle: it is the game itself, and when the boot
+     * wedges the only way to find out where is to suspend it and read its RIP.
+     * xbox_thread_debug_handle() hands it to the watchdog. */
+    {
+        static volatile LONG s_first = 0;
+        if (InterlockedCompareExchange(&s_first, 1, 0) == 0) {
+            g_game_thread = h;
+            return TRUE;   /* deliberately not closed */
+        }
+    }
+    CloseHandle(h);  /* workers: fire and forget, the game waits on its own objects */
     return TRUE;
 }
 

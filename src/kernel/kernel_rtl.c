@@ -223,13 +223,43 @@ static CRITICAL_SECTION *shadow_cs_for(void *key)
 VOID __stdcall xbox_RtlEnterCriticalSection(PRTL_CRITICAL_SECTION CriticalSection)
 {
     CRITICAL_SECTION *cs = shadow_cs_for((void*)CriticalSection);
-    if (cs) EnterCriticalSection(cs);
+    if (!cs) return;
+
+    /* Announce a wait before blocking: making these real locks (they used to
+     * be no-ops) means a deadlock here is now possible, and a silent one is
+     * indistinguishable from the game hanging anywhere else. */
+    if (!TryEnterCriticalSection(cs)) {
+        fprintf(stderr, "  [RTL] EnterCriticalSection %p: BLOCKING"
+                " (owner thread %lu, recursion %ld), waiter is thread %lu\n",
+                (void*)CriticalSection,
+                (unsigned long)(uintptr_t)cs->OwningThread,
+                (long)cs->RecursionCount, GetCurrentThreadId());
+        fflush(stderr);
+        EnterCriticalSection(cs);
+        fprintf(stderr, "  [RTL] EnterCriticalSection %p: acquired\n",
+                (void*)CriticalSection);
+        fflush(stderr);
+    }
 }
 
 VOID __stdcall xbox_RtlLeaveCriticalSection(PRTL_CRITICAL_SECTION CriticalSection)
 {
     CRITICAL_SECTION *cs = shadow_cs_for((void*)CriticalSection);
-    if (cs) LeaveCriticalSection(cs);
+    if (!cs) return;
+
+    /* Leaving a section this thread does not own corrupts the lock: Win32
+     * decrements the count regardless, and the next Enter then blocks for
+     * ever. The game doing this was harmless while these were no-ops, so it
+     * may well have been doing it all along. Refuse rather than corrupt. */
+    if (cs->OwningThread != (HANDLE)(uintptr_t)GetCurrentThreadId()) {
+        fprintf(stderr, "  [RTL] LeaveCriticalSection %p: NOT OWNED by thread"
+                " %lu (owner=%lu), ignoring to avoid corrupting the lock\n",
+                (void*)CriticalSection, GetCurrentThreadId(),
+                (unsigned long)(uintptr_t)cs->OwningThread);
+        fflush(stderr);
+        return;
+    }
+    LeaveCriticalSection(cs);
 }
 
 VOID __stdcall xbox_RtlInitializeCriticalSection(PRTL_CRITICAL_SECTION CriticalSection)
