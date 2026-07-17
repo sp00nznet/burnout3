@@ -140,7 +140,8 @@ ULONG_PTR xbox_resolve_ordinal(ULONG ordinal)
     case  97: return (ULONG_PTR)xbox_KeBugCheck;
     case  98: return (ULONG_PTR)xbox_KeBugCheckEx;
     case  99: return (ULONG_PTR)xbox_KeCancelTimer;
-    case 100: return (ULONG_PTR)xbox_KeConnectInterrupt;
+    /* case 100: kernel exports KeDisconnectInterrupt here, not KeConnectInterrupt; xbox_KeDisconnectInterrupt is not implemented.
+       Left unresolved rather than dispatching the wrong function. */
     case 107: return (ULONG_PTR)xbox_KeInitializeDpc;
     case 109: return (ULONG_PTR)xbox_KeInitializeInterrupt;
     case 113: return (ULONG_PTR)xbox_KeInitializeTimerEx;
@@ -211,8 +212,9 @@ ULONG_PTR xbox_resolve_ordinal(ULONG ordinal)
     case 225: return (ULONG_PTR)xbox_NtSetEvent;
     case 226: return (ULONG_PTR)xbox_NtSetInformationFile;
     case 228: return (ULONG_PTR)xbox_NtSetSystemTime;
-    case 233: return (ULONG_PTR)xbox_NtWaitForMultipleObjectsEx;
-    case 234: return (ULONG_PTR)xbox_NtWaitForSingleObject;
+    case 233: return (ULONG_PTR)xbox_NtWaitForSingleObject;
+    /* case 234: kernel exports NtWaitForSingleObjectEx here, not NtWaitForSingleObject; xbox_NtWaitForSingleObjectEx is not implemented.
+       Left unresolved rather than dispatching the wrong function. */
     case 236: return (ULONG_PTR)xbox_NtWriteFile;
     case 238: return (ULONG_PTR)xbox_NtYieldExecution;
 
@@ -244,38 +246,47 @@ ULONG_PTR xbox_resolve_ordinal(ULONG ordinal)
     case 305: return (ULONG_PTR)xbox_RtlTimeToTimeFields;
     case 308: return (ULONG_PTR)xbox_RtlUnicodeStringToAnsiString;
     case 312: return (ULONG_PTR)xbox_RtlUnwind;
-    case 354: return (ULONG_PTR)xbox_RtlRip;
+    case 354: return (ULONG_PTR)xbox_AlternateSignatureKeys;
 
     /* ---- Xbox Identity (data exports) ---- */
     case 322: return (ULONG_PTR)&xbox_HardwareInfo;              /* data */
     case 323: return (ULONG_PTR)xbox_HDKey;                      /* data (array) */
     case 324: return (ULONG_PTR)&xbox_KrnlVersion;               /* data */
     case 325: return (ULONG_PTR)xbox_SignatureKey;                /* data (array) */
-    case 326: return (ULONG_PTR)xbox_LANKey;                     /* data (array) */
-    case 327: return (ULONG_PTR)xbox_AlternateSignatureKeys;     /* data (array) */
-    case 328: return (ULONG_PTR)&xbox_XeImageFileName;           /* data */
-    case 355: return (ULONG_PTR)xbox_LANKey;                     /* data (alias) */
-    case 356: return (ULONG_PTR)xbox_AlternateSignatureKeys;     /* data (alias) */
-    case 357: return (ULONG_PTR)xbox_XePublicKeyData;            /* data (array) */
+    case 326: return (ULONG_PTR)&xbox_XeImageFileName;           /* data (XBOX_ANSI_STRING) */
+    /* case 327: kernel exports XeLoadSection here, not AlternateSignatureKeys; xbox_XeLoadSection is not implemented.
+       Left unresolved rather than dispatching the wrong function. */
+    /* case 328: kernel exports XeUnloadSection here, not XeImageFileName; xbox_XeUnloadSection is not implemented.
+       Left unresolved rather than dispatching the wrong function. */
+    case 355: return (ULONG_PTR)xbox_XePublicKeyData;                     /* data (alias) */
+    /* case 356: kernel exports HalBootSMCVideoMode here, not AlternateSignatureKeys; xbox_HalBootSMCVideoMode is not implemented.
+       Left unresolved rather than dispatching the wrong function. */
+    /* case 357: kernel exports IdexChannelObject here, not XePublicKeyData; xbox_IdexChannelObject is not implemented.
+       Left unresolved rather than dispatching the wrong function. */
 
     /* ---- Port I/O ---- */
-    case 335: return (ULONG_PTR)xbox_WRITE_PORT_BUFFER_USHORT;
-    case 336: return (ULONG_PTR)xbox_WRITE_PORT_BUFFER_ULONG;
+    case 335: return (ULONG_PTR)xbox_XcSHAInit;
+    case 336: return (ULONG_PTR)xbox_XcSHAUpdate;
 
     /* ---- Crypto ---- */
-    case 337: return (ULONG_PTR)xbox_XcSHAInit;
-    case 338: return (ULONG_PTR)xbox_XcSHAUpdate;
-    case 339: return (ULONG_PTR)xbox_XcSHAFinal;
-    case 340: return (ULONG_PTR)xbox_XcRC4Key;
-    case 344: return (ULONG_PTR)xbox_XcPKDecPrivate;
-    case 345: return (ULONG_PTR)xbox_XcPKGetKeyLen;
-    case 346: return (ULONG_PTR)xbox_XcVerifyPKCS1Signature;
-    case 347: return (ULONG_PTR)xbox_XcModExp;
-    case 349: return (ULONG_PTR)xbox_XcKeyTable;
-    case 353: return (ULONG_PTR)xbox_XcUpdateCrypto;
+    case 337: return (ULONG_PTR)xbox_XcSHAFinal;
+    case 338: return (ULONG_PTR)xbox_XcRC4Key;
+    /* case 339: kernel exports XcRC4Crypt here, not XcSHAFinal; xbox_XcRC4Crypt is not implemented.
+       Left unresolved rather than dispatching the wrong function. */
+    /* case 340: kernel exports XcHMAC here, not XcRC4Key; xbox_XcHMAC is not implemented.
+       Left unresolved rather than dispatching the wrong function. */
+    case 344: return (ULONG_PTR)xbox_XcVerifyPKCS1Signature;
+    case 345: return (ULONG_PTR)xbox_XcModExp;
+    /* case 346: kernel exports XcDESKeyParity here, not XcVerifyPKCS1Signature; xbox_XcDESKeyParity is not implemented.
+       Left unresolved rather than dispatching the wrong function. */
+    case 347: return (ULONG_PTR)xbox_XcKeyTable;
+    /* case 349: kernel exports XcBlockCryptCBC here, not XcKeyTable; xbox_XcBlockCryptCBC is not implemented.
+       Left unresolved rather than dispatching the wrong function. */
+    case 353: return (ULONG_PTR)xbox_LANKey;
 
     /* ---- Threading (continued) ---- */
-    case 256: return (ULONG_PTR)xbox_KeDelayExecutionThread;
+    /* case 256: kernel exports PsQueryStatistics here, not KeDelayExecutionThread; xbox_PsQueryStatistics is not implemented.
+       Left unresolved rather than dispatching the wrong function. */
 
     default:
         xbox_log(XBOX_LOG_ERROR, XBOX_LOG_THUNK,
