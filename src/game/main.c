@@ -5137,7 +5137,13 @@ static void game_loop(void)
              * not the game is busy loading -- which is exactly when the intro
              * is meant to play. */
             int boot_phase = boot_get_phase();
-            if (boot_phase < BOOT_PHASE_GAMEPLAY) {
+            if (boot_phase == BOOT_PHASE_MENU) {
+                /* fe_menu_render_frame opens its own scene, so it must not be
+                 * wrapped in ours -- nesting BeginScene fails. It clears for
+                 * itself too. */
+                boot_update(frame_dt(), boot_skip_pressed());
+                fe_menu_render_frame();
+            } else if (boot_phase < BOOT_PHASE_GAMEPLAY) {
                 boot_update(frame_dt(), boot_skip_pressed());
                 g_d3d_device->lpVtbl->BeginScene(g_d3d_device);
                 g_d3d_device->lpVtbl->Clear(g_d3d_device, 0, NULL,

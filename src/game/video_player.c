@@ -29,6 +29,7 @@
 
 #include "video_player.h"
 #include "menu_gui.h"
+#include "fe_menu.h"
 #include "d3d/d3d8_xbox.h"
 #include "d3d/d3d8_internal.h"
 
@@ -666,16 +667,35 @@ int boot_update(float dt, int skip)
             break;
         }
 
-        /* Any button press advances to gameplay */
+        /* Any button press advances to the menu.
+         *
+         * This used to jump straight to BOOT_PHASE_GAMEPLAY, skipping
+         * BOOT_PHASE_MENU entirely -- which is why the boot sequence appeared
+         * to "drop to nothing" after the press-start bar: there was no menu
+         * phase, and gameplay has nothing to show until the game finishes
+         * booting. fe_menu renders the real frontend and does not need the
+         * game's state machine to get there. */
         if (skip) {
-            g_boot.phase = BOOT_PHASE_GAMEPLAY;
-            fprintf(stderr, "  [BOOT] Press Start -> Gameplay\n");
+            g_boot.phase = BOOT_PHASE_MENU;
+            g_boot.debounce = 0.5f;
+            fprintf(stderr, "  [BOOT] Press Start -> Menu\n");
         }
         break;
 
     case BOOT_PHASE_MENU:
+        /* fe_menu drives itself; it just needs a tick for animation and
+         * input. It hands off to gameplay on its own when a race starts. */
+        if (g_boot.debounce > 0.0f)
+            g_boot.debounce -= dt;
+        fe_menu_update(dt);
+        if (fe_menu_is_racing()) {
+            g_boot.phase = BOOT_PHASE_GAMEPLAY;
+            fprintf(stderr, "  [BOOT] Menu -> Gameplay\n");
+        }
+        break;
+
     case BOOT_PHASE_GAMEPLAY:
-        /* Terminal states — handled by game code */
+        /* Terminal state — handled by game code */
         break;
     }
 
@@ -713,8 +733,13 @@ void boot_render(void)
         dev->lpVtbl->SetTexture(dev, 0, NULL);
         dev->lpVtbl->SetRenderState(dev, D3DRS_LIGHTING, FALSE);
         dev->lpVtbl->SetRenderState(dev, D3DRS_ZENABLE, FALSE);
-        dev->lpVtbl->SetTextureStageState(dev, 0, 1 /*COLOROP*/, 3 /*SELECTARG1*/);
-        dev->lpVtbl->SetTextureStageState(dev, 0, 2 /*COLORARG1*/, 0 /*D3DTA_DIFFUSE*/);
+        /* Same literal-vs-enum trap as video_render had: 3 is SELECTARG2, not
+         * SELECTARG1. It happened to look right here only because ARG2
+         * defaults to CURRENT, which is DIFFUSE on stage 0, which is the white
+         * we wanted anyway. It would have broken the moment the bar was not
+         * white. */
+        dev->lpVtbl->SetTextureStageState(dev, 0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+        dev->lpVtbl->SetTextureStageState(dev, 0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
         dev->lpVtbl->SetVertexShader(dev, D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
         dev->lpVtbl->DrawPrimitiveUP(dev, D3DPT_TRIANGLESTRIP, 2, bar, sizeof(bar[0]));
         break;
