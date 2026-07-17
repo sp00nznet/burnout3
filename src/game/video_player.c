@@ -519,9 +519,17 @@ void video_render(void)
     dev->lpVtbl->SetRenderState(dev, D3DRS_LIGHTING, FALSE);
     dev->lpVtbl->SetRenderState(dev, D3DRS_ZENABLE, FALSE);
     dev->lpVtbl->SetRenderState(dev, D3DRS_ALPHABLENDENABLE, FALSE);
-    dev->lpVtbl->SetTextureStageState(dev, 0, 1 /*COLOROP*/, 3 /*SELECTARG1*/);
-    dev->lpVtbl->SetTextureStageState(dev, 0, 2 /*COLORARG1*/, 2 /*D3DTA_TEXTURE*/);
-    dev->lpVtbl->SetTextureStageState(dev, 1, 1 /*COLOROP*/, 1 /*DISABLE*/);
+    /* Use the enum names, not hand-written numbers. COLOROP was passed a
+     * literal 3 labelled SELECTARG1, but D3DTOP_SELECTARG1 is 2 and 3 is
+     * D3DTOP_SELECTARG2. The stage therefore selected ARG2, which defaults to
+     * D3DTA_CURRENT, and on stage 0 with no diffuse in the vertex format that
+     * is opaque white. The video decoded, converted and uploaded perfectly,
+     * and every frame then drew a white rectangle over it. */
+    dev->lpVtbl->SetTextureStageState(dev, 0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+    dev->lpVtbl->SetTextureStageState(dev, 0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    dev->lpVtbl->SetTextureStageState(dev, 0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+    dev->lpVtbl->SetTextureStageState(dev, 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+    dev->lpVtbl->SetTextureStageState(dev, 1, D3DTSS_COLOROP, D3DTOP_DISABLE);
     dev->lpVtbl->SetVertexShader(dev, D3DFVF_XYZRHW | D3DFVF_TEX1);
     dev->lpVtbl->DrawPrimitiveUP(dev, D3DPT_TRIANGLESTRIP, 2, quad, sizeof(quad[0]));
     dev->lpVtbl->SetTexture(dev, 0, NULL);
