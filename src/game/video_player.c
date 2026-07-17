@@ -564,7 +564,14 @@ static struct {
     float press_start_timer;
     float press_start_blink;
     float debounce;          /* prevent held keys from instant-skipping */
-} g_boot = { BOOT_PHASE_CRITERION_LOGO, 0, 0.0f, 0.0f, 0.0f };
+} g_boot = { BOOT_PHASE_CRITERION_LOGO, 0, 0.0f, 0.0f,
+             /* debounce: start at 0.5s, not 0.
+              * Every later phase gets a debounce when it transitions, but the
+              * first one had none, so a key still physically down from
+              * launching the game (Enter, usually) read as "skip" on frame one
+              * and the whole intro flashed past: every phase opened its video
+              * and was skipped in the same instant. */
+             0.5f };
 
 /* Video files for each boot phase (relative to game data dir) */
 static const char *boot_videos[] = {

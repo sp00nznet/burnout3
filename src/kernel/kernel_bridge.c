@@ -31,9 +31,9 @@
 #include <float.h>
 
 /* Access to recompiled code globals */
-extern uint32_t g_eax, g_ecx, g_edx, g_esp;
-extern uint32_t g_ebx, g_esi, g_edi;
-extern uint32_t g_seh_ebp;
+extern RECOMP_TLS uint32_t g_eax, g_ecx, g_edx, g_esp;
+extern RECOMP_TLS uint32_t g_ebx, g_esi, g_edi;
+extern RECOMP_TLS uint32_t g_seh_ebp;
 extern ptrdiff_t g_xbox_mem_offset;
 
 /* Dispatch table lookup (for function pointer args) */
@@ -238,22 +238,52 @@ static void bridge_PsCreateSystemThreadEx(void)
         if (!fn) fn = recomp_lookup_manual(start_routine);
         if (fn) {
             if (is_first_call) {
-                /* Main game thread: run directly, inheriting register state */
-                g_esp -= 4; BRIDGE_MEM32(g_esp) = start_context2;
-                g_esp -= 4; BRIDGE_MEM32(g_esp) = start_context1;
-                g_esp -= 4; BRIDGE_MEM32(g_esp) = 0;
-                fn();
-                g_esp += 12;
-                fprintf(stderr, "  [KERNEL] PsCreateSystemThreadEx: main thread returned (g_eax=0x%08X)\n", g_eax);
+                /* The game's main thread, on a real host thread.
+                 *
+                 * This used to run synchronously right here, so
+                 * xbe_entry_point never returned -- the entire game lived
+                 * inside this call. main()'s loop therefore never ran, and
+                 * everything it drives (the boot videos, the window pump,
+                 * input) was dead code for as long as the game was alive.
+                 *
+                 * On hardware the entry point creates this thread and RETURNS,
+                 * exactly as this function's own header comment has always
+                 * said. That was impossible while one global register set was
+                 * shared by everything; now that it is thread-local, it isn't.
+                 *
+                 * Gets XBOX_STACK_TOP, the whole upper stack region: this is
+                 * the game, not a worker on a 256 KB slice.
+                 */
+                if (!xbox_thread_spawn_on(fn, start_context1, start_context2,
+                                          XBOX_STACK_TOP)) {
+                    fprintf(stderr, "  [KERNEL] PsCreateSystemThreadEx: could not "
+                            "spawn the game's main thread!\n");
+                }
                 fflush(stderr);
             } else {
-                /* Worker thread: do NOT call synchronously.
-                 * Running the worker here destroys resource slots that the
-                 * init code just populated. Instead, let the main thread's
-                 * rendering tick (sub_000110E0) handle completion. */
-                fprintf(stderr, "  [KERNEL] PsCreateSystemThreadEx: deferring worker 0x%08X\n",
-                        start_routine);
-                fflush(stderr);
+                /* Worker thread: run it on a real host thread.
+                 *
+                 * It used to be "deferred", i.e. never run at all, on the hope
+                 * that the render tick would pick up the work. It does not, so
+                 * any game that starts a worker and waits for it deadlocked --
+                 * which is exactly where the boot stalls, waiting on a load
+                 * (load_state=0x8) that nothing services.
+                 *
+                 * Running it synchronously here is not an option either: the
+                 * caller expects PsCreateSystemThreadEx to return promptly
+                 * while the work proceeds, and a synchronous call clobbers the
+                 * resource slots the init code just populated.
+                 *
+                 * Safe now that the register set is thread-local (see
+                 * recomp_types.h): the worker gets its own eax..esp and its
+                 * own Xbox stack, which is what the hardware gives it.
+                 */
+                if (!xbox_thread_spawn(fn, start_context1, start_context2)) {
+                    fprintf(stderr, "  [KERNEL] PsCreateSystemThreadEx: could not "
+                            "spawn worker 0x%08X (out of Xbox stacks?)\n",
+                            start_routine);
+                    fflush(stderr);
+                }
             }
         } else {
             fprintf(stderr, "  [KERNEL] PsCreateSystemThreadEx: start routine 0x%08X not found in dispatch!\n",

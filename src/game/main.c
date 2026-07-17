@@ -5059,6 +5059,42 @@ void game_frame_pump(void)
 
 /* ── Main game loop ─────────────────────────────────────────── */
 
+/* Real wall-clock seconds since the previous call. The videos play at their own
+ * rate, so they need true elapsed time, not a fixed 1/60. */
+static float frame_dt(void)
+{
+    static LARGE_INTEGER freq = {0}, last = {0};
+    LARGE_INTEGER now;
+    float dt;
+
+    if (freq.QuadPart == 0) {
+        QueryPerformanceFrequency(&freq);
+        QueryPerformanceCounter(&last);
+        return 0.0f;
+    }
+    QueryPerformanceCounter(&now);
+    dt = (float)(now.QuadPart - last.QuadPart) / (float)freq.QuadPart;
+    last = now;
+    if (dt > 0.1f) dt = 0.1f;   /* clamp: a stall must not skip half a video */
+    return dt;
+}
+
+/* Any of Enter/Space/Esc, or any gamepad button, skips the current video. */
+static int boot_skip_pressed(void)
+{
+    XINPUT_STATE xs;
+
+    if (GetAsyncKeyState(VK_RETURN) & 0x8000) return 1;
+    if (GetAsyncKeyState(VK_SPACE)  & 0x8000) return 1;
+    if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) return 1;
+    if (XInputGetState(0, &xs) == ERROR_SUCCESS) {
+        if (xs.Gamepad.wButtons) return 1;
+        if (xs.Gamepad.bLeftTrigger  > 30) return 1;
+        if (xs.Gamepad.bRightTrigger > 30) return 1;
+    }
+    return 0;
+}
+
 static void game_loop(void)
 {
     MSG msg;
@@ -5086,12 +5122,38 @@ static void game_loop(void)
          * For now, clear to dark blue and present to verify D3D works.
          */
         if (g_d3d_device) {
-            g_d3d_device->lpVtbl->BeginScene(g_d3d_device);
-            g_d3d_device->lpVtbl->Clear(g_d3d_device, 0, NULL,
-                D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
-                0xFF001030,  /* Dark blue */
-                1.0f, 0);
-            g_d3d_device->lpVtbl->EndScene(g_d3d_device);
+            /* The boot videos are driven from here, not from the game's frame
+             * pump.
+             *
+             * They used to hang off game_frame_pump (via sub_000110E0), which
+             * cannot work: that pump throttles itself to 60 Hz and returns
+             * early on its very first call (it sets s_last = now, then finds
+             * elapsed == 0), and it only runs at all once the game reaches its
+             * tick loop. The game reached it twice and then blocked on a load,
+             * so boot_update never ran once.
+             *
+             * This loop is the right owner anyway now that the game has its own
+             * thread: it owns the window and the device, and it runs whether or
+             * not the game is busy loading -- which is exactly when the intro
+             * is meant to play. */
+            int boot_phase = boot_get_phase();
+            if (boot_phase < BOOT_PHASE_GAMEPLAY) {
+                boot_update(frame_dt(), boot_skip_pressed());
+                g_d3d_device->lpVtbl->BeginScene(g_d3d_device);
+                g_d3d_device->lpVtbl->Clear(g_d3d_device, 0, NULL,
+                    D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
+                    0xFF000000,  /* black behind the videos */
+                    1.0f, 0);
+                boot_render();
+                g_d3d_device->lpVtbl->EndScene(g_d3d_device);
+            } else {
+                g_d3d_device->lpVtbl->BeginScene(g_d3d_device);
+                g_d3d_device->lpVtbl->Clear(g_d3d_device, 0, NULL,
+                    D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
+                    0xFF001030,  /* Dark blue */
+                    1.0f, 0);
+                g_d3d_device->lpVtbl->EndScene(g_d3d_device);
+            }
             menu_gui_begin_frame();
             menu_gui_render();
             g_d3d_device->lpVtbl->Present(g_d3d_device, NULL, NULL, NULL, NULL);

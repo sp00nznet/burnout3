@@ -74,12 +74,13 @@ static void *g_kernel_memory = NULL;
 /* Global offset accessible by recompiled code (via recomp_types.h) */
 ptrdiff_t g_xbox_mem_offset = 0;
 
-/* Global registers for recompiled code (via recomp_types.h) */
-uint32_t g_eax = 0, g_ecx = 0, g_edx = 0, g_esp = 0;
-uint32_t g_ebx = 0, g_esi = 0, g_edi = 0;
+/* Per-thread registers for recompiled code (via recomp_types.h). Thread-local:
+ * each Xbox thread has its own register set. */
+RECOMP_TLS uint32_t g_eax = 0, g_ecx = 0, g_edx = 0, g_esp = 0;
+RECOMP_TLS uint32_t g_ebx = 0, g_esi = 0, g_edi = 0;
 
 /* SEH frame pointer bridge (see recomp_types.h for explanation) */
-uint32_t g_seh_ebp = 0;
+RECOMP_TLS uint32_t g_seh_ebp = 0;
 
 /* ICALL trace ring buffer */
 volatile uint32_t g_icall_trace[16] = {0};

@@ -626,6 +626,28 @@ NTSTATUS __stdcall xbox_NtQuerySymbolicLinkObject(HANDLE LinkHandle, PXBOX_ANSI_
  * Threading (kernel_thread.c)
  * ============================================================================ */
 
+/**
+ * Run a RECOMPILED routine on a real host thread.
+ *
+ * xbox_PsCreateSystemThreadEx takes a native routine; recompiled routines are
+ * void fn(void) driving the simulated stack and the register set, so they need
+ * their own spawn. The worker gets its own Xbox stack slice and its own
+ * thread-local register set, and fn is called with (ctx1, ctx2) pushed the way
+ * the Xbox thread ABI passes them.
+ *
+ * Returns FALSE if no worker stack slice is free (XBOX_WORKER_STACK_COUNT) or
+ * the thread could not be created.
+ */
+BOOL xbox_thread_spawn(void (*fn)(void), uint32_t ctx1, uint32_t ctx2);
+
+/**
+ * As xbox_thread_spawn, but on a caller-chosen Xbox stack (stack_top == 0
+ * means take a worker slice). The game's own main thread uses this with
+ * XBOX_STACK_TOP: it needs the whole upper stack region, not a 256 KB slice.
+ */
+BOOL xbox_thread_spawn_on(void (*fn)(void), uint32_t ctx1, uint32_t ctx2,
+                          uint32_t stack_top);
+
 NTSTATUS __stdcall xbox_PsCreateSystemThreadEx(
     PHANDLE ThreadHandle, ULONG ThreadExtraSize, ULONG KernelStackSize,
     ULONG TlsDataSize, PULONG ThreadId, PVOID StartContext1, PVOID StartContext2,

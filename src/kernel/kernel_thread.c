@@ -12,6 +12,18 @@
  */
 
 #include "kernel.h"
+#include "xbox_memory_layout.h"
+#include <stdio.h>
+
+/* The recompiled register set. Declared the same way kernel_bridge.c does --
+ * thread-local, so each worker gets its own (see recomp_types.h). */
+extern RECOMP_TLS uint32_t g_eax, g_ecx, g_edx, g_esp;
+extern RECOMP_TLS uint32_t g_ebx, g_esi, g_edi;
+extern RECOMP_TLS uint32_t g_seh_ebp;
+extern ptrdiff_t g_xbox_mem_offset;
+
+/* Xbox VA -> native, same as kernel_bridge.c's BRIDGE_MEM32. */
+#define THREAD_MEM32(addr) (*(volatile uint32_t *)((uintptr_t)(addr) + g_xbox_mem_offset))
 
 /* ============================================================================
  * Thread Start Wrapper
@@ -341,4 +353,117 @@ NTSTATUS __stdcall xbox_NtDuplicateObject(
         SourceHandle, *TargetHandle, Options);
 
     return STATUS_SUCCESS;
+}
+
+/* ============================================================================
+ * Recompiled worker threads
+ *
+ * xbox_PsCreateSystemThreadEx above takes a native routine. Recompiled Xbox
+ * routines are not native: they are void fn(void) that read their arguments
+ * off the simulated Xbox stack and communicate through the register set. So
+ * they need their own spawn.
+ *
+ * Each worker gets its own Xbox stack slice and, because the register set is
+ * thread-local (recomp_types.h), its own eax..esp. That is what the hardware
+ * gives a thread; without both, two threads share one esp and corrupt each
+ * other on the first push.
+ * ============================================================================ */
+
+typedef void (*xbox_recomp_func_t)(void);
+
+typedef struct {
+    xbox_recomp_func_t fn;
+    uint32_t           ctx1;
+    uint32_t           ctx2;
+    int                slot;      /* -1 = uses the main stack, not a slice */
+    uint32_t           stack_top;
+} XBOX_RECOMP_THREAD_INFO;
+
+/* One bit per worker stack slice. Guarded by a lock: PsCreateSystemThreadEx
+ * can now be called from a worker, so the allocator itself must be safe. */
+static volatile LONG g_worker_stack_used[XBOX_WORKER_STACK_COUNT];
+
+static int xbox_worker_stack_alloc(void)
+{
+    for (int i = 0; i < XBOX_WORKER_STACK_COUNT; i++) {
+        if (InterlockedCompareExchange(&g_worker_stack_used[i], 1, 0) == 0)
+            return i;
+    }
+    return -1;  /* all slices in use */
+}
+
+static void xbox_worker_stack_free(int slot)
+{
+    if (slot >= 0 && slot < XBOX_WORKER_STACK_COUNT)
+        InterlockedExchange(&g_worker_stack_used[slot], 0);
+}
+
+static DWORD WINAPI xbox_recomp_thread_wrapper(LPVOID param)
+{
+    XBOX_RECOMP_THREAD_INFO info = *(XBOX_RECOMP_THREAD_INFO*)param;
+    HeapFree(GetProcessHeap(), 0, param);
+
+    /* This thread's own register set starts zeroed (TLS), so give it a stack
+     * and the two context arguments the Xbox thread ABI passes:
+     *     void StartRoutine(PVOID StartContext1, PVOID StartContext2)
+     * pushed right-to-left, then a dummy return address -- the same shape
+     * bridge_PsCreateSystemThreadEx builds for the main thread. */
+    g_esp = info.stack_top;
+    g_esp -= 4; THREAD_MEM32(g_esp) = info.ctx2;
+    g_esp -= 4; THREAD_MEM32(g_esp) = info.ctx1;
+    g_esp -= 4; THREAD_MEM32(g_esp) = 0;
+    g_seh_ebp = g_esp;
+
+    fprintf(stderr, "  [KERNEL] worker thread %lu running (slot %d, "
+            "esp=0x%08X)\n", GetCurrentThreadId(), info.slot, g_esp);
+    fflush(stderr);
+
+    info.fn();
+
+    fprintf(stderr, "  [KERNEL] worker thread %lu returned (eax=0x%08X)\n",
+            GetCurrentThreadId(), g_eax);
+    fflush(stderr);
+
+    xbox_worker_stack_free(info.slot);
+    return 0;
+}
+
+/* stack_top == 0: take a worker slice. Otherwise run on that stack, which the
+ * game's own main thread does -- it gets the full upper stack region because
+ * a 256 KB slice is nowhere near enough for the whole game. */
+BOOL xbox_thread_spawn_on(void (*fn)(void), uint32_t ctx1, uint32_t ctx2,
+                          uint32_t stack_top)
+{
+    if (!fn) return FALSE;
+
+    int slot = -1;
+    if (stack_top == 0) {
+        slot = xbox_worker_stack_alloc();
+        if (slot < 0) return FALSE;
+        stack_top = XBOX_WORKER_STACK_TOP(slot);
+    }
+
+    XBOX_RECOMP_THREAD_INFO *info =
+        (XBOX_RECOMP_THREAD_INFO*)HeapAlloc(GetProcessHeap(), 0, sizeof(*info));
+    if (!info) { xbox_worker_stack_free(slot); return FALSE; }
+
+    info->fn = (xbox_recomp_func_t)fn;
+    info->ctx1 = ctx1;
+    info->ctx2 = ctx2;
+    info->slot = slot;
+    info->stack_top = stack_top;
+
+    HANDLE h = CreateThread(NULL, 0, xbox_recomp_thread_wrapper, info, 0, NULL);
+    if (!h) {
+        HeapFree(GetProcessHeap(), 0, info);
+        xbox_worker_stack_free(slot);
+        return FALSE;
+    }
+    CloseHandle(h);  /* fire and forget; the game waits on its own objects */
+    return TRUE;
+}
+
+BOOL xbox_thread_spawn(void (*fn)(void), uint32_t ctx1, uint32_t ctx2)
+{
+    return xbox_thread_spawn_on(fn, ctx1, ctx2, 0);
 }

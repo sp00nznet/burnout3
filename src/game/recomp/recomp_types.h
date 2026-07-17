@@ -77,8 +77,26 @@ extern ptrdiff_t g_xbox_mem_offset;
  * (Frame Pointer Omission) functions use it as scratch without
  * save/restore. For SEH functions, g_seh_ebp bridges the gap.
  */
-extern uint32_t g_eax, g_ecx, g_edx, g_esp;
-extern uint32_t g_ebx, g_esi, g_edi;
+/*
+ * Thread-local. Each Xbox thread has its own register set, so each host thread
+ * running recompiled code must too -- otherwise two threads share one esp and
+ * immediately corrupt each other's stacks. This is not an approximation; it is
+ * what the hardware does.
+ *
+ * Costs a TLS indirection on every register access. Measure before optimising:
+ * correctness first, and the alternative is that worker threads cannot run at
+ * all.
+ */
+#ifndef RECOMP_TLS
+#  if defined(_MSC_VER)
+#    define RECOMP_TLS __declspec(thread)
+#  else
+#    define RECOMP_TLS __thread
+#  endif
+#endif
+
+extern RECOMP_TLS uint32_t g_eax, g_ecx, g_edx, g_esp;
+extern RECOMP_TLS uint32_t g_ebx, g_esi, g_edi;
 
 /**
  * SEH frame pointer bridge.
@@ -88,7 +106,7 @@ extern uint32_t g_ebx, g_esi, g_edi;
  * The prolog writes g_seh_ebp, and the caller reads it after the call.
  * Similarly, __SEH_epilog reads g_seh_ebp at entry and writes it at exit.
  */
-extern uint32_t g_seh_ebp;
+extern RECOMP_TLS uint32_t g_seh_ebp;
 
 /* ── ICALL trace ring buffer (for debugging) ────────── */
 #define ICALL_TRACE_SIZE 16

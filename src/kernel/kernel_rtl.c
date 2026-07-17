@@ -158,34 +158,84 @@ ULONG __stdcall xbox_RtlCompareMemoryUlong(PVOID Source, ULONG Length, ULONG Pat
  * ============================================================================ */
 
 /*
- * Critical section operations are no-ops for now.
+ * Critical sections: shadow mapping (Xbox VA -> native CRITICAL_SECTION).
  *
- * The Xbox CRITICAL_SECTION is a 20-byte 32-bit structure that's
- * incompatible with the Windows 64-bit CRITICAL_SECTION (40 bytes).
- * Passing Xbox memory pointers to native Windows CS functions would
- * corrupt memory. Since the recompiled game runs single-threaded
- * (all Xbox threads are called synchronously), there's no contention
- * and no-ops are correct.
+ * The Xbox CRITICAL_SECTION is a 20-byte 32-bit structure; the Windows x64 one
+ * is 40 bytes. Handing Xbox memory to the native CS functions would scribble
+ * 20 bytes past whatever the game put there, so we cannot use the game's
+ * struct directly. Instead each distinct Xbox CS address gets a native
+ * CRITICAL_SECTION of our own, looked up by address.
  *
- * TODO: If multithreading is needed, implement a shadow CS mapping
- * (Xbox VA → native Windows CRITICAL_SECTION).
+ * These were no-ops, which was fine while every Xbox thread ran synchronously.
+ * Worker threads are real host threads now (xbox_thread_spawn), so a no-op
+ * lock is a data race -- the game asks for mutual exclusion and gets none.
+ *
+ * ponytail: fixed-size table with a linear scan, guarded by one SRW lock.
+ * Burnout 3 initialises ~14 critical sections. If a title ever needs more than
+ * SHADOW_CS_MAX, or the scan shows up in a profile, make it a hash map.
  */
+#define SHADOW_CS_MAX 256
+
+static struct {
+    void             *key;   /* the Xbox CS address, used only as an identity */
+    CRITICAL_SECTION  cs;
+    int               used;
+} g_shadow_cs[SHADOW_CS_MAX];
+
+static SRWLOCK g_shadow_cs_lock = SRWLOCK_INIT;
+
+/* Find (or create) the native CS shadowing this Xbox CS address. */
+static CRITICAL_SECTION *shadow_cs_for(void *key)
+{
+    CRITICAL_SECTION *found = NULL;
+
+    AcquireSRWLockExclusive(&g_shadow_cs_lock);
+    for (int i = 0; i < SHADOW_CS_MAX; i++) {
+        if (g_shadow_cs[i].used && g_shadow_cs[i].key == key) {
+            found = &g_shadow_cs[i].cs;
+            break;
+        }
+    }
+    if (!found) {
+        /* Lazily create: the game does not always call
+         * RtlInitializeCriticalSection before entering one. */
+        for (int i = 0; i < SHADOW_CS_MAX; i++) {
+            if (!g_shadow_cs[i].used) {
+                g_shadow_cs[i].used = 1;
+                g_shadow_cs[i].key  = key;
+                InitializeCriticalSection(&g_shadow_cs[i].cs);
+                found = &g_shadow_cs[i].cs;
+                break;
+            }
+        }
+    }
+    ReleaseSRWLockExclusive(&g_shadow_cs_lock);
+
+    if (!found) {
+        /* Out of slots. Say so rather than silently not locking. */
+        xbox_log(XBOX_LOG_ERROR, XBOX_LOG_RTL,
+                 "shadow critical sections exhausted (%d); lock at %p is a no-op",
+                 SHADOW_CS_MAX, key);
+    }
+    return found;
+}
+
 VOID __stdcall xbox_RtlEnterCriticalSection(PRTL_CRITICAL_SECTION CriticalSection)
 {
-    (void)CriticalSection;
-    /* No-op: single-threaded execution, no contention */
+    CRITICAL_SECTION *cs = shadow_cs_for((void*)CriticalSection);
+    if (cs) EnterCriticalSection(cs);
 }
 
 VOID __stdcall xbox_RtlLeaveCriticalSection(PRTL_CRITICAL_SECTION CriticalSection)
 {
-    (void)CriticalSection;
-    /* No-op: single-threaded execution */
+    CRITICAL_SECTION *cs = shadow_cs_for((void*)CriticalSection);
+    if (cs) LeaveCriticalSection(cs);
 }
 
 VOID __stdcall xbox_RtlInitializeCriticalSection(PRTL_CRITICAL_SECTION CriticalSection)
 {
-    (void)CriticalSection;
-    /* No-op: single-threaded execution */
+    /* Just materialise the shadow; entering lazily creates it anyway. */
+    (void)shadow_cs_for((void*)CriticalSection);
 }
 
 /* ============================================================================

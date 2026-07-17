@@ -144,6 +144,18 @@ ptrdiff_t xbox_GetMemoryOffset(void);
 #define KDATA_ALT_SIGNATURE_KEYS 0x130 /* XboxAlternateSignatureKeys (256 bytes) */
 #define KDATA_XE_PUBLIC_KEY     0x300  /* XePublicKeyData (284 bytes) */
 
+/* Thread-local storage qualifier for the recompiled register set.
+ * Defined here and in recomp_types.h; both guard so either include order
+ * works. A mismatch between the definition and an extern is a hard error, so
+ * every declaration of g_eax and friends must carry this. */
+#ifndef RECOMP_TLS
+#  if defined(_MSC_VER)
+#    define RECOMP_TLS __declspec(thread)
+#  else
+#    define RECOMP_TLS __thread
+#  endif
+#endif
+
 /** Size of the simulated Xbox stack (8 MB).
  *  Increased from 1 MB because failed RECOMP_ICALL indirect calls
  *  can leak stdcall args onto the stack each frame. An 8 MB stack
@@ -155,6 +167,25 @@ ptrdiff_t xbox_GetMemoryOffset(void);
 
 /** Initial ESP value (top of stack, 16-byte aligned). */
 #define XBOX_STACK_TOP      (XBOX_STACK_BASE + XBOX_STACK_SIZE - 16)
+
+/* ── Worker thread stacks ────────────────────────────────
+ * Real threads each need their own Xbox stack, or they share one esp and
+ * corrupt each other immediately. Carved out of the bottom half of the stack
+ * region: the main thread starts at XBOX_STACK_TOP and grows down, workers
+ * take fixed slices from the bottom and grow down within their slice.
+ *
+ * The two halves meet only if the main thread burns 4 MB, which would already
+ * be a runaway. xbox_thread_alloc_stack() hands these out.
+ */
+#define XBOX_WORKER_STACK_SIZE   (256 * 1024)
+#define XBOX_WORKER_STACK_BASE   XBOX_STACK_BASE            /* 0x00780000 */
+#define XBOX_WORKER_STACK_COUNT  16                          /* 4 MB total */
+#define XBOX_WORKER_STACK_END    (XBOX_WORKER_STACK_BASE + \
+                                  XBOX_WORKER_STACK_SIZE * XBOX_WORKER_STACK_COUNT)
+
+/** Top of worker N's stack (grows down toward its own base). */
+#define XBOX_WORKER_STACK_TOP(n) (XBOX_WORKER_STACK_BASE + \
+                                  XBOX_WORKER_STACK_SIZE * ((n) + 1) - 16)
 
 /* ================================================================
  * Xbox dynamic heap (for MmAllocateContiguousMemory, etc.)
