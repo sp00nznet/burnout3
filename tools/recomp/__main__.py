@@ -26,22 +26,7 @@ import time
 from .translator import BatchTranslator
 from .output import write_summary, print_stats, generate_header
 
-# "void sub_001AA100(void)" with no trailing ';' -- a definition, not a decl.
-_MANUAL_DEF_RE = re.compile(r"^void (sub_([0-9A-Fa-f]{8}))\(void\)\s*$", re.M)
-
-
-def _manual_definitions(path):
-    """Addresses of functions DEFINED (not merely declared) in a manual file.
-
-    Emitting gen code for these collides with the hand-written version at link
-    time, which is why every regen previously needed '#if 0' re-applied around
-    each one by hand.
-    """
-    if not os.path.exists(path):
-        print(f"WARNING: {path} not found; excluding nothing.", file=sys.stderr)
-        return set()
-    src = open(path, encoding="utf-8", errors="replace").read()
-    return {int(m.group(2), 16) for m in _MANUAL_DEF_RE.finditer(src)}
+from .manual_scan import scan as _manual_definitions
 
 
 def _func_addr(entry):
@@ -202,28 +187,38 @@ def main():
 
     declare_only = set()
     if args.exclude_manual:
-        excluded = _manual_definitions(args.exclude_manual)
-        if excluded:
-            # Declare but do not define: emitting a body collides with the
-            # hand-written one at link, while dropping the function outright
-            # would also drop the declaration that recomp_manual.c's own
-            # dispatch table needs.
-            declare_only = {a for a in excluded if a in translator.func_db}
-            # The manual file defines these as sub_XXXXXXXX. If a naming pass
-            # has since renamed them in func_db, generated call sites would
-            # emit the new name and fail to link against the hand-written
-            # definition -- so pin excluded functions back to the sub_ name.
-            renamed = 0
-            for addr in declare_only:
-                info = translator.func_db[addr]
-                plain = f"sub_{addr:08X}"
-                if info.get("name") != plain:
-                    info["name"] = plain
-                    renamed += 1
-            print(f"Declaring (not defining) {len(declare_only)} functions "
-                  f"already defined in {args.exclude_manual}"
-                  + (f" ({renamed} pinned back to sub_ names)" if renamed else ""),
-                  file=sys.stderr)
+        skip, wrap, referenced = _manual_definitions(args.exclude_manual)
+        known = set(translator.func_db)
+
+        # Anything the hand-written code names as sub_XXXXXXXX must keep that
+        # name, whether it defines it or merely calls it. A naming pass that
+        # renamed it would leave the manual reference undefined.
+        pinned = 0
+        for addr in (referenced & known) - wrap:
+            info = translator.func_db[addr]
+            plain = f"sub_{addr:08X}"
+            if info.get("name") != plain:
+                info["name"] = plain
+                pinned += 1
+
+        # A wrapped function is defined by hand AND still needs its generated
+        # body, under the sub_X_gen name the manual version calls.
+        for addr in wrap & known:
+            translator.func_db[addr]["name"] = f"sub_{addr:08X}_gen"
+
+        # Declare but do not define: emitting a body collides with the
+        # hand-written one at link, while dropping the function outright
+        # would also drop the declaration that recomp_manual.c's own
+        # dispatch table needs.
+        declare_only = {a for a in (skip - wrap) if a in known}
+
+        print(f"Declaring (not defining) {len(declare_only)} functions "
+              f"already defined in {args.exclude_manual}"
+              + (f"; {pinned} pinned to sub_ names because the manual code "
+                 f"references them" if pinned else "")
+              + (f"; {len(wrap & known)} emitted as sub_X_gen for manual "
+                 f"wrappers" if wrap else ""),
+              file=sys.stderr)
 
     print(f"\nTranslating {len(funcs)} functions...", file=sys.stderr)
 

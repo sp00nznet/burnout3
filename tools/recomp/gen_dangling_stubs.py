@@ -18,9 +18,16 @@ import argparse
 import glob
 import os
 import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from recomp.manual_scan import definition_names  # noqa: E402
 
 CALL_RE = re.compile(r"\b([A-Za-z_]\w*)\(\);")
-DEF_RE = re.compile(r"^void (\w+)\(void\)\s*$", re.M)
+# Matches a definition whether the body opens on this line or the next. Using a
+# stricter pattern here than the recompiler uses is how sub_00014FB0 -- defined
+# in recomp_manual.c as a one-liner -- got stubbed a second time and collided.
+DEF_RE = re.compile(r"^void (\w+)\(void\)\s*(?:\{|$)", re.M)
 DECL_RE = re.compile(r"^void (\w+)\(void\);", re.M)
 
 
@@ -48,8 +55,9 @@ def main():
     hdr = os.path.join(a.gen_dir, "recomp_funcs.h")
     if os.path.exists(hdr):
         defined |= set(DECL_RE.findall(read(hdr)))
-    if os.path.exists(a.manual):
-        defined |= set(DEF_RE.findall(read(a.manual)))
+    # Ask the shared scanner what the manual file defines, so the recompiler
+    # and this script cannot disagree about it.
+    defined |= definition_names(a.manual)
 
     # Only sub_XXXXXXXX names are safe to stub: a named XDK function that is
     # missing means something upstream is wrong, and a silent empty stub would
