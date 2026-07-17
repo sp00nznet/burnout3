@@ -19,11 +19,34 @@ Options:
 import argparse
 import json
 import os
+import re
 import sys
 import time
 
 from .translator import BatchTranslator
 from .output import write_summary, print_stats, generate_header
+
+# "void sub_001AA100(void)" with no trailing ';' -- a definition, not a decl.
+_MANUAL_DEF_RE = re.compile(r"^void (sub_([0-9A-Fa-f]{8}))\(void\)\s*$", re.M)
+
+
+def _manual_definitions(path):
+    """Addresses of functions DEFINED (not merely declared) in a manual file.
+
+    Emitting gen code for these collides with the hand-written version at link
+    time, which is why every regen previously needed '#if 0' re-applied around
+    each one by hand.
+    """
+    if not os.path.exists(path):
+        print(f"WARNING: {path} not found; excluding nothing.", file=sys.stderr)
+        return set()
+    src = open(path, encoding="utf-8", errors="replace").read()
+    return {int(m.group(2), 16) for m in _MANUAL_DEF_RE.finditer(src)}
+
+
+def _func_addr(entry):
+    """get_functions_by_category yields (addr, func_info) tuples."""
+    return entry[0] if isinstance(entry, tuple) else entry
 
 
 def find_data_files():
@@ -87,6 +110,13 @@ def main():
     parser.add_argument("--gen-dir",
                         help="Output dir for split generated files "
                              "(default: src/game/recomp/gen)")
+    parser.add_argument("--exclude-manual", metavar="FILE",
+                        nargs="?", const="src/game/recomp/recomp_manual.c",
+                        help="Skip functions that FILE already defines, so the "
+                             "generated code does not collide with hand-written "
+                             "overrides. Defaults to recomp_manual.c. This "
+                             "replaces hand-editing '#if 0' around every "
+                             "overridden function after each regen.")
 
     args = parser.parse_args()
 
@@ -169,6 +199,29 @@ def main():
         # Default: game functions only
         categories = {"game_engine", "game_vtable", "unknown"}
         funcs = translator.get_functions_by_category(categories=categories)
+
+    if args.exclude_manual:
+        excluded = _manual_definitions(args.exclude_manual)
+        if excluded:
+            before = len(funcs)
+            funcs = [f for f in funcs if _func_addr(f) not in excluded]
+            # The manual file defines these as sub_XXXXXXXX. If a naming pass
+            # has since renamed them in func_db, generated call sites would
+            # emit the new name and fail to link against the hand-written
+            # definition -- so pin excluded functions back to the sub_ name.
+            renamed = 0
+            for addr in excluded:
+                info = translator.func_db.get(addr)
+                if info is None:
+                    continue
+                plain = f"sub_{addr:08X}"
+                if info.get("name") != plain:
+                    info["name"] = plain
+                    renamed += 1
+            print(f"Excluding {before - len(funcs)} functions already defined in "
+                  f"{args.exclude_manual}"
+                  + (f" ({renamed} pinned back to sub_ names)" if renamed else ""),
+                  file=sys.stderr)
 
     print(f"\nTranslating {len(funcs)} functions...", file=sys.stderr)
 

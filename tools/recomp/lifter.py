@@ -659,13 +659,22 @@ class Lifter:
         self.func_end = 0
 
     def _call_target_name(self, addr):
-        """Get the name for a call target address."""
+        """Get the name for a call target address.
+
+        func_db wins over label_db for anything that IS a function: the
+        definition is emitted from func_db's name, so a call must use that same
+        name or the two won't link. labels.json is written by the
+        disassembler before any naming pass runs, so it still carries the
+        original sub_XXXXXXXX; checking it first silently emitted calls to
+        sub_0033951C for a function defined as XnInit_24.
+
+        label_db still answers for addresses that aren't known functions
+        (jump targets, data labels).
+        """
+        if addr in self.func_db:
+            return self.func_db[addr].get("name", f"sub_{addr:08X}")
         if addr in self.label_db:
             return self.label_db[addr]
-        if addr in self.func_db:
-            info = self.func_db[addr]
-            name = info.get("name", f"sub_{addr:08X}")
-            return name
         return f"sub_{addr:08X}"
 
     def lift_instruction(self, insn):
