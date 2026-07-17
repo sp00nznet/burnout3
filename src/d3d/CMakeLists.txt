@@ -11,7 +11,10 @@ if(WIN32)
         d3d8_combiners.c
         d3d8_vsh.c
     )
+    # platform is an INTERFACE target on Windows: it supplies the src/
+    # include path that "platform/xbox_winnt.h" resolves against.
     target_link_libraries(d3d8_compat
+        platform
         d3d11
         dxgi
         dxguid

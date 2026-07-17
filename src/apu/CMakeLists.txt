@@ -34,7 +34,7 @@ endif()
 
 if(WIN32)
     # kernel32 for threading, winmm for waveOut fallback, ole32 for CoInitializeEx
-    target_link_libraries(apu_emu PRIVATE kernel32 winmm ole32)
+    target_link_libraries(apu_emu PRIVATE platform kernel32 winmm ole32)
 else()
     # Linux: platform layer (Win32 primitives on POSIX) + SDL2 audio
     find_package(SDL2 REQUIRED)

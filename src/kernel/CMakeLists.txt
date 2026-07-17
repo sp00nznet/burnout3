@@ -37,7 +37,7 @@ target_include_directories(xbox_kernel PUBLIC
 
 # System libraries (platform-specific)
 if(WIN32)
-    target_link_libraries(xbox_kernel PUBLIC kernel32 bcrypt)
+    target_link_libraries(xbox_kernel PUBLIC platform kernel32 bcrypt)
 else()
     # Linux: platform layer (POSIX host primitives) + OpenSSL (replaces
     # bcrypt for kernel_crypto.c)

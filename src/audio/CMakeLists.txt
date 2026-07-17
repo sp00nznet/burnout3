@@ -8,10 +8,9 @@ target_include_directories(dsound_compat PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-if(NOT WIN32)
-    # Linux: needs the platform layer for NT types / win32_compat
-    target_link_libraries(dsound_compat platform)
-endif()
+# platform carries the src/ include path (and on Linux the POSIX Win32
+# primitives), so both hosts need it for "platform/xbox_winnt.h".
+target_link_libraries(dsound_compat platform)
 
 if(MSVC)
     target_compile_options(dsound_compat PRIVATE /W4 /O2)

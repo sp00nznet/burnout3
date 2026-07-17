@@ -9,7 +9,7 @@ target_include_directories(input_compat PUBLIC
 )
 
 if(WIN32)
-    target_link_libraries(input_compat xinput)
+    target_link_libraries(input_compat platform xinput)
 else()
     find_package(SDL2 REQUIRED)
     target_link_libraries(input_compat platform SDL2::SDL2)
