@@ -322,7 +322,37 @@ Game boots, loads, runs gameplay loop. **Two rendering modes** toggled with V ke
 - **N/P keys**: next/previous vehicle model (in model viewer)
 - **Gamepad**: Left stick = steer, RT/LT = gas/brake, A or RB = boost
 
-### Gen File Patches (must re-apply after regen)
+### Regenerating gen/ (2026-07-16: no longer a manual checklist)
+
+The whole pipeline is reproducible now. From the repo root:
+
+```
+py -3 -m tools.disasm "Burnout 3 Takedown/default.xbe"        # NOT --text-only
+py -3 tools/ghidra_naming/merge_names.py --names-json tools/ghidra_naming/xdk_names.json --apply
+py -3 -m tools.func_id "Burnout 3 Takedown/default.xbe"
+py -3 -m tools.recomp "Burnout 3 Takedown/default.xbe" --all --split 1000 --exclude-manual
+py -3 tools/recomp/gen_dangling_stubs.py
+cmake -S . -B build && cmake --build build --config Release
+```
+
+`--exclude-manual` reads recomp_manual.c and declares-but-does-not-define every
+function it overrides, which is what the old `#if 0` patches did by hand. Do not
+hand-patch gen/ — it is gitignored and regenerable, and hand edits are lost on
+the next run. If gen needs a change, change the recompiler.
+
+**Never run tools.disasm with --text-only.** It skips the XDK sections (D3D,
+DSOUND, XNET, XONLINE, XPP, WMADEC, XGRPH, XMV), and with no function
+boundaries there the disassembler glues each function to the next — which is
+where the mythical "79KB D3D8LTCG giants" came from. sub_0034D530 was recorded
+as 79,140 bytes with zero instructions parsed; it is really 533 bytes, and it
+is D3DDevice_SetViewport.
+
+### Gen File Patches (HISTORICAL — superseded by --exclude-manual)
+
+Kept only as a record of what used to be re-applied by hand. Most entries are
+`#if 0` around a function recomp_manual.c overrides; --exclude-manual now does
+that automatically (59 functions on the last run). The pre-re-lift tree is in
+src/game/recomp/gen.pre_relift_backup/ if any of this needs recovering.
 1. **recomp_0000.c**: extern g_tick_110e0_count, sub_000165F0 entry/ESP traces, sub_00015570 vtable guard, sub_0003D9E0 #if 0, **sub_000636D0 #if 0**, jump table→C switch (replace_all), state traces, exit path traces, case 3 traces, **screen list init PATCH before sub_0001F7C0** (zero idx/count at MEM32(0x4A1E94)+0x10+0x04/0x08), **19× screen entry invalidation disable** (comment out `MEM8(esi+0x1E)=LO8(ebx)` + `MEM32(edi+8)--`)
 2. **recomp_0002.c**: #if 0 around sub_00135040, sub_00135240
 3. **recomp_0003.c**: extern g_tick_110e0_count, flag clear, ESP+callee-saved save/restore, game loop traces
