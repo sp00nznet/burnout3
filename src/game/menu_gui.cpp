@@ -68,7 +68,11 @@ static struct {
     false, /* wireframe */
     60.0f, /* fov */
     12.0f, /* camera distance */
-    true,  /* skip_intro */
+    false, /* skip_intro -- default to the real boot sequence (Criterion logo,
+            * EA logo, title video, press start). It defaulted to true, which
+            * dropped straight to gameplay and made it look like the intro was
+            * unimplemented. Still toggleable in the debug menu for fast
+            * iteration. */
 };
 
 /* ================================================================
