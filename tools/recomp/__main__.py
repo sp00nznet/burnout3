@@ -200,26 +200,28 @@ def main():
         categories = {"game_engine", "game_vtable", "unknown"}
         funcs = translator.get_functions_by_category(categories=categories)
 
+    declare_only = set()
     if args.exclude_manual:
         excluded = _manual_definitions(args.exclude_manual)
         if excluded:
-            before = len(funcs)
-            funcs = [f for f in funcs if _func_addr(f) not in excluded]
+            # Declare but do not define: emitting a body collides with the
+            # hand-written one at link, while dropping the function outright
+            # would also drop the declaration that recomp_manual.c's own
+            # dispatch table needs.
+            declare_only = {a for a in excluded if a in translator.func_db}
             # The manual file defines these as sub_XXXXXXXX. If a naming pass
             # has since renamed them in func_db, generated call sites would
             # emit the new name and fail to link against the hand-written
             # definition -- so pin excluded functions back to the sub_ name.
             renamed = 0
-            for addr in excluded:
-                info = translator.func_db.get(addr)
-                if info is None:
-                    continue
+            for addr in declare_only:
+                info = translator.func_db[addr]
                 plain = f"sub_{addr:08X}"
                 if info.get("name") != plain:
                     info["name"] = plain
                     renamed += 1
-            print(f"Excluding {before - len(funcs)} functions already defined in "
-                  f"{args.exclude_manual}"
+            print(f"Declaring (not defining) {len(declare_only)} functions "
+                  f"already defined in {args.exclude_manual}"
                   + (f" ({renamed} pinned back to sub_ names)" if renamed else ""),
                   file=sys.stderr)
 
@@ -239,6 +241,7 @@ def main():
             output_dir=gen_dir,
             chunk_size=args.split,
             verbose=args.verbose,
+            declare_only=declare_only,
         )
 
         t_translate = time.time() - t0

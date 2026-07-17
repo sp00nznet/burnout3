@@ -631,7 +631,8 @@ class BatchTranslator:
 
     def translate_batch_split(self, func_list, output_dir, chunk_size=1000,
                               header_name="recomp_funcs.h",
-                              prefix="recomp", verbose=False):
+                              prefix="recomp", verbose=False,
+                              declare_only=None):
         """
         Translate functions into multiple .c files + a shared header.
 
@@ -642,11 +643,18 @@ class BatchTranslator:
           ...
           output_dir/recomp_dispatch.c    - address -> function pointer table
 
+        declare_only: addresses to declare in the header but NOT define, because
+        something else (recomp_manual.c) defines them. Emitting a body would
+        collide at link; omitting them entirely would drop the declaration that
+        the manual file's dispatch table needs. This is what hand-applied
+        '#if 0' used to achieve.
+
         Returns dict with stats and list of generated files.
         """
         import sys
 
         os.makedirs(output_dir, exist_ok=True)
+        declare_only = declare_only or set()
 
         # Translate all functions first, collecting results
         translations = []
@@ -662,6 +670,11 @@ class BatchTranslator:
             if verbose and (i % 500 == 0 or i == len(func_list) - 1):
                 print(f"  [{i+1}/{len(func_list)}] Translating {name}...",
                       file=sys.stderr)
+
+            if addr in declare_only:
+                # Header-only: declared below, defined by hand elsewhere.
+                translations.append((addr, name, None))
+                continue
 
             code = self.translator.translate_function(addr, func_info)
             if code:
@@ -717,7 +730,10 @@ class BatchTranslator:
                 "",
             ]
             for addr, name, code in chunk:
-                c_lines.append(code)
+                # code is None for declare_only functions: the header declares
+                # them and the hand-written file defines them.
+                if code is not None:
+                    c_lines.append(code)
 
             with open(c_path, "w", encoding="utf-8") as f:
                 f.write("\n".join(c_lines))
