@@ -1942,66 +1942,6 @@ static DWORD WINAPI tick_count_thread_func(LPVOID param)
 
 /* ── Watchdog thread: periodically dumps register state ──── */
 
-/* Fast RIP sampler: the game thread runs so hot the 2s watchdog barely gets
- * scheduled, so this samples where the game thread actually IS at 50 Hz and
- * reports the hottest 64 KB bucket every couple of seconds. That is enough to
- * name a tight loop the ICALL counter can't see. */
-static DWORD WINAPI rip_profiler_func(LPVOID param)
-{
-    (void)param;
-    static uint32_t bucket[0x8000];   /* 4KB buckets, one per function-ish */
-    static uint64_t exemplar[0x8000]; /* one real RIP seen in each bucket */
-    /* The game thread starves everything; run above it so we get samples. */
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
-    uint64_t last_report = GetTickCount64();
-    for (;;) {
-        Sleep(20);
-        HANDLE gt = xbox_thread_debug_handle();
-        if (gt && SuspendThread(gt) != (DWORD)-1) {
-            CONTEXT ctx; memset(&ctx, 0, sizeof(ctx));
-            ctx.ContextFlags = CONTEXT_CONTROL;
-            if (GetThreadContext(gt, &ctx)) {
-                uint64_t base = 0x140000000ull;
-                if (ctx.Rip >= base && ctx.Rip < base + 0x8000000ull) {
-                    uint32_t b = (uint32_t)((ctx.Rip - base) >> 12);
-                    bucket[b]++;
-                    exemplar[b] = ctx.Rip;
-                }
-            }
-            ResumeThread(gt);
-        }
-        uint64_t now = GetTickCount64();
-        if (now - last_report >= 2000) {
-            last_report = now;
-            /* Top 3 hot buckets, reported by the real RIP sampled in each. */
-            for (int top = 0; top < 3; top++) {
-                int hot = 0;
-                for (int i = 1; i < 0x8000; i++)
-                    if (bucket[i] > bucket[hot]) hot = i;
-                if (!bucket[hot]) break;
-                fprintf(stderr, "  [PROFILE] hot RIP=0x%016llX (%u samples)\n",
-                        (unsigned long long)exemplar[hot], bucket[hot]);
-                bucket[hot] = 0;
-            }
-            /* The load-time registration loop (sub_0006B130) iterates a count
-             * at 0x5729A8 and appends to a table whose length is at 0x5A3400.
-             * Print both: if the outer count is garbage the loop never ends,
-             * and if the registered length is not climbing it is spinning on
-             * one object rather than making progress. */
-            if (g_xbox_mem_offset) {
-                #define PROBE(va) (*(volatile uint32_t*)((uintptr_t)(va) + g_xbox_mem_offset))
-                fprintf(stderr, "  [PROFILE] outer_count@0x5729A8=%u "
-                        "registered@0x5A3400=%u first_obj@0x572988=0x%08X\n",
-                        PROBE(0x5729A8), PROBE(0x5A3400), PROBE(0x572988));
-                #undef PROBE
-            }
-            fflush(stderr);
-            memset(bucket, 0, sizeof(bucket));
-        }
-    }
-    return 0;
-}
-
 static DWORD WINAPI watchdog_thread_func(LPVOID param)
 {
     (void)param;
@@ -5238,6 +5178,73 @@ static void game_loop(void)
             menu_gui_render();
             g_d3d_device->lpVtbl->Present(g_d3d_device, NULL, NULL, NULL, NULL);
         }
+        /* Reliable diagnostics from the MAIN thread (this loop runs steadily at
+         * 60fps, unlike the game thread which starves everything and unlike the
+         * profiler thread which deadlocked suspending it). Once a second:
+         *   - GetThreadTimes on the game thread: rising CPU = spinning,
+         *     flat = blocked. This is the spinning-vs-blocked answer, no
+         *     suspend needed.
+         *   - the load-loop memory probes.
+         *   - only if blocked, suspend once for the parked RIP. */
+        {
+            static uint64_t last_diag = 0;
+            uint64_t now_ms = GetTickCount64();
+            if (now_ms - last_diag >= 1000) {
+                last_diag = now_ms;
+                HANDLE gt = xbox_thread_debug_handle();
+                if (gt) {
+                    static uint64_t prev_cpu = 0;
+                    FILETIME c, e, k, u;
+                    if (GetThreadTimes(gt, &c, &e, &k, &u)) {
+                        uint64_t cpu = (((uint64_t)k.dwHighDateTime << 32) | k.dwLowDateTime)
+                                     + (((uint64_t)u.dwHighDateTime << 32) | u.dwLowDateTime);
+                        uint64_t delta = cpu - prev_cpu;
+                        prev_cpu = cpu;
+                        uint32_t reg = 0, firstobj = 0, gs = 0;
+                        if (g_xbox_mem_offset) {
+                            #define DBG(va) (*(volatile uint32_t*)((uintptr_t)(va)+g_xbox_mem_offset))
+                            reg = DBG(0x5A3400); firstobj = DBG(0x572988); gs = DBG(0x4D53B8);
+                            #undef DBG
+                        }
+                        fprintf(stderr, "  [DIAG] game thread cpu +%llums/s (%s)  "
+                                "state=0x%X registered=%u first_obj=0x%08X\n",
+                                (unsigned long long)(delta / 10000),
+                                delta > 50000 ? "SPINNING" : "idle/blocked",
+                                gs, reg, firstobj);
+                        /* Always grab the RIP (safe from the main thread):
+                         * whether spinning or blocked, where it is is the
+                         * whole question. */
+                        {
+                            CONTEXT ctx; memset(&ctx, 0, sizeof(ctx));
+                            ctx.ContextFlags = CONTEXT_CONTROL;
+                            if (SuspendThread(gt) != (DWORD)-1) {
+                                if (GetThreadContext(gt, &ctx)) {
+                                    /* Approximate backtrace: scan the native
+                                     * stack for values that land inside the
+                                     * image (return addresses). The map turns
+                                     * them into the loop nest. */
+                                    fprintf(stderr, "  [DIAG] RIP=0x%016llX chain:",
+                                            (unsigned long long)ctx.Rip);
+                                    uint64_t base = 0x140000000ull, top = base + 0x8000000ull;
+                                    uint64_t *sp = (uint64_t*)ctx.Rsp;
+                                    int shown = 0;
+                                    for (int q = 0; q < 256 && shown < 10; q++) {
+                                        uint64_t v = sp[q];
+                                        if (v >= base && v < top) {
+                                            fprintf(stderr, " 0x%llX", (unsigned long long)v);
+                                            shown++;
+                                        }
+                                    }
+                                    fprintf(stderr, "\n");
+                                }
+                                ResumeThread(gt);
+                            }
+                        }
+                        fflush(stderr);
+                    }
+                }
+            }
+        }
         Sleep(16); /* ~60 FPS target */
     }
 }
@@ -5303,7 +5310,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     /* Start watchdog thread for periodic register dumps */
     CreateThread(NULL, 0, watchdog_thread_func, NULL, 0, NULL);
-    CreateThread(NULL, 0, rip_profiler_func, NULL, 0, NULL);
 
     /* Call the recompiled game entry point with crash protection.
      * We push a dummy return address (simulating x86 'call' instruction)
