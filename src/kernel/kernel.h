@@ -644,6 +644,11 @@ BOOL xbox_thread_spawn(void (*fn)(void), uint32_t ctx1, uint32_t ctx2);
  *  wedges, suspending this and reading RIP is the only way to see where. */
 HANDLE xbox_thread_debug_handle(void);
 
+/** Arm a timer that fires a DPC. `routine` is the resolved native function for
+ *  the DPC's DeferredRoutine (the caller resolves the Xbox VA). */
+BOOL xbox_timer_arm(void (*routine)(void), uint32_t dpc_va, uint32_t dpc_context,
+                    int64_t due_100ns, uint32_t period_ms);
+
 /**
  * As xbox_thread_spawn, but on a caller-chosen Xbox stack (stack_top == 0
  * means take a worker slice). The game's own main thread uses this with

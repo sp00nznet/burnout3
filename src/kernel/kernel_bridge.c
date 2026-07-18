@@ -735,12 +735,44 @@ static void bridge_KeInitializeTimerEx(void)
  * Sets a timer. We don't actually start timers - just record the state.
  * Returns FALSE (timer was not already set).
  */
-static void bridge_KeSetTimer(void)
+/* Shared by KeSetTimer (149) and KeSetTimerEx (150): the only difference is a
+ * Period arg inserted before Dpc.
+ *   KeSetTimer  (Timer, DueTime[8], Dpc)
+ *   KeSetTimerEx(Timer, DueTime[8], Period, Dpc) */
+static void bridge_KeSetTimer_impl(int has_period)
 {
-    /* Timer functionality is not needed for basic execution.
-     * Return FALSE = timer was not previously set. */
-    g_eax = 0;
+    uint32_t timer_va = STACK_ARG(0);
+    int64_t  due = (int64_t)(((uint64_t)STACK_ARG(2) << 32) | STACK_ARG(1));
+    uint32_t period = has_period ? STACK_ARG(3) : 0;
+    uint32_t dpc_va = STACK_ARG(has_period ? 4 : 3);
+    (void)timer_va;
+
+    /* No DPC -> nothing to fire; the game is only setting a wait timer it will
+     * poll itself. Report "was not already set". */
+    if (dpc_va) {
+        uint32_t routine = BRIDGE_MEM32(dpc_va + 12);   /* DeferredRoutine  */
+        uint32_t context = BRIDGE_MEM32(dpc_va + 16);   /* DeferredContext  */
+        recomp_func_t fn = recomp_lookup(routine);
+        if (!fn) fn = recomp_lookup_manual(routine);
+        if (fn) {
+            xbox_timer_arm(fn, dpc_va, context, due, period);
+            if (g_kernel_call_count <= 200) {
+                fprintf(stderr, "  [KERNEL] KeSetTimer%s: armed DPC routine "
+                        "0x%08X (due=%lld period=%ums)\n",
+                        has_period ? "Ex" : "", routine, (long long)due, period);
+                fflush(stderr);
+            }
+        } else {
+            fprintf(stderr, "  [KERNEL] KeSetTimer%s: DPC routine 0x%08X not "
+                    "found; timer will not fire\n", has_period ? "Ex" : "", routine);
+            fflush(stderr);
+        }
+    }
+    g_eax = 0;   /* timer was not previously set */
 }
+
+static void bridge_KeSetTimer(void)   { bridge_KeSetTimer_impl(0); }
+static void bridge_KeSetTimerEx(void) { bridge_KeSetTimer_impl(1); }
 
 /* ── ExQueryPoolBlockSize (ordinal 24) ────────────────────
  * ULONG ExQueryPoolBlockSize(PVOID PoolBlock)
@@ -1715,7 +1747,7 @@ static bridge_func_t bridge_for_ordinal(ULONG ordinal)
     case 127: return bridge_KeQueryPerformanceFrequency;
     case 128: return bridge_KeQuerySystemTime;
     case 149: return bridge_KeSetTimer;
-    case 150: return bridge_KeSetTimer;  /* KeSetTimerEx */
+    case 150: return bridge_KeSetTimerEx;
 
     /* DPC / Timer init */
     case 107: return bridge_KeInitializeDpc;

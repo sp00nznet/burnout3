@@ -483,3 +483,95 @@ BOOL xbox_thread_spawn(void (*fn)(void), uint32_t ctx1, uint32_t ctx2)
 {
     return xbox_thread_spawn_on(fn, ctx1, ctx2, 0);
 }
+
+/* ============================================================================
+ * Timer-driven DPCs
+ *
+ * KeSetTimer(Timer, DueTime, Dpc) arms a timer that, when it expires, queues
+ * the Dpc's DeferredRoutine. Our KeSetTimer used to be a stub that started no
+ * timer, so the DPC never fired -- fine until a game actually waited on one,
+ * which is where the boot now wedges.
+ *
+ * A Win32 timer-queue timer fires the callback after the due time; the
+ * callback runs the DeferredRoutine on a worker stack with its own TLS
+ * register set, passing the four args the DPC ABI uses:
+ *     void DeferredRoutine(PKDPC Dpc, PVOID Context, PVOID Arg1, PVOID Arg2)
+ * ============================================================================ */
+
+typedef struct {
+    xbox_recomp_func_t routine;
+    uint32_t           dpc_va;
+    uint32_t           context;
+} XBOX_DPC_INFO;
+
+static DWORD WINAPI xbox_dpc_wrapper(LPVOID param)
+{
+    XBOX_DPC_INFO info = *(XBOX_DPC_INFO*)param;
+    HeapFree(GetProcessHeap(), 0, param);
+
+    int slot = xbox_worker_stack_alloc();
+    if (slot < 0) return 0;   /* no stack free; drop the DPC rather than crash */
+
+    g_esp = XBOX_WORKER_STACK_TOP(slot);
+    g_esp -= 4; THREAD_MEM32(g_esp) = 0;             /* SystemArgument2 */
+    g_esp -= 4; THREAD_MEM32(g_esp) = 0;             /* SystemArgument1 */
+    g_esp -= 4; THREAD_MEM32(g_esp) = info.context;  /* DeferredContext */
+    g_esp -= 4; THREAD_MEM32(g_esp) = info.dpc_va;   /* Dpc */
+    g_esp -= 4; THREAD_MEM32(g_esp) = 0;             /* dummy return address */
+    g_seh_ebp = g_esp;
+
+    info.routine();
+
+    xbox_worker_stack_free(slot);
+    return 0;
+}
+
+static VOID CALLBACK xbox_timer_callback(PVOID param, BOOLEAN fired)
+{
+    (void)fired;
+    XBOX_DPC_INFO *src = (XBOX_DPC_INFO*)param;
+    /* Hand a fresh copy to a thread with its own Xbox stack. The timer
+     * callback runs on a threadpool thread whose TLS registers are not set
+     * up for recompiled code, so we cannot run the routine here directly. */
+    XBOX_DPC_INFO *info = (XBOX_DPC_INFO*)HeapAlloc(GetProcessHeap(), 0, sizeof(*info));
+    if (!info) return;
+    *info = *src;
+    HANDLE h = CreateThread(NULL, 0, xbox_dpc_wrapper, info, 0, NULL);
+    if (h) CloseHandle(h);
+    else HeapFree(GetProcessHeap(), 0, info);
+}
+
+/* Arm a timer that fires the DPC after due_100ns (NT units; negative =
+ * relative). period_ms > 0 repeats. `routine` is the ALREADY-RESOLVED native
+ * function for the DPC's DeferredRoutine -- the bridge resolves the Xbox VA,
+ * since only it has the recomp dispatch. Returns TRUE on success. */
+BOOL xbox_timer_arm(void (*routine)(void), uint32_t dpc_va, uint32_t dpc_context,
+                    int64_t due_100ns, uint32_t period_ms)
+{
+    if (!routine) return FALSE;
+
+    /* Relative NT time is negative 100ns units; absolute is positive. Only the
+     * relative case is used by game load timers, and a floor of 1ms keeps a
+     * zero/tiny due time from busy-firing. */
+    DWORD due_ms = 1;
+    if (due_100ns < 0) {
+        int64_t ms = (-due_100ns) / 10000;
+        due_ms = (ms > 0) ? (DWORD)ms : 1;
+    }
+
+    XBOX_DPC_INFO *info = (XBOX_DPC_INFO*)HeapAlloc(GetProcessHeap(), 0, sizeof(*info));
+    if (!info) return FALSE;
+    info->routine = (xbox_recomp_func_t)routine;
+    info->dpc_va  = dpc_va;
+    info->context = dpc_context;
+
+    HANDLE timer = NULL;
+    if (!CreateTimerQueueTimer(&timer, NULL, xbox_timer_callback, info,
+                               due_ms, period_ms, WT_EXECUTELONGFUNCTION)) {
+        HeapFree(GetProcessHeap(), 0, info);
+        return FALSE;
+    }
+    /* Leak the timer handle and info: load timers live for the process. A
+     * real timer table would track these; not needed to get the boot moving. */
+    return TRUE;
+}
