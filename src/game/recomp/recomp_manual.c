@@ -41,6 +41,19 @@ void recomp_icall_fail_log(uint32_t va)
         fprintf(stderr, "  [ICALL-FAIL #%ld] target va=0x%08X, from native %p "
                 "(edi=0x%08X esi=0x%08X ecx=0x%08X)\n",
                 (long)n, va, _ReturnAddress(), g_edi, g_esi, g_ecx);
+
+        /* Native backtrace: recompiled functions are real C functions calling
+         * each other, so the host stack IS the Xbox call chain. This is how we
+         * find who passed the bad object, rather than guessing between the
+         * five callers the xref data lists. */
+        {
+            void *frames[12];
+            USHORT got = CaptureStackBackTrace(0, 12, frames, NULL);
+            fprintf(stderr, "      stack:");
+            for (USHORT i = 0; i < got; i++)
+                fprintf(stderr, " %p", frames[i]);
+            fprintf(stderr, "\n");
+        }
         fflush(stderr);
     }
 }
@@ -162,6 +175,7 @@ void sub_00350C10(void);
 /* Forward declarations for manually implemented functions */
 void sub_0002DDF0(void);
 void sub_001BEFF0(void);
+void sub_00011000(void);
 void sub_001F5810(void);
 void sub_001F5840(void);
 void sub_001F5C40(void);
@@ -339,6 +353,7 @@ static const struct {
     { 0x00249B7Cu, (recomp_func_t)sub_00249B7C },
     { 0x00249B9Cu, (recomp_func_t)sub_00249B9C },
     { 0x003518E0u, (recomp_func_t)sub_003518E0 },
+    { 0x00011000u, (recomp_func_t)sub_00011000 },
     { 0x00351770u, (recomp_func_t)sub_00351770 },
     { 0x00351A20u, (recomp_func_t)sub_00351A20 },
     /* sub_0034CBF0 + sub_0034CEF0 use gen code (PB cursor reset in sub_003518E0) */
@@ -497,6 +512,51 @@ recomp_func_t recomp_lookup_manual(uint32_t xbox_va)
  *
  * Calling convention: cdecl, 0 params (esi = implicit pool pointer)
  */
+/*
+ * sub_00011000 - "for each of `count` objects `stride` apart, call fnptr(this)"
+ *
+ * A RenderWare/CRT iteration primitive at the very start of .text. cdecl,
+ * ret 16, four args: (start, stride, count, fnptr). The boot spins here at
+ * 100% CPU, so `count` is arriving as garbage. This override logs the args and
+ * the caller (so the real caller, which the map cannot name, is finally
+ * visible) and guards the loop against an absurd count instead of spinning
+ * forever. A legitimate per-object loop is never millions of entries.
+ */
+void sub_00011000(void)
+{
+    uint32_t start  = MEM32(esp + 4);
+    uint32_t stride = MEM32(esp + 8);
+    uint32_t count  = MEM32(esp + 12);
+    uint32_t fnptr  = MEM32(esp + 16);
+
+    static uint32_t s_calls = 0;
+    uint32_t n = ++s_calls;
+
+    if (n <= 12 || count > 0x10000) {
+        fprintf(stderr, "  [FOREACH] sub_00011000 #%u: start=0x%08X stride=%u "
+                "count=%u fn=0x%08X caller=%p\n",
+                n, start, stride, count, fnptr, _ReturnAddress());
+        fflush(stderr);
+    }
+
+    /* A real object array is not millions of elements; a garbage count is the
+     * spin. Cap it so the boot proceeds and the bad caller is visible above,
+     * rather than wedging the whole game. */
+    if (count > 0x10000)
+        count = 0;
+
+    uint32_t obj = start;
+    for (uint32_t i = 0; i < count; i++) {
+        ecx = obj;                   /* thiscall: this in ecx */
+        PUSH32(esp, 0);              /* dummy return address */
+        RECOMP_ICALL(fnptr);
+        obj += stride;
+    }
+
+    esp += 20;   /* ret 16: dummy return (4) + four args (16) */
+    return;
+}
+
 void sub_001BEFF0(void)
 {
     esp += 4;  /* pop dummy return address */
