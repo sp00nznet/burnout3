@@ -198,6 +198,7 @@ void sub_003558A0(void);
 void sub_0034D410(void);
 void sub_0003FEE0(void);
 void sub_001C1670(void);
+void sub_001CA530(void);  /* scene-render pass; guarded list walk (see impl) */
 void sub_001D7180(void);
 void sub_001D7857(void);
 void sub_001D7876(void);
@@ -362,6 +363,7 @@ static const struct {
     { 0x0034D410u, (recomp_func_t)sub_0034D410 },
     { 0x0003FEE0u, (recomp_func_t)sub_0003FEE0 },
     { 0x001C1670u, (recomp_func_t)sub_001C1670 },
+    { 0x001CA530u, (recomp_func_t)sub_001CA530 },
     { 0x001D7180u, (recomp_func_t)sub_001D7180 },
     { 0x001D7857u, (recomp_func_t)sub_001D7857 },
     { 0x001D7876u, (recomp_func_t)sub_001D7876 },
@@ -2260,6 +2262,109 @@ void sub_001DDAF0(void)
     eax = 1;
     esp += 4; return;
 }
+/*
+ * sub_001CA530 - RenderWare scene-render pass (guarded)
+ *
+ * Verbatim copy of the gen body, with ONE change: the linked-list walk at
+ * [edi+0x2DDC] (loc_001CA561..569, calling sub_001CB7E0 per node) is bounded.
+ *
+ * Why: after seeding the C++ static initialisers (commits c0eb2e1/1487106),
+ * this list is now populated by a ctor but with a self-referential `next`
+ * (offset 0), so the walk `esi = *esi` never reaches NULL. The boot spins at
+ * 100% CPU in this walk (no icalls -- all direct calls), game_state stuck at 0,
+ * never reaching the menu. Symptoms match the live log exactly.
+ *
+ * ponytail: hard cap at 0x10000 nodes -- no real boot-time scene list is that
+ * long, so hitting the cap proves the list is circular. This is the same
+ * garbage threshold the sub_00011000 walker-guard uses. Band-aid to advance the
+ * boot and confirm the diagnosis; the root-cause fix is in whichever static
+ * initialiser builds this list (follow-up).
+ */
+void sub_001CA530(void)
+{
+    static int warned = 0;
+    uint32_t walk_n = 0;
+    float xmm0;
+
+loc_001CA530: ;
+    PUSH32(esp, ebx);
+    PUSH32(esp, esi);
+    PUSH32(esp, edi);
+    edi = eax;
+    if (edi == 0) {
+        /* Called with a null render object -- every field read below is garbage
+         * (this is how the [0+0x2DDC] "circular list" arose). The real bug is
+         * upstream: the scene/camera object is never built. Bail cleanly rather
+         * than churn on low memory; the boot's outer poll loop then shows the
+         * true wait. ponytail: defensive null-guard; root cause tracked in #2. */
+        if (!warned) {
+            warned = 1;
+            fprintf(stderr, "  [RW-GUARD] sub_001CA530 called with NULL object -- skipping pass\n");
+        }
+        goto loc_001CA597;
+    }
+    eax = MEM32(edi + 0x528);
+    esi = 0;
+    if (eax == 0) goto loc_001CA557;  /* jbe 0 (unsigned <=0) */
+
+loc_001CA541: ;
+    ecx = MEM32(edi + esi * 4 + 0x520);
+    eax = MEM32(ecx);
+    { uint32_t _icall_esp = g_esp;
+    PUSH32(esp, 0); RECOMP_ICALL_SAFE(MEM32(eax), _icall_esp); /* vtable[0] */
+    }
+
+loc_001CA54C: ;
+    eax = MEM32(edi + 0x528);
+    esi++;
+    if (esi < eax) goto loc_001CA541;  /* jb (unsigned <) */
+
+loc_001CA557: ;
+    esi = MEM32(edi + 0x2DDC);
+    if (esi == 0) goto loc_001CA56F;
+
+loc_001CA561: ;
+    eax = esi + 8;
+    PUSH32(esp, 0); sub_001CB7E0();
+
+loc_001CA569: ;
+    esi = MEM32(esi);           /* next = *node */
+    if (esi != 0) {
+        if (++walk_n > 0x10000u) {   /* circular list from malformed static-init */
+            if (!warned) {
+                warned = 1;
+                fprintf(stderr,
+                    "  [RW-GUARD] sub_001CA530: list @[0x%08X+0x2DDC] exceeds "
+                    "0x10000 nodes -- circular, breaking walk\n", edi);
+            }
+            goto loc_001CA56F;
+        }
+        goto loc_001CA561;
+    }
+
+loc_001CA56F: ;
+    ebx = edi + 8;
+    PUSH32(esp, 0); sub_001CE0B0();
+
+loc_001CA577: ;
+    ecx = MEM32(esp + 0x1C);
+    edx = MEM32(esp + 0x18);
+    eax = MEM32(esp + 0x10);
+    xmm0 = MEMF(esp + 0x14);
+    PUSH32(esp, ecx);
+    PUSH32(esp, edx);
+    PUSH32(esp, eax);
+    edi = edi + 0x534;
+    PUSH32(esp, 0); sub_001CD620();
+
+loc_001CA597: ;
+    POP32(esp, edi);
+    POP32(esp, esi);
+    POP32(esp, ebx);
+    (void)xmm0;
+    esp += 20; return; /* ret 16 */
+}
+
 void sub_001D94A0(void) { esp += 4; return; }
 void sub_001D94D0(void) { esp += 4; return; }
 
