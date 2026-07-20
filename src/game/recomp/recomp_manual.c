@@ -199,6 +199,7 @@ void sub_0034D410(void);
 void sub_0003FEE0(void);
 void sub_001C1670(void);
 void sub_001CA530(void);  /* scene-render pass; guarded list walk (see impl) */
+void sub_001CA220(void);  /* render-list teardown; guards null object (see impl) */
 void sub_001D7180(void);
 void sub_001D7857(void);
 void sub_001D7876(void);
@@ -364,6 +365,7 @@ static const struct {
     { 0x0003FEE0u, (recomp_func_t)sub_0003FEE0 },
     { 0x001C1670u, (recomp_func_t)sub_001C1670 },
     { 0x001CA530u, (recomp_func_t)sub_001CA530 },
+    { 0x001CA220u, (recomp_func_t)sub_001CA220 },
     { 0x001D7180u, (recomp_func_t)sub_001D7180 },
     { 0x001D7857u, (recomp_func_t)sub_001D7857 },
     { 0x001D7876u, (recomp_func_t)sub_001D7876 },
@@ -2374,6 +2376,56 @@ loc_001CA597: ;
     esp = _save_esp + 20;
     (void)xmm0;
     return; /* ret 16 */
+}
+
+/*
+ * sub_001CA220 - render-list teardown over the render context's +0x520 array
+ *
+ * Called from sub_001CA620 with ebx = ctx+0x520 (ctx = 0x40B310, the clean/empty
+ * render context). For each of 2 array slots, and for the single object at
+ * ctx+0x530, it hands the object to sub_001F5F30 (a circular-list unlink pass).
+ *
+ * Bug: the array-slot calls are null-guarded (loc_001CA22B) but the ctx+0x530
+ * call is NOT -- the original assumes that pointer is always a valid render pool.
+ * With an empty render context it is 0, and sub_001F5F30(0) dereferences low
+ * memory ([0]/[0xC]) as a list and spins forever (this is the game_state=2 wall).
+ *
+ * Fix: verbatim body with (a) callee-saved regs preserved in C locals and esp
+ * restored authoritatively (same lifter reg-corruption class as sub_001CA530),
+ * and (b) a null guard on the ctx+0x530 object. ponytail: guards the empty-
+ * context case; the real fix is for RW init to build these pools.
+ */
+void sub_001CA220(void)
+{
+    uint32_t _save_esi = esi, _save_edi = edi, _save_esp = esp;
+
+    edi = 0;
+loc_001CA224: ;
+    esi = MEM32(ebx + edi * 4);
+    if (esi != 0) {
+        eax = MEM32(esi + 8);
+        if (eax != 0) {
+            PUSH32(esp, 0); PUSH32(esp, 0); PUSH32(esp, eax);
+            PUSH32(esp, 0); sub_001F5F30();
+            esp += 0xC;
+            MEM32(esi + 8) = 0;
+        }
+        MEM32(ebx + edi * 4) = 0;
+    }
+    edi++;
+    if (edi < 2) goto loc_001CA224;
+
+    eax = MEM32(ebx + 0x10);
+    if (eax != 0) {                 /* GUARD: original called even for null -> spin */
+        PUSH32(esp, 0); PUSH32(esp, 0); PUSH32(esp, eax);
+        PUSH32(esp, 0); sub_001F5F30();
+        esp += 0xC;
+    }
+    MEM32(ebx + 0x10) = 0;
+
+    esi = _save_esi; edi = _save_edi;
+    esp = _save_esp + 4;   /* ret (0 args): pop the dummy return address */
+    return;
 }
 
 void sub_001D94A0(void) { esp += 4; return; }
