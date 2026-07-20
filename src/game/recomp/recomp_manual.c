@@ -4381,15 +4381,12 @@ void sub_000110E0(void)
      * Since we stub rendering, set it here so the game can advance states. */
     MEM8(0x4D53BE) = 1;
 
-    /* Pump the Windows message loop and present a D3D frame.
-     * The original Xbox rendering pipeline (Part 2) is stubbed because it
-     * hangs on NV2A GPU registers. Instead, we call our D3D11 frame pump
-     * which clears to a solid color and presents. This runs at ~60fps
-     * (throttled inside game_frame_pump). */
-    {
-        extern void game_frame_pump(void);
-        game_frame_pump();
-    }
+    /* Rendering is not driven from here. The original Xbox pipeline (Part 2) is
+     * stubbed because it hangs on NV2A GPU registers, and game_frame_pump()
+     * used to be called here to stand in for it -- but that tied every frame to
+     * the game ticking, and the game ticks only while its state machine runs.
+     * game_loop() calls the pump directly now, so frames keep coming during
+     * loads and boot videos. This function is the tick and nothing else. */
 
     esp += 4; return; /* ret: pop dummy return address */
 }

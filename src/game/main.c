@@ -5182,51 +5182,22 @@ static void game_loop(void)
         if (!g_running)
             break;
 
-        game_tick_drive();
-
-        /*
-         * Frame rendering.
+        /* One frame: advance the game, then draw it.
          *
-         * Eventually the recompiled game code will drive this.
-         * For now, clear to dark blue and present to verify D3D works.
-         */
-        if (g_d3d_device) {
-            /* The boot videos are driven from here, not from the game's frame
-             * pump.
-             *
-             * They used to hang off game_frame_pump (via sub_000110E0), which
-             * cannot work: that pump throttles itself to 60 Hz and returns
-             * early on its very first call (it sets s_last = now, then finds
-             * elapsed == 0), and it only runs at all once the game reaches its
-             * tick loop. The game reached it twice and then blocked on a load,
-             * so boot_update never ran once.
-             *
-             * This loop is the right owner anyway now that the game has its own
-             * thread: it owns the window and the device, and it runs whether or
-             * not the game is busy loading -- which is exactly when the intro
-             * is meant to play. */
-            int boot_phase = boot_get_phase();
-            if (boot_phase < BOOT_PHASE_GAMEPLAY) {
-                boot_update(frame_dt(), boot_skip_pressed());
-                g_d3d_device->lpVtbl->BeginScene(g_d3d_device);
-                g_d3d_device->lpVtbl->Clear(g_d3d_device, 0, NULL,
-                    D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
-                    0xFF000000,  /* black behind the videos */
-                    1.0f, 0);
-                boot_render();
-                g_d3d_device->lpVtbl->EndScene(g_d3d_device);
-            } else {
-                g_d3d_device->lpVtbl->BeginScene(g_d3d_device);
-                g_d3d_device->lpVtbl->Clear(g_d3d_device, 0, NULL,
-                    D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
-                    0xFF001030,  /* Dark blue */
-                    1.0f, 0);
-                g_d3d_device->lpVtbl->EndScene(g_d3d_device);
-            }
-            menu_gui_begin_frame();
-            menu_gui_render();
-            g_d3d_device->lpVtbl->Present(g_d3d_device, NULL, NULL, NULL, NULL);
-        }
+         * game_frame_pump() owns the frame -- input injection, the boot videos,
+         * and the real gameplay renderer (RW bridge / rw_gameplay_render / the
+         * texture cache) all live there, and it is the only Present.
+         *
+         * It used to be called from inside sub_000110E0, which could not work:
+         * the pump only ran when the game ticked, and the game ticked twice and
+         * stopped. So the boot videos were driven from a second render block
+         * here instead, and once the host started driving the tick, both ran and
+         * both presented. Calling it here directly is the single driver both
+         * halves were reaching for: it runs whether or not the game is ticking,
+         * which is exactly when the intro is meant to play. */
+        game_tick_drive();
+        game_frame_pump();
+
         /* Reliable diagnostics from the MAIN thread (this loop runs steadily at
          * 60fps, unlike the game thread which starves everything and unlike the
          * profiler thread which deadlocked suspending it). Once a second:
