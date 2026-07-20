@@ -2285,6 +2285,14 @@ void sub_001CA530(void)
     static int warned = 0;
     uint32_t walk_n = 0;
     float xmm0;
+    /* edi/esi/ebx are callee-saved. The recompiled stack save/restore below
+     * corrupts them (the saved slot gets clobbered by an internal call's dummy
+     * return address), so sub_001CA530 returned edi=0 instead of the caller's
+     * value -- which turned sub_00135500's 30-frame loop counter (edi) into
+     * ~0xFFFFFFFF and spun the boot forever at game_state=0. esp itself is
+     * balanced, so preserve the register VALUES explicitly and restore them at
+     * exit, independent of the buggy stack dance. */
+    uint32_t _save_edi = edi, _save_esi = esi, _save_ebx = ebx, _save_esp = esp;
 
 loc_001CA530: ;
     PUSH32(esp, ebx);
@@ -2358,11 +2366,14 @@ loc_001CA577: ;
     PUSH32(esp, 0); sub_001CD620();
 
 loc_001CA597: ;
-    POP32(esp, edi);
-    POP32(esp, esi);
-    POP32(esp, ebx);
+    /* Authoritative restore, independent of the buggy internal stack dance:
+     * callee-saved regs from C locals, and esp to entry+20 (ret 16 = pop the
+     * dummy return address + 4 args the caller pushed). This fixes both the
+     * edi corruption and the 28-byte/call stack leak. */
+    edi = _save_edi; esi = _save_esi; ebx = _save_ebx;
+    esp = _save_esp + 20;
     (void)xmm0;
-    esp += 20; return; /* ret 16 */
+    return; /* ret 16 */
 }
 
 void sub_001D94A0(void) { esp += 4; return; }
