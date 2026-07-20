@@ -644,6 +644,17 @@ BOOL xbox_thread_spawn(void (*fn)(void), uint32_t ctx1, uint32_t ctx2);
  *  wedges, suspending this and reading RIP is the only way to see where. */
 HANDLE xbox_thread_debug_handle(void);
 
+/**
+ * Claim a 256 KB Xbox stack slice; -1 if all XBOX_WORKER_STACK_COUNT are taken.
+ * Pair with xbox_worker_stack_free(), or hold it for the process lifetime.
+ *
+ * Any host thread that calls recompiled code needs one: the register set is
+ * __declspec(thread), so a thread that has not been given a stack runs with
+ * g_esp == 0 and its first PUSH32 writes through address 0.
+ */
+int  xbox_worker_stack_alloc(void);
+void xbox_worker_stack_free(int slot);
+
 /** Arm a timer that fires a DPC. `routine` is the resolved native function for
  *  the DPC's DeferredRoutine (the caller resolves the Xbox VA). */
 BOOL xbox_timer_arm(void (*routine)(void), uint32_t dpc_va, uint32_t dpc_context,

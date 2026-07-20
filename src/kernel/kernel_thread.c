@@ -389,7 +389,7 @@ typedef struct {
  * can now be called from a worker, so the allocator itself must be safe. */
 static volatile LONG g_worker_stack_used[XBOX_WORKER_STACK_COUNT];
 
-static int xbox_worker_stack_alloc(void)
+int xbox_worker_stack_alloc(void)
 {
     for (int i = 0; i < XBOX_WORKER_STACK_COUNT; i++) {
         if (InterlockedCompareExchange(&g_worker_stack_used[i], 1, 0) == 0)
@@ -398,7 +398,7 @@ static int xbox_worker_stack_alloc(void)
     return -1;  /* all slices in use */
 }
 
-static void xbox_worker_stack_free(int slot)
+void xbox_worker_stack_free(int slot)
 {
     if (slot >= 0 && slot < XBOX_WORKER_STACK_COUNT)
         InterlockedExchange(&g_worker_stack_used[slot], 0);

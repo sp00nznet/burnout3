@@ -5115,6 +5115,53 @@ static int boot_skip_pressed(void)
     return 0;
 }
 
+/*
+ * Drive the game's per-frame tick from the host loop.
+ *
+ * Burnout 3 is tick-driven, not main-loop-driven. xbe_entry_point() spawns the
+ * init thread and returns; that thread runs init (game_state = 2) and calls
+ * PsTerminateSystemThread. Nothing in the title then drives its state machine --
+ * on hardware the main thread does, after spawning the init thread. Here this
+ * loop is that driver, and sub_000110E0 is the tick the game's own frame loops
+ * (sub_00015F10 / sub_0001664C) call.
+ *
+ * The recomp CPU state is __declspec(thread), so this thread has its own g_esp,
+ * zero until it is given a stack -- the first PUSH32 in the tick would write
+ * through address 0. The slot is allocated once and never freed: this thread
+ * ticks for the lifetime of the process.
+ */
+static void game_tick_drive(void)
+{
+    static int stack_slot = -1;
+
+    /* Init has not set game_state yet; there is nothing to tick. */
+    if (MEM32(0x4D53B8) == 0)
+        return;
+
+    if (stack_slot < 0) {
+        stack_slot = xbox_worker_stack_alloc();
+        if (stack_slot < 0) {
+            static int warned = 0;
+            if (!warned) {
+                warned = 1;
+                fprintf(stderr, "  [TICK] no worker stack free; host tick disabled\n");
+            }
+            return;
+        }
+        fprintf(stderr, "  [TICK] host-driven tick armed on slot %d (esp=0x%08X)\n",
+                stack_slot, XBOX_WORKER_STACK_TOP(stack_slot));
+    }
+
+    /* Re-base every frame rather than trusting the tick to balance its own
+     * stack -- it is lifted cdecl and a few bytes of drift per frame would
+     * walk off the slice within a minute of gameplay. */
+    g_esp = XBOX_WORKER_STACK_TOP(stack_slot);
+    g_seh_ebp = g_esp;
+    g_esp -= 4; MEM32(g_esp) = 0;   /* dummy return address, as the lifted callers push */
+
+    sub_000110E0();
+}
+
 static void game_loop(void)
 {
     MSG msg;
@@ -5134,6 +5181,8 @@ static void game_loop(void)
 
         if (!g_running)
             break;
+
+        game_tick_drive();
 
         /*
          * Frame rendering.
