@@ -945,6 +945,13 @@ loc_001D27DF:
     PUSH32(esp, 0);
     PUSH32(esp, 0);
     PUSH32(esp, 0); sub_00156400();
+    /* sub_00156400 holds the title's main loop (loc_001564A0: call sub_000165F0
+     * while MEM8(0x4D5378) == 0), so on hardware it does not return until the
+     * game quits. If it returns here, the loop was skipped at loc_0015648F or
+     * exited -- both decided by that one flag. Log it to tell which. */
+    fprintf(stderr, "  [init] sub_00156400 RETURNED: exit_flag(0x4D5378)=0x%02X "
+                    "game_state(0x4D53B8)=%u\n",
+            MEM8(0x4D5378), MEM32(0x4D53B8));
     esp += 0xC;  /* cdecl: caller cleans 3 args */
 
     /* push 0; push 1; push 1; call sub_001D2E6F (stdcall: callee cleans) */
