@@ -1480,6 +1480,57 @@ class Lifter:
             return [f"fp_top() = fabs(fp_top()); /* fabs */"]
         if m == "fsqrt":
             return [f"fp_top() = sqrt(fp_top()); /* fsqrt */"]
+        # x87 transcendentals. This fork never implemented them: every one fell
+        # through to the catch-all below, which emits `/* FPU: fsin */` and
+        # leaves the FP stack untouched -- so the result was whatever happened to
+        # be on the stack. Silent, because an unimplemented FPU op is
+        # indistinguishable from one that only touches the status word.
+        #
+        # Burnout 3's own machine code has 69 fcos, 68 fsin, 57 fpatan, 27 fyl2x,
+        # 6 fptan and 5 f2xm1 -- 232 sites. Every camera angle, car rotation and
+        # steering computation runs through them, on fabricated inputs. The menus
+        # render because menus barely use trig; the driving does not get to be so
+        # lucky. Ported verbatim from xboxrecomp, where this was found by chasing
+        # Halo's boot camera assert down to an fptan that never ran.
+        if m == "fsin":
+            return [f"fp_top() = sin(fp_top()); /* fsin */"]
+        if m == "fcos":
+            return [f"fp_top() = cos(fp_top()); /* fcos */"]
+        if m == "fsincos":
+            return [f"{{ double _a = fp_top(); fp_top() = sin(_a);"
+                    f" fp_push(cos(_a)); }} /* fsincos */"]
+        if m == "fptan":
+            # st0 = tan(st0), then push 1.0 -- callers use it as a denominator.
+            return [f"{{ fp_top() = tan(fp_top()); fp_push(1.0); }} /* fptan */"]
+        if m == "fpatan":
+            # st1 = atan2(st1, st0), pop. Argument order is st1 over st0.
+            return [f"{{ fp_st1() = atan2(fp_st1(), fp_top()); fp_pop(); }}"
+                    f" /* fpatan */"]
+        if m == "fyl2x":
+            return [f"{{ fp_st1() = fp_st1() * log2(fp_top()); fp_pop(); }}"
+                    f" /* fyl2x */"]
+        if m == "fyl2xp1":
+            return [f"{{ fp_st1() = fp_st1() * log2(fp_top() + 1.0); fp_pop(); }}"
+                    f" /* fyl2xp1 */"]
+        if m == "f2xm1":
+            return [f"fp_top() = exp2(fp_top()) - 1.0; /* f2xm1 */"]
+        if m in ("fprem", "fprem1"):
+            fn = "fmod" if m == "fprem" else "remainder"
+            return [f"fp_top() = {fn}(fp_top(), fp_st1()); /* {m} */"]
+        if m == "fscale":
+            return [f"fp_top() = ldexp(fp_top(), (int)fp_st1()); /* fscale */"]
+        if m == "frndint":
+            return [f"fp_top() = nearbyint(fp_top()); /* frndint */"]
+        if m == "fldpi":
+            return [f"fp_push(3.14159265358979323846); /* fldpi */"]
+        if m == "fldl2e":
+            return [f"fp_push(1.44269504088896340736); /* fldl2e */"]
+        if m == "fldl2t":
+            return [f"fp_push(3.32192809488736234787); /* fldl2t */"]
+        if m == "fldlg2":
+            return [f"fp_push(0.30102999566398119521); /* fldlg2 */"]
+        if m == "fldln2":
+            return [f"fp_push(0.69314718055994530942); /* fldln2 */"]
         if m == "fxch":
             return [f"{{ double _t = fp_top(); fp_top() = fp_st1(); fp_st1() = _t; }} /* fxch */"]
         if m in ("fcom", "fcomp", "fcompp", "fucom", "fucomp", "fucompp"):
