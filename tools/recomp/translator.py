@@ -223,6 +223,25 @@ class FunctionTranslator:
         if has_tail_jump:
             used_regs.add("ebp")
 
+        # Fall-through into the next function. The disassembler splits a
+        # straight-line run of code into separate functions at any address
+        # something else targets, so a function's last instruction can be an
+        # ordinary insn (or a conditional jump) that simply runs off the end
+        # into the next function -- x86 executes that fall-through. A trailing
+        # jmp/ret is already handled (tail jump / return); the gap is the bare
+        # fall-through, which a C body silently drops -- skipping the next
+        # function's shared epilogue. In Burnout 3 sub_00013F6F fell into
+        # sub_00013F75's `pop ebx; ret`, leaking 8 bytes of esp, so its caller
+        # restored ebx from the wrong slot and the title's main loop exited
+        # after one iteration. Emit the fall-through as an explicit tail call.
+        _FALLTHROUGH_TERMINATORS = {"ret", "retn", "iret", "iretd", "jmp"}
+        falls_through = (
+            instructions
+            and instructions[-1].mnemonic not in _FALLTHROUGH_TERMINATORS
+            and is_code_address(end))
+        if falls_through:
+            used_regs.add("ebp")
+
         # Ensure ebp tracked if function calls __SEH_prolog or __SEH_epilog
         # (lifter emits ebp = g_seh_ebp readback after these calls).
         SEH_FUNCS = {0x00244784, 0x002447BF}
@@ -364,6 +383,15 @@ class FunctionTranslator:
             for stmt in stmts:
                 lines.append(f"    {stmt}")
 
+            lines.append(f"")
+
+        # Emit the fall-through into the next function as an explicit tail call
+        # (see falls_through above). Same shape as the external-jmp tail jump:
+        # publish the frame, call, return.
+        if falls_through:
+            tgt = self.lifter._call_target_name(end)
+            lines.append(f"    g_seh_ebp = ebp; {tgt}(); "
+                         f"return; /* fall through to 0x{end:08X} */")
             lines.append(f"")
 
         # Insert _icall_esp save points before RECOMP_ICALL_SAFE arg pushes.
