@@ -1,0 +1,305 @@
+{
+  "schema": "b3-bounded-optimization-assessment-v1",
+  "date": "2026-10-09",
+  "work_horizon_days": [
+    1,
+    2
+  ],
+  "evidence_scope": "Local measured counters, user-confirmed training transition, offline sampled CPU and source analysis. No FPS improvement or unique-frame guarantee.",
+  "sources": [
+    {
+      "path": "research/output/xemu-live/assessment066/critical065.json",
+      "sha256": "013f3d97a207f57c812b5397f2530ee58f17bf326f62d9dce1ad1f02fdf4fafe"
+    },
+    {
+      "path": "research/output/xemu-live/assessment066/critical066.json",
+      "sha256": "68a6cf7f0aeb0c2783e771d3b637a0abb60b3dd0468dc1663fc540fac831ee50"
+    },
+    {
+      "path": "research/output/xemu-live/assessment066/critical067.json",
+      "sha256": "917c089ffd47ab556f17b98cffdf983a5995ba0d24ea47e449e56ffff046b291"
+    },
+    {
+      "path": "research/output/xemu-live/assessment066/profile-candidates.json",
+      "sha256": "c6bafef725e66481b5c2a77f2944a4f0ea6dafdd650032c5391bc2acdbe7de79"
+    },
+    {
+      "path": "research/output/xemu-live/assessment066/cadence067-versioned.json",
+      "sha256": "c24c0189f7b4dad92a43627406b12fb44893d06cb7911f3f5fd78503908ade41"
+    },
+    {
+      "path": "research/output/xemu-live/assessment066/summary067.json",
+      "sha256": "bfe04c15b3b614926da8e8a7d9f519ecc1714318878415cc64840eb78c2def7b"
+    },
+    {
+      "path": "research/output/xemu-live/assessment066/run066-scale3-protocol.json",
+      "sha256": "858fb7b6fdcaa5da7321a8b8997c20c51baf64d52903d11d34182dac987d2c05"
+    },
+    {
+      "path": "research/output/xemu-live/assessment066/run067-protocol.json",
+      "sha256": "cd79ab07a5d0a4683a4cca7c0a6b64e27390c1453b3c6cdc94a88d13eecd10c3"
+    },
+    {
+      "path": "research/output/short-training-disc/short-training-manifest.json",
+      "sha256": "09c8bfe5d5dea72b01a7d9e78e2d8665bf71d469fe17bb1abdf8ba46e6f95852"
+    },
+    {
+      "path": "research/output/xemu-live/assessment068/scope068-final.json",
+      "sha256": "1135034c1169685afec5b5aded72df926df09c994f8220de3f3528602fa31d43"
+    },
+    {
+      "path": "research/output/xemu-live/assessment068/summary068.json",
+      "sha256": "347c391ebaf5a2725278bba44aa66361845de7a48f42acc124336db7e3f9de02"
+    },
+    {
+      "path": "research/output/xemu-live/assessment068/scope-probe-manifest.json",
+      "sha256": "89118d0cb2adaba780849ed740b21a5be206b21b7e2d3563b42544e510d7ccf7"
+    },
+    {
+      "path": "research/output/xemu-live/assessment068/compiled-manifest.json",
+      "sha256": "9d1847aa70a0a40447e9db09f99a2b676497abbc59ee7e68730338f3e293c623"
+    },
+    {
+      "path": "research/output/xemu-live/assessment068/run068-protocol.json",
+      "sha256": "1e80e450083af7585d846bd1808504e6d88749a7af899002033b24bcaea9754b"
+    }
+  ],
+  "run065_exclusive_wall": {
+    "window": {
+      "begin_ns": 53190883319628,
+      "end_ns": 53196883319628,
+      "ns": 6000000000
+    },
+    "workers": {
+      "10": {
+        "observed_service_union_ns": 4593112173,
+        "barrier_union_ns": 1662929177,
+        "barrier_root_totals_ns": {
+          "CACHE_SLOT_DRAIN": 11334095,
+          "DISPLAY": 79651417,
+          "LEGACY_FLIP_STALL": 212795,
+          "MEMORY_BUDGET": 11091,
+          "NOP_NONZERO": 1166246109,
+          "STANDALONE_AUX": 389850972,
+          "VERTEX_BANK_DRAIN": 15239233,
+          "WAIT_MMIO_CONSUMER": 383465
+        }
+      }
+    },
+    "closure_scopes": {
+      "CACHE_SLOT_DRAIN": 11,
+      "DISPLAY": 102,
+      "NOP_NONZERO": 1248,
+      "STANDALONE_AUX": 671,
+      "UNATTRIBUTED": 86,
+      "VERTEX_BANK_DRAIN": 83,
+      "WAIT_MMIO_CONSUMER": 1
+    },
+    "removable_closures_proven": 0
+  },
+  "run067_cadence": {
+    "window_begin_ns": 57252467613262,
+    "window_end_ns": 57258467613262,
+    "complete_stalls": {
+      "count": 143,
+      "sum_ns": 120968,
+      "median_ns": 641,
+      "min_ns": 481,
+      "max_ns": 10540
+    },
+    "complete_stall_union_ns": 120968,
+    "write_periods": {
+      "count": 142,
+      "sum_ns": 5929020441,
+      "median_ns": 40000424.5,
+      "min_ns": 28998936,
+      "max_ns": 73994270
+    },
+    "event_counts": {
+      "50": 143,
+      "51": 143,
+      "52": 143,
+      "53": 143,
+      "54": 144,
+      "55": 144,
+      "56": 144,
+      "57": 144
+    },
+    "limits": [
+      "Stall is wall duration of the observed PFIFO waiting_for_flip state, not CPU time or removable savings.",
+      "Censored union includes only trailing BEGIN to the last observed probe event; missing leading BEGIN contributes no invented duration. Neither edge is extended to header bounds.",
+      "READ-to-resume uses the latest observed READ, possibly before WRITE and a different observer serial; same_serial_read_to_resume is separate. Neither proves completion of a particular original image.",
+      "Accepted requests are not WSI completion or unique original frames.",
+      "Only global reservation order is validated; other producer timestamps may invert. Probe worker timestamps must not invert."
+    ],
+    "source": {
+      "path": "local-artifact:research/output/xemu-live/run067-short-training-cadence/causal.bin",
+      "bytes": 20303480,
+      "sha256": "51a519fb99f7e702a837cc339a3505c9e17e47d13632c64756d631e939f6f65a"
+    }
+  },
+  "run067_presentation": {
+    "attempts": 144,
+    "elapsed_ns": 16021440,
+    "requests": 144,
+    "drops": 0,
+    "distinct_source_image_draw_tuples": 144,
+    "original_unique_frames_proven": false
+  },
+  "profile_optimization_weights": [
+    {
+      "run": "run062",
+      "binary_sha256": "0ec2aa7e4f56f514d951bdc396aa6bf6e0de4908451afa9b410a5171d134a87d",
+      "samples": 3244,
+      "lost_events": 0,
+      "cycle_weights_percent": {
+        "unknown_DSO_flags": 41.10209090515147,
+        "unknown_native_or_mapping_flags": 48.77022914705743,
+        "O2_guest": 8.619577391977748,
+        "O0_guest": 1.5081025558133585
+      },
+      "accounting_checks": {
+        "all_self_counts_preserved": true,
+        "all_self_PERIOD_preserved": true,
+        "optimization_buckets_sum_to_total": true
+      }
+    },
+    {
+      "run": "run063-retry",
+      "binary_sha256": "b50d071e1e4ca986d7b9193aec8f3d3e1d27f12da654e91a0af3fc23337a979a",
+      "samples": 3610,
+      "lost_events": 0,
+      "cycle_weights_percent": {
+        "unknown_DSO_flags": 42.98325270640485,
+        "O2_native_archived_command": 39.70701305193237,
+        "unknown_native_or_mapping_flags": 6.854978683288477,
+        "O2_guest": 8.338071238008071,
+        "O0_native_archived_command": 0.7259534838354048,
+        "O0_guest": 1.3907308365308284
+      },
+      "accounting_checks": {
+        "all_self_counts_preserved": true,
+        "all_self_PERIOD_preserved": true,
+        "optimization_buckets_sum_to_total": true
+      }
+    },
+    {
+      "run": "run065-retry",
+      "binary_sha256": "07e500f4a0ad2ec718988aa540cd870f84d5209477d0543fbfb173ede6c5b004",
+      "samples": 3387,
+      "lost_events": 0,
+      "cycle_weights_percent": {
+        "unknown_DSO_flags": 40.77204829816882,
+        "unknown_native_or_mapping_flags": 6.686536588191635,
+        "O2_native_archived_command": 41.56069540058093,
+        "O0_native_archived_command": 0.6732194943598285,
+        "O2_guest": 8.281080118580624,
+        "O0_guest": 2.0264201001181648
+      },
+      "accounting_checks": {
+        "all_self_counts_preserved": true,
+        "all_self_PERIOD_preserved": true,
+        "optimization_buckets_sum_to_total": true
+      }
+    }
+  ],
+  "short_training": {
+    "original_duration_ms": 123563,
+    "derived_duration_ms": 200,
+    "frames": 6,
+    "source_unchanged": true,
+    "user_confirmed_controllable_race": true,
+    "user_confirmed_narration_stopped": true
+  },
+  "comparison_limits": [
+    "RUN065 and066154..167 contain ImpactTime; do not call uniform driving.",
+    "RUN067 has manual user driving plus scripted inputs; not controlled A/B against065 or066.",
+    "Post-handler flip state is measured; prior XDK/vblank durations were not yet measured by RUN067.",
+    "Sampled CPU categories are not a frame-time partition."
+  ],
+  "run068_xdk": {
+    "window_begin_ns": 58452236480233,
+    "window_end_ns": 58458236480233,
+    "complete_scope_count": 485,
+    "scope_union_ns": 773146447,
+    "scope_union_queue_ns": 353293704,
+    "scope_union_own_service_ns": 11362881,
+    "scope_union_wake_return_ns": 17323071,
+    "by_va": {
+      "0x351090": {
+        "name": "Swap",
+        "count": 182,
+        "inclusive_sum_ns": 694394868,
+        "inclusive_union_ns": 694394868,
+        "exclusive_ns": 322319752,
+        "inclusive_queue_ns": 287035384,
+        "inclusive_own_service_ns": 9738143,
+        "inclusive_wake_return_ns": 11621595,
+        "exclusive_queue_ns": 277793902,
+        "exclusive_own_service_ns": 7015522,
+        "exclusive_wake_return_ns": 10386386,
+        "inclusive_durations": {
+          "count": 182,
+          "sum_ns": 694394868,
+          "median_ns": 234368.0,
+          "min_ns": 117510,
+          "max_ns": 45291739
+        }
+      },
+      "0x351770": {
+        "name": "waiter",
+        "count": 182,
+        "inclusive_sum_ns": 372075116,
+        "inclusive_union_ns": 372075116,
+        "exclusive_ns": 372075116,
+        "inclusive_queue_ns": 9241482,
+        "inclusive_own_service_ns": 2722621,
+        "inclusive_wake_return_ns": 1235209,
+        "exclusive_queue_ns": 9241482,
+        "exclusive_own_service_ns": 2722621,
+        "exclusive_wake_return_ns": 1235209,
+        "inclusive_durations": {
+          "count": 182,
+          "sum_ns": 372075116,
+          "median_ns": 1884.0,
+          "min_ns": 1072,
+          "max_ns": 45141388
+        }
+      },
+      "0x3518e0": {
+        "name": "reserve",
+        "count": 121,
+        "inclusive_sum_ns": 78751579,
+        "inclusive_union_ns": 78751579,
+        "exclusive_ns": 78751579,
+        "inclusive_queue_ns": 66258320,
+        "inclusive_own_service_ns": 1624738,
+        "inclusive_wake_return_ns": 5701476,
+        "exclusive_queue_ns": 66258320,
+        "exclusive_own_service_ns": 1624738,
+        "exclusive_wake_return_ns": 5701476,
+        "inclusive_durations": {
+          "count": 121,
+          "sum_ns": 78751579,
+          "median_ns": 92343,
+          "min_ns": 67967,
+          "max_ns": 8484176
+        }
+      }
+    },
+    "binary_sha256": "c06ec22a2350cbf0a0beebacbd259c407aafab4441e075b954251c764aee8c4c"
+  },
+  "tool_versions": {
+    "python": "3.14.3",
+    "ffprobe": "ffprobe version 7.1.3 Copyright (c) 2007-2025 the FFmpeg developers",
+    "git": "git version 2.53.0",
+    "probe_compiler": "cc (GCC) 15.2.0"
+  },
+  "targeted_tests": {
+    "count": 31,
+    "result": "PASS",
+    "game_transition": "User confirmed controllable race and narration stopped in RUN067."
+  },
+  "decision": "Do not continue performance optimization under the required 1\u20132 day horizon for 60/90/120 FPS; modest improvements remain plausible, no sufficient measured path to the requested targets.",
+  "publication_note": "Aggregate measurements only. Source artifacts identified by hashes are not included. Linux experimental backend, not upstream Windows performance. Personal work-horizon decision is not a project feasibility claim."
+}
