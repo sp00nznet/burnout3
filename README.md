@@ -81,7 +81,9 @@ You need:
    repo and in Downloads first). After that it unpacks the disc, regenerates the C
    and builds.
 
-   Each step is skipped once done, so after a failure just run it again. What went
+   Each step is skipped once done, so after a failure just run it again. A
+   `..\xboxrecomp` from an earlier setup is left as it is, and Burnout 3 needs
+   v0.14.0 or later: update it with `git -C ..\xboxrecomp pull` first. What went
    wrong goes in `setup.log`, and the window says what to do next.
 3. Double-click **`Play Burnout 3.cmd`**, which the setup leaves in the repo folder.
 
@@ -123,7 +125,10 @@ the step says Git Bash.
    git clone https://github.com/sp00nznet/xboxrecomp
    ```
 
-   The toolkit's `main` has everything Burnout 3 needs (xboxrecomp #138-#156).
+   Burnout 3 needs the toolkit at v0.14.0 or later, which acknowledges the DSP
+   doorbell by itself (sp00nznet/xboxrecomp#193). A toolkit cloned before that
+   hangs at DirectSound start: update it with `git -C ..\xboxrecomp pull`, then
+   regenerate and rebuild.
 
 3. **Unpack your disc image** into `burnout3\Burnout 3 Takedown\`, using the
    toolkit's XDVDFS reader:

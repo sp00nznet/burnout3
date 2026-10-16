@@ -514,13 +514,14 @@ int main(int argc, char **argv)
      * builder faults on it. DirectSound needs the AC'97 codec to report ready
      * (RECOMP_AC97_READY) and then waits for the DSP to clear a command
      * doorbell it writes 3 to; with no DSP56300 here the runtime acknowledges
-     * it. The doorbell is a contiguous allocation, so its address is per-title
-     * data, observed as ebx+0x810 in the DirectSound spin at 0x002F8029.
-     * Set either variable yourself to override. */
+     * it. The doorbell is a contiguous allocation, so its address moves with
+     * the toolkit's allocator (0x825F8810, observed as ebx+0x810 in the spin
+     * at 0x002F8029, was an older one's). The toolkit derives it from the GP
+     * scratch table (RECOMP_APU_DSP_ACK unset means auto, since xboxrecomp
+     * #193), so it is left to the toolkit here. Set either variable yourself
+     * to override. */
     if (!getenv("RECOMP_AC97_READY"))
         _putenv_s("RECOMP_AC97_READY", "1");
-    if (!getenv("RECOMP_APU_DSP_ACK"))
-        _putenv_s("RECOMP_APU_DSP_ACK", "0x825F8810");
     /* The pad. Without the USB controller model there is no way past
      * "Press START"; with it the host's XInput pad (or RECOMP_PAD_SCRIPT /
      * RECOMP_PAD_LIVE) drives the title's own XPP driver. */

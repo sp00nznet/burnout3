@@ -73,7 +73,7 @@ Defaults that `main.c` sets, which you can override:
 | `RECOMP_FB_WINDOW` | `1` unless `--headless` | The window. |
 | `RECOMP_USB` / `RECOMP_USB_PADS` | `1` / `2` | The USB host and pad count (1–4). Split-screen modes are greyed out with one pad. |
 | `RECOMP_AC97_READY` | `1` | DirectSound refuses to start until the AC'97 codec reports ready, and RenderWare won't start without audio. |
-| `RECOMP_APU_DSP_ACK` | `0x825F8810` | The DSP doorbell DirectSound waits on; [boot.md](boot.md) #5. |
+| `RECOMP_APU_DSP_ACK` | unset (the toolkit's `auto`) | The DSP doorbell DirectSound waits on. The toolkit finds it from the GP scratch table; an address overrides that. [boot.md](boot.md) #5. |
 
 For debugging:
 

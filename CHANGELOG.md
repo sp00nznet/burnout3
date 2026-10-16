@@ -50,5 +50,16 @@ and per-flip frame dumps.
   taken from RenderWare SDK headers.
 
 ### Fixed
+- Boots on xboxrecomp v0.14.0: six functions its disassembler misses are
+  seeded. Without 0x00014C80 the game stays on a black screen at the
+  language movie; without 0x000782C0 the main menu stops advancing once
+  the profile has loaded. sp00nznet/xboxrecomp#186 finds them statically,
+  and the seeds are then redundant.
+- The DSP doorbell is left to the toolkit (`RECOMP_APU_DSP_ACK` unset means
+  `auto` since sp00nznet/xboxrecomp#193); the fixed 0x825F8810 was the
+  address before the contiguous allocator changed in
+  sp00nznet/xboxrecomp#189. This needs xboxrecomp v0.14.0: update an
+  existing checkout with `git -C ../xboxrecomp pull`, then regenerate and
+  rebuild.
 - The README described a build that did not run (#1, reported by
   [@VincxBlox](https://github.com/VincxBlox)).
