@@ -46,10 +46,18 @@ or per-title data in `main.c`.
 | 7 | XAPI takes the dashboard-update path (`C:\xboxdash.xbe`, then launches `dashupdate.xbe`) | Two memcpy jump-table arms had been seeded as functions. That split `memcpy`, an indirect call during XAPI init went unresolved, and heap creation was skipped. | dropped the bad seeds; toolkit `fix/switch-table-offset-index` |
 | 8 | Stall in `sub_002F805E` with the executor on | The doorbell ack only ran inside `se_frame`, which is gated off while the APU front end is trapped | toolkit `fix/apu-doorbell-ungated` |
 | 9 | Intro movie holds on its first frame | The XMV player paces on `[device+0x1DE8]`, which only D3D's vblank handler (`sub_00350EC0`) increments | `xbox_Nv2aFrameCounter(0x0035FB48, 0x1DE8)` |
+| 10 | Black screen at the language movie (`ovid\englis30.xmv`) on xboxrecomp v0.14.0, with `[ICALL] Failed to resolve 0x00014C80` repeating | 0x00014C80 is called through a pointer and packed straight after a switch table, which v0.14.0's disassembler does not walk past. v0.14.0 also leaves 0x000229E0, 0x00022B30, 0x00022D30 and 0x00067D10 unresolved. | seeded in `config/seed_functions.json`; sp00nznet/xboxrecomp#186 finds all five statically |
+| 11 | Main menu stops advancing once the profile has loaded (UDATA) on xboxrecomp v0.14.0, with `[ICALL] Failed to resolve 0x000782C0` on every call | 0x000782C0 is an indirect-call target that v0.14.0's disassembler misses | seeded in `config/seed_functions.json`; sp00nznet/xboxrecomp#186 finds it statically |
 
 Numbers 4 and 9 are what the HL2 loader needed, and 5 is the Wreckless
 doorbell, which also sits at offset 0x...F8810. What changes from title to
 title is the address, not the mechanism.
+
+The address in row 5 also changes with the toolkit's allocator: the
+contiguous page allocator of sp00nznet/xboxrecomp#189 moved it. Since
+sp00nznet/xboxrecomp#193 (v0.14.0) the toolkit derives the doorbell itself
+(`RECOMP_APU_DSP_ACK` unset means `auto`), so `main.c` no longer sets it. An
+older toolkit has no `auto` and hangs at DirectSound start.
 
 ### Seeds are measurements, and some of them are wrong
 

@@ -81,7 +81,9 @@ You need:
    repo and in Downloads first). After that it unpacks the disc, regenerates the C
    and builds.
 
-   Each step is skipped once done, so after a failure just run it again. What went
+   Each step is skipped once done, so after a failure just run it again. A
+   `..\xboxrecomp` from an earlier setup is left as it is, and Burnout 3 needs
+   v0.14.0 or later: update it with `git -C ..\xboxrecomp pull` first. What went
    wrong goes in `setup.log`, and the window says what to do next.
 3. Double-click **`Play Burnout 3.cmd`**, which the setup leaves in the repo folder.
 
@@ -123,7 +125,10 @@ the step says Git Bash.
    git clone https://github.com/sp00nznet/xboxrecomp
    ```
 
-   The toolkit's `main` has everything Burnout 3 needs (xboxrecomp #138-#156).
+   Burnout 3 needs the toolkit at v0.14.0 or later, which acknowledges the DSP
+   doorbell by itself (sp00nznet/xboxrecomp#193). A toolkit cloned before that
+   hangs at DirectSound start: update it with `git -C ..\xboxrecomp pull`, then
+   regenerate and rebuild.
 
 3. **Unpack your disc image** into `burnout3\Burnout 3 Takedown\`, using the
    toolkit's XDVDFS reader:
@@ -169,7 +174,11 @@ the step says Git Bash.
    ```
 
    A window opens titled `Burnout 3: Takedown | FPS: n | draws: n`, and you see the
-   EA and Criterion intros, then "Press START".
+   EA and Criterion intros, then "Press START". The exe is a Windows GUI program,
+   so the prompt comes back at once and the log goes nowhere: set
+   `RECOMP_STDIO_LOG=bo3.log` to keep it, or configure with `-DBO3_CONSOLE=ON`
+   for a console build ([docs/running.md](docs/running.md)). Closing the window
+   ends the run.
 
 **Usual trip-ups:** `regen.sh` needs Git Bash, not WSL's `bash`. A tool installed a
 moment ago isn't found until you open a new window. The build needs the
@@ -214,6 +223,80 @@ OHCI host with emulated pads, and the XMV movie player. See
 The C is regenerated, not edited. If the output is wrong, the fix goes in the
 toolkit's recompiler or in this repo's per-title data
 (`config/seed_functions.json`, `src/game/main.c`), never by hand in `gen/`.
+
+Visual Studio is the route above. [llvm-mingw](https://github.com/mstorsjo/llvm-mingw)
+(Clang with the MinGW ABI) builds the same exe, on Windows or cross-compiled from
+macOS or Linux, for example with Ninja:
+
+```
+cmake -S . -B build/mingw -G Ninja -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang
+cmake --build build/mingw --target burnout3
+```
+
+It needs `src/game/recomp/gen/` first (step 4). `regen.sh` calls `py -3`, which
+exists only on Windows: elsewhere put a `py` on `PATH` that drops the `-3` and
+runs Python 3 with capstone, or generate on Windows and copy `gen/` over.
+
+A MinGW build puts the exe in its build dir (`build/mingw/burnout3.exe`, with
+`burnout3.pdb` for fault reports) rather than `bin\`. It links
+`xinput1_4`, as MSVC's build does, so it starts on a stock Windows 10 or 11.
+
+On macOS and Linux the same sources build natively against the toolkit's SDL
+host, and play on its CPU rasteriser: see
+[docs/running.md](docs/running.md#on-macos-and-linux).
+
+### Building with ./burnout3 (xboxrecomp-cli, optional)
+
+[xboxrecomp-cli](https://github.com/apexJCL/xboxrecomp-cli) runs the same
+pipeline from one command on Windows, macOS and Linux, and packages the
+result. It is optional: `Setup.cmd`, `regen.sh` and the Visual Studio build
+above are unchanged and need none of it. `game.toml` holds everything the CLI
+knows about this game, including the toolkit it builds on (upstream's
+xboxrecomp at v0.14.0).
+
+You need [uv](https://docs.astral.sh/uv/), git and Python 3.9 or newer.
+`./burnout3` (`burnout3.cmd` on Windows) finds or clones the CLI at the
+commit `game.toml` pins and runs it.
+
+```
+./burnout3 setup        # the tools venv (.venv), llvm-mingw (and NSIS on Windows), the toolkit at its pin
+./burnout3 doctor       # what this host has, and what the toolkit offers
+./burnout3 analyze      # xbe_parser, disasm, func_id, abi_analysis -> build/xr/
+./burnout3 recomp       # the C, into src/game/recomp/gen/ (the same files regen.sh writes)
+./burnout3 build        # build-win/burnout3.exe (llvm-mingw, also from macOS or Linux); `build macos` on a Mac: build/burnout3
+./burnout3 package windows   # dist/: an installer for Windows
+./burnout3 package steamos   # dist/: one .tar for a Steam Deck or other Linux PC (Proton through umu-run)
+./burnout3 package macos     # dist/: a .dmg with Burnout3Takedown.app (on a Mac)
+./burnout3 bench ...    # build and run it on a remote Proton host (docs/running.md)
+```
+
+The disc is read from `Burnout 3 Takedown/`, as above; nothing is written
+into it. A `../xboxrecomp` checkout beside this one (the one `Setup.cmd`
+makes) is used as it is; `XBOXRECOMP_DIR` names another, and
+`XBOXRECOMP_CLI_DIR` a CLI checkout.
+
+A bundle from `./burnout3 package` holds your copy of the game: it is for
+your own machines, never to share. Settings and saves live outside the
+program, in `%LOCALAPPDATA%\Burnout3Takedown` on Windows and
+`~/Games/Burnout3Takedown` on Linux, and survive updates. The bundle's
+`README.txt` has the install steps.
+
+On upstream's toolkit every target draws with the CPU rasteriser. The
+toolkit fork (`apexJCL/xboxrecomp`) adds Direct3D 11 and Metal backends and
+an options layer; `game.toml` carries its pin as a commented block, and
+[docs/running.md](docs/running.md#testing-with-the-fork-pin) has the swap.
+
+### Players: the wizard
+
+`./burnout3 wizard build` makes a small program per platform (Windows, macOS,
+Linux and the Steam Deck) that does all of the above for a player: point it at
+your own disc image and it installs the toolchain, builds the game and installs
+it. Nothing from the game is downloaded or published; the only game data used
+is the player's own disc image, and the build stays on their machine.
+`.github/workflows/release-wizard.yml` builds the three wizards on a version tag
+and publishes them as a GitHub Release with the tag's CHANGELOG section and
+`SHA256SUMS`.
 
 ## Contributors
 

@@ -52,3 +52,49 @@ Desktop.ini
 .DS_Store
 *.tmp
 *.bak
+
+# ./burnout3 (xboxrecomp-cli): its toolchain, venvs, build trees, bundles,
+# the generation key and marker, bench logs and local bench settings.
+/.venv-ghidra/
+/external/
+/third_party/
+/build-*/
+/dist/
+/.ruff_cache/
+/bench-logs
+/build-logs/
+src/game/recomp/gen.key.json
+src/game/recomp/.gen-regenerating
+/scripts/bench.env
+/.xbr-pin
+
+# The developer's own options (the game reads config/config.toml from the
+# working directory over the build's config.default.toml); never committed.
+config/config.toml
+
+# What `./burnout3 import` leaves beside the game files while it replaces
+# them, the bundles' by-products, and game data, captures and game output
+# anywhere in the tree. Golden reference frames are game output too; a PNG
+# in the top folder is a capture. docs/screenshots stays tracked.
+/Burnout 3 Takedown.partial/
+/Burnout 3 Takedown.old/
+*.dmg
+*.nsi
+*.tar
+*.xbe
+*.xpr
+*.xwb
+*.adx
+*.sfd
+*.ipk
+*.wav
+/*.png
+/analysis/golden/frames/
+*.ico
+*.icns
+*.ppm
+*.raw
+*.sav
+*.xsv
+UDATA/
+TDATA/

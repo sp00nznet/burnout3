@@ -1,0 +1,50 @@
+Install and update (Windows)
+----------------------------
+Keep this folder together: the setup program copies game_files\ from the
+folder it runs in. Run Burnout3Takedown-@VERSION@-setup.exe. It installs
+for your user only (no administrator rights) to
+%LOCALAPPDATA%\Programs\Burnout3Takedown and adds a Start Menu entry.
+Running a newer setup installs on top and keeps your saves. Uninstall from
+Settings > Apps; your saves and settings stay in
+%LOCALAPPDATA%\Burnout3Takedown.
+
+Windows may warn before running the setup program or Burnout3Takedown.exe:
+they are built on your machine and not signed. SmartScreen: "More info" >
+"Run anyway". If the folder came as a .zip downloaded or copied from
+another machine, right-click the .zip > Properties > Unblock before
+extracting (Mark of the Web), or Windows asks again for every file.
+
+To keep saves and settings somewhere else, set BURNOUT3TAKEDOWN_DATA_DIR
+(a Windows environment variable) to that folder before starting the game.
+
+@if enhance@
+Options
+-------
+Your options live in config\config.toml in %LOCALAPPDATA%\Burnout3Takedown.
+config.default.toml, in the install folder, lists every option at its
+stock value. Copy a line from it into your config.toml and change it there,
+for example "scale = 2" under "[render]" to draw at twice the resolution.
+An update replaces config.default.toml but never touches your file.
+
+The game starts in a window. "fullscreen = true" under "[present]" in
+your config.toml starts it fullscreen.
+@endif@
+@if !enhance@
+The game starts in a window. This build has no options file; a build on
+the xboxrecomp fork pin adds render scale and fullscreen.
+@endif@
+
+Note: this build is played and tested under Proton on Linux. On native
+Windows 11 it has been checked to start in one window and reach Press
+START, no further. On a Steam Deck use the steamos bundle: its README has
+the Deck notes.
+
+Controls
+--------
+Two controllers work, as players 1 and 2 (XInput pads 1 and 2). There is no
+keyboard: the game's menus and races read only the pad.
+
+Speed
+-----
+The game steps a fixed amount per frame. On a machine that cannot keep up,
+races play in slow motion but correctly.

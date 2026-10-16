@@ -1,0 +1,175 @@
+# game.toml: what xboxrecomp-cli needs to know about Burnout 3. The CLI reads
+# it on every command (./burnout3 runs the CLI at [cli] commit); see the
+# CLI's docs/manifest.md for every key. Upstream's regen.sh, Setup.cmd and
+# MSVC build are untouched and still work on their own.
+schema = 1
+
+[game]
+name = "Burnout 3: Takedown"
+slug = "burnout3"
+env_header = "src/env/recomp_env_game.h"
+env_doc = "docs/running.md"
+
+[xbe]
+path = "Burnout 3 Takedown/default.xbe"
+title_id = 0x4541005B
+# The dump this was tested with. Another dump builds, packages and
+# plays with a warning.
+sha256 = ["9f497acd82adb8edfb72cc31aeeb35010b45d32b13a3f1fc6540717ff24d13f9"]
+
+# The CLI at a release tag. The commit locks the tag: a tag that names
+# another commit (moved, re-pushed) is refused. 0.7.6 builds on upstream's
+# toolkit: it probes for --spin-waits and leaves out the wizard options a
+# toolkit without the enhancements layer cannot apply.
+[cli]
+tag = "v0.7.6"
+commit = "2a4de72294d1f403e84db94895f08c24f96e712c"
+url = "https://github.com/apexJCL/xboxrecomp-cli.git"
+
+[toolkit]
+# Upstream's toolkit, the release Setup.cmd and regen.sh build on: the CPU
+# rasteriser on every host.
+url = "https://github.com/sp00nznet/xboxrecomp.git"
+tag = "v0.14.0"
+branch = "main"
+commit = "eb0aa1d5fcb1ca34cdb6470fcfa471d87f431d73"
+# The toolkit fork instead (docs/running.md, "Testing with the fork pin"):
+# the D3D11 and Metal renderers, the enhancements layer and spin waits.
+# Swap this block in for the one above.
+# url = "https://github.com/apexJCL/xboxrecomp.git"
+# tag = "blinx2-v0.4.0"
+# branch = "blinx2/portability"
+# commit = "4e5f6039c3c3cf39de1c284cad9df3ae85e853a0"
+
+[toolchain]
+llvm_mingw = "20260922"
+nsis = "3.13"
+
+[pipeline]
+# The XBE certificate's title, which recomp stamps into the banners when
+# regen.sh passes no --game-name: gen/ stays byte-identical to regen.sh's.
+game_name = "Burnout 3"
+gen = "src/game/recomp/gen"
+out = "build/xr"
+# Never inside the dump: "Burnout 3 Takedown" is the player's own copy, and
+# may be a read-only link to it. regen.sh writes the same file.
+analysis_json = "build/xr/analysis.json"
+seeds = ["config/seed_functions.json"]
+# The toolkit's icall_feedback database is another game's; regen.sh has none.
+icall_seeds = false
+# The KickOff spin waits up to a vblank behind the toolkit's flip hold;
+# lowered, it yields the guest CPU instead of holding it. Only a toolkit
+# whose recomp takes --spin-waits uses it (the CLI probes); upstream's
+# lifter does not, and gen/ stays regen.sh's.
+spin_waits = "config/spin_waits.json"
+exclude_manual = "src/game/recomp/recomp_manual.c"
+split = 1000
+names_hooks = []
+ghidra = false
+
+[pipeline.disasm]
+# Every code section, as regen.sh: without the XDK sections there are no
+# function boundaries there.
+text_only = false
+extra_sections = []
+
+[build]
+exe = "burnout3"
+# macos: the developer build on a Mac (the CPU rasteriser on upstream's
+# toolkit, Metal on the fork); package macos makes its DMG.
+targets = ["windows", "macos"]
+windows_dir = "build-win"
+macos_dir = "build"
+# Passed on every packaging configure so a cache cannot keep a non-stock
+# value: the enhancements layer on where the toolkit has one (upstream's
+# has none and ignores it), every key stock unless a player's config.toml
+# or the environment says otherwise.
+stock_cmake = ["-DXBOXRECOMP_ENHANCE=ON"]
+nonstock_vars = []
+icon_var = ""
+
+[data]
+game_files = "Burnout 3 Takedown"
+# dashupdate.xbe is the disc's 58 MB dashboard update; the title never runs it.
+# UDATA, TDATA and CACHE are the Xbox user, title and cache folders that runs
+# can leave in the dump folder: one player's state, never part of a bundle.
+game_files_exclude = ["default_analysis.json", "dashupdate.xbe", "UDATA", "TDATA", "CACHE"]
+
+[input]
+script_env = "RECOMP_PAD_SCRIPT"
+presets = []
+
+[golden]
+json = ""
+
+[package]
+# Windows, the SteamOS-like Linux PC (both from the windows build) and the
+# Mac. Not "Burnout3": the launcher <app>.exe sits beside burnout3.exe, and
+# Windows file names ignore case.
+app = "Burnout3Takedown"
+product = "burnout3-recomp"
+targets = ["windows", "steamos", "macos"]
+# macos: Burnout3Takedown.app in a DMG, with the Homebrew dylibs the Mac build
+# links (otool -L build/burnout3) bundled; the launcher and Info.plist are
+# the game's own, in packaging/macos/.
+brew = ["sdl2", "openssl", "libepoxy"]
+content = "packaging"
+templates = "packaging"
+icon = "xbe"
+
+[bench]
+# The host tree is ~/xbox-recomp/<this checkout's name>; settings such as
+# BENCH_HOST and BENCH_PREFIX go in scripts/bench.env (see
+# scripts/bench.env.example).
+remote_name = ""
+main_branch = "main"
+toolkit_branch = "main"
+# Burnout 3 has no goldens, so no toolkit tests run before them.
+toolkit_tests = false
+pacing_scenario = ""
+# What src/game/main.c's veh_handler prints for a fatal exception.
+crash_tag = "[FAULT]"
+# Local output of the upstream flow and the A/B probes (rsync does not read
+# .gitignore): never sent to the host.
+sync_excludes = ["/bin/", "/runs/", "/_local/", "/saves/", "/Play Burnout 3.cmd", "/setup.log", "/TESTING.md"]
+
+[wizard]
+repo = "https://github.com/sp00nznet/burnout3.git"
+targets = ["windows", "steamos", "macos"]
+# No icon: the CLI's generic gamepad glyph. Burnout, EA and Criterion marks
+# and game art are not ours to use.
+# No [[wizard.fetch]] entries: the clone carries everything else the build
+# needs, and the CLI fetches the toolkit, llvm-mingw and NSIS itself by
+# the pins in [cli], [toolkit] and its setup-pins.json.
+
+# The wizard's open-source credits (xboxrecomp-cli docs/wizard.md,
+# Credits): this repo first, before the CLI's own group.
+[[wizard.credit]]
+name = "burnout3"
+role = "the static recompilation of Burnout 3: Takedown, by sp00nz"
+license = "MIT"
+url = "https://github.com/sp00nznet/burnout3"
+own = true
+
+# The player options. Both need the toolkit's enhancements layer: on
+# upstream's toolkit the CLI leaves them out (wizard config lists them
+# under "omitted"), on the fork they write the player's config.toml.
+[[wizard.option]]
+key = "scale"
+label = "Render scale"
+hint = "Draws the game sharper on a big screen; needs a faster graphics card."
+kind = "range"
+# The toolkit's render.scale stops at 4 (SCALE_MAX in src/enhance/enhance.c).
+min = 1
+max = 4
+default = 1
+config = "render.scale"
+labels = { "1" = "640×480, as on the Xbox", "2" = "1280×960", "3" = "1920×1440", "4" = "2560×1920, the sharpest" }
+
+[[wizard.option]]
+key = "fullscreen"
+label = "Start fullscreen"
+hint = "Off by default: on the Steam Deck's Desktop Mode, add the game to Steam with the Gamepad template instead."
+kind = "bool"
+default = false
+config = "present.fullscreen"
