@@ -32,6 +32,13 @@ and per-flip frame dumps.
 - CONTRIBUTING, CONTRIBUTORS, ROADMAP, this changelog, and the MIT LICENSE file.
 
 ### Changed
+- `burnout3.exe` is a Windows GUI program: one window, the game's, from
+  Explorer, a shortcut or `Play Burnout 3.cmd` (which now starts it and
+  closes), and closing the window ends the run. A failed startup step shows
+  a dialog. `RECOMP_STDIO_LOG=<file>` keeps the log, and `-DBO3_CONSOLE=ON`
+  builds the console program. Setup skips a build that already exists, so
+  rebuild an existing checkout with `cmake --build build-xr --config Release`
+  and run Setup again for the new launcher.
 - The build links the xboxrecomp runtime libraries (`../xboxrecomp`) instead of
   in-tree copies.
 - Format and engine research notes moved to `docs/research/`.

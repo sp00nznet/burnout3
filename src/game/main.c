@@ -469,6 +469,91 @@ static void hang_watchdog_start(void)
                                  (LPVOID)getenv("BO3_TRAP_NAN"), 0, NULL));
 }
 
+/* RECOMP_STDIO_LOG=<path>: stdout and stderr into a file. The GUI-subsystem
+ * exe has no console, so a launch from Explorer or a shortcut otherwise
+ * loses every line it prints (a redirect, `burnout3.exe > bo3.log 2>&1`,
+ * still works from cmd), and under Proton a game's stdio is often not
+ * where its launcher looks. Truncate the file, then reopen both streams in
+ * append mode so their writes interleave instead of overwriting each other
+ * (there is no stderr descriptor to dup onto). Called before anything
+ * prints; a failure goes to whichever stream still works, and the dialog
+ * path below does not depend on it. */
+static void stdio_log_setup(void)
+{
+    const char *log = getenv("RECOMP_STDIO_LOG");
+    FILE *trunc;
+
+    if (!log || !*log)
+        return;
+    trunc = fopen(log, "w");
+    if (trunc)
+        fclose(trunc);
+    if (!freopen(log, "a", stdout))
+        fprintf(stderr, "[BOOT] RECOMP_STDIO_LOG: cannot open %s\n", log);
+    else if (!freopen(log, "a", stderr))
+        printf("[BOOT] RECOMP_STDIO_LOG: stderr NOT redirected\n");
+}
+
+static int s_headless;
+
+/* A required startup step failed: say which, and what to do, on stderr --
+ * and in a dialog, since a launch from Explorer or a shortcut has no console
+ * and would otherwise end without a word. --headless (or RECOMP_HEADLESS)
+ * means no dialog: one would wait for a click nobody can give. */
+static void host_report_fatal(const char *step, const char *detail)
+{
+    fprintf(stderr, "[FATAL] %s: %s\n", step, detail);
+    fflush(stderr);
+    if (!s_headless && !getenv("RECOMP_HEADLESS"))
+        MessageBoxA(NULL, detail, "Burnout 3: Takedown", MB_ICONERROR);
+}
+
+/* The window's close button ends the run. On xboxrecomp v0.14.0 the GDI
+ * presenter's WM_CLOSE only stops its own thread, which then destroys the
+ * window; the game itself keeps running. A console build at least left its
+ * console to close, but a GUI build would go on invisibly (audio playing,
+ * the CPU busy, saves\ held open) and the next launch would be a second
+ * instance on the same saves. So watch for this process's presenter window,
+ * and once it has been up and is gone, end the run as --seconds does:
+ * encode any recording, then ExitProcess. Gone includes replaced: the
+ * pushbuffer executor reopens the window on its next surface clear, often
+ * within one poll, so a new handle means the old window was closed. */
+#define BO3_FB_WINDOW_CLASS "XboxRecompFramebuffer"
+
+static BOOL CALLBACK fb_window_find(HWND h, LPARAM out)
+{
+    DWORD pid = 0;
+    char cls[64];
+
+    GetWindowThreadProcessId(h, &pid);
+    if (pid == GetCurrentProcessId() && GetClassNameA(h, cls, sizeof cls) &&
+        !strcmp(cls, BO3_FB_WINDOW_CLASS)) {
+        *(HWND *)out = h;
+        return FALSE;
+    }
+    return TRUE;
+}
+
+static DWORD WINAPI fb_window_watch(LPVOID unused)
+{
+    HWND seen = NULL;
+
+    (void)unused;
+    for (;;) {
+        HWND h = NULL;
+
+        Sleep(250);
+        EnumWindows(fb_window_find, (LPARAM)&h);
+        if (seen && h != seen)
+            break;
+        seen = h;
+    }
+    fprintf(stderr, "[BOOT] window closed: ending the run\n");
+    record_finish();
+    ExitProcess(0);
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
     const char *path = BO3_XBE_DEFAULT;
@@ -478,16 +563,22 @@ int main(int argc, char **argv)
     void *xbe_data = NULL;
     size_t xbe_size = 0;
 
+    stdio_log_setup();
+
     for (i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--headless"))
-            headless = 1;
+            headless = s_headless = 1;
         else if (!strcmp(argv[i], "--record") && i + 1 < argc)
             record = argv[++i];
         else if (!strcmp(argv[i], "--seconds") && i + 1 < argc)
             seconds = (unsigned)strtoul(argv[++i], NULL, 10);
         else if (argv[i][0] == '-') {
-            fprintf(stderr, "usage: %s [--headless] [--record out.mp4] "
-                            "[--seconds N] [default.xbe]\n", argv[0]);
+            char detail[MAX_PATH + 200];
+            snprintf(detail, sizeof detail,
+                     "Unknown option %s.\nusage: burnout3 [--headless] "
+                     "[--record out.mp4] [--seconds N] [default.xbe]",
+                     argv[i]);
+            host_report_fatal("parse arguments", detail);
             return 2;
         } else
             path = argv[i];
@@ -540,17 +631,25 @@ int main(int argc, char **argv)
         _putenv_s("RECOMP_PB_EXEC", "");
     if (!headless && !getenv("RECOMP_FB_WINDOW"))
         _putenv_s("RECOMP_FB_WINDOW", "1");
+    if (!headless)
+        CloseHandle(CreateThread(NULL, 0, fb_window_watch, NULL, 0, NULL));
     if (record)
         record_start(record, seconds);
 
-    if (!load_xbe(path, &xbe_data, &xbe_size))
+    if (!load_xbe(path, &xbe_data, &xbe_size)) {
+        char detail[MAX_PATH + 200];
+        snprintf(detail, sizeof detail,
+                 "Failed to load %s. Run from the folder that holds "
+                 BO3_GAME_DIR "\\, or pass the path to default.xbe.", path);
+        host_report_fatal("load XBE", detail);
         return 1;
+    }
     printf("XBE loaded: %zu bytes\n", xbe_size);
 
-
     if (!xbox_MemoryLayoutInit(xbe_data, xbe_size)) {
-        fprintf(stderr, "Xbox memory layout init failed "
-                        "(required VA range unavailable?)\n");
+        host_report_fatal("map Xbox memory layout",
+                          "Xbox memory layout init failed (the required "
+                          "virtual address range may be unavailable).");
         free(xbe_data);
         return 1;
     }

@@ -169,7 +169,11 @@ the step says Git Bash.
    ```
 
    A window opens titled `Burnout 3: Takedown | FPS: n | draws: n`, and you see the
-   EA and Criterion intros, then "Press START".
+   EA and Criterion intros, then "Press START". The exe is a Windows GUI program,
+   so the prompt comes back at once and the log goes nowhere: set
+   `RECOMP_STDIO_LOG=bo3.log` to keep it, or configure with `-DBO3_CONSOLE=ON`
+   for a console build ([docs/running.md](docs/running.md)). Closing the window
+   ends the run.
 
 **Usual trip-ups:** `regen.sh` needs Git Bash, not WSL's `bash`. A tool installed a
 moment ago isn't found until you open a new window. The build needs the

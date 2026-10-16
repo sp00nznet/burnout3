@@ -179,12 +179,15 @@ else {
 }
 
 # ---------------------------------------------------------------- launcher
+# "start" so the launcher's console closes at once: burnout3.exe is a GUI
+# program, and a batch file would otherwise keep an empty console open
+# beside the game until it exits.
 Step 5 "Making the launcher"
 $launcher = Join-Path $Root 'Play Burnout 3.cmd'
 Set-Content -Path $launcher -Encoding ASCII -Value @'
 @echo off
 cd /d "%~dp0"
-bin\burnout3.exe %*
+start "" bin\burnout3.exe %*
 '@
 Say "  $launcher"
 

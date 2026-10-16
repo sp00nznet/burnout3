@@ -10,17 +10,47 @@ Run it from the repo folder. It reads the disc from `Burnout 3 Takedown\` and
 keeps the emulated hard disk (profile, cache partitions) in `saves\`. Delete
 `saves\` to go through first boot again.
 
+It is a Windows GUI program: launched from Explorer, a shortcut or
+`Play Burnout 3.cmd`, it opens the game's window and nothing else, and
+closing that window ends the run. If a startup step fails (the XBE is not
+where it looks, the Xbox address range cannot be mapped, an unknown option),
+a dialog says which, unless `--headless` or `RECOMP_HEADLESS` is set.
+`Play Burnout 3.cmd` starts the exe and returns, so its exit code is not
+passed on.
+
+From a terminal the prompt comes back at once and the exe prints nowhere,
+so the `[FATAL]` and `[FAULT]` reports and the boot log are lost unless you
+keep them. Any of these does:
+
+1. **`RECOMP_STDIO_LOG=<file>`**: stdout and stderr go to `<file>`,
+   truncated at start. In PowerShell:
+   `$env:RECOMP_STDIO_LOG = "bo3.log"; .\bin\burnout3.exe --headless`, then
+   `Get-Content bo3.log -Wait`.
+2. **A redirect from cmd**: `bin\burnout3.exe > bo3.log 2>&1`.
+3. **A console build**, which prints to the terminal it starts from and
+   waits for the game to end, as builds before this option did:
+   `cmake -S . -B build-xr -DBO3_CONSOLE=ON`, then
+   `cmake --build build-xr --config Release`.
+
+Ctrl+C in a terminal does not reach the GUI exe, so a `--record` run ends
+(and encodes) after `--seconds N` or when its window is closed. A
+`--headless --record` run has no window to close, so give it `--seconds`,
+or use the console build and stop it with Ctrl+C.
+
+The options:
+
 - **Windowed** by default. The title bar reads
   `Burnout 3: Takedown | FPS: 14 | draws: 212`. The title comes from the XBE
   certificate; draws are the draw calls in the last frame.
 - **`--headless`** opens no window. Use it for scripts, CI, and over RDP, where a
   window would land on whatever screen the remote session is showing.
 - **`--record out.mp4`** writes every presented frame as a BMP into
-  `%TEMP%\bo3rec_<pid>\`. When the run ends, after `--seconds N` or on Ctrl+C,
-  it encodes them with `ffmpeg` at 30 fps. If ffmpeg is missing or fails, the
-  frames stay where they are and the path is printed. The frames are buffered on
-  disk rather than piped, because at a few fps there is nothing to gain from
-  streaming, and an encoder that fails can't lose the run.
+  `%TEMP%\bo3rec_<pid>\`. When the run ends, after `--seconds N`, when the
+  window is closed or (console build) on Ctrl+C, it encodes them with `ffmpeg`
+  at 30 fps. If ffmpeg is missing or fails, the frames stay where they are and
+  the path is printed. The frames are buffered on disk rather than piped,
+  because at a few fps there is nothing to gain from streaming, and an encoder
+  that fails can't lose the run.
 
 The fps is real frames per wall-clock second. The title steps its simulation a
 fixed amount per frame, so at 3 fps a race plays in slow motion but correctly,

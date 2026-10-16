@@ -9,11 +9,30 @@ file(GLOB RECOMP_GEN_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/recomp/gen/recomp_*.c"
 )
 
-add_executable(burnout3
+# A GUI-subsystem program on Windows: a console-subsystem exe started with
+# no console attached (Explorer, a shortcut, or Proton) gets a console window
+# of its own beside the game's. Started from a terminal, a GUI exe returns
+# the prompt at once and its printf reaches nothing unless RECOMP_STDIO_LOG
+# names a file or the command redirects it; -DBO3_CONSOLE=ON builds the
+# console program again for terminal debugging (docs/running.md).
+option(BO3_CONSOLE "Windows: build a console-subsystem exe (terminal debugging)" OFF)
+if(BO3_CONSOLE)
+    set(_bo3_subsystem "")
+else()
+    set(_bo3_subsystem WIN32)
+endif()
+
+add_executable(burnout3 ${_bo3_subsystem}
     main.c
     recomp/recomp_manual.c
     ${RECOMP_GEN_SOURCES}
 )
+# main(argc, argv) stays the entry point under both subsystems: MSVC would
+# look for WinMain under WIN32, so name the CRT's main startup. MinGW's CRT
+# starts a main program under -mwindows by itself.
+if(MSVC AND NOT BO3_CONSOLE)
+    target_link_options(burnout3 PRIVATE /ENTRY:mainCRTStartup)
+endif()
 
 target_link_libraries(burnout3 PRIVATE
     xbox_kernel xbox_d3d8 xbox_dsound xbox_input xbox_usb xbox_video xbox_apu
