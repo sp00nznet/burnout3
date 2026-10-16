@@ -215,6 +215,24 @@ The C is regenerated, not edited. If the output is wrong, the fix goes in the
 toolkit's recompiler or in this repo's per-title data
 (`config/seed_functions.json`, `src/game/main.c`), never by hand in `gen/`.
 
+Visual Studio is the route above. [llvm-mingw](https://github.com/mstorsjo/llvm-mingw)
+(Clang with the MinGW ABI) builds the same exe, on Windows or cross-compiled from
+macOS or Linux, for example with Ninja:
+
+```
+cmake -S . -B build/mingw -G Ninja -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=x86_64-w64-mingw32-clang
+cmake --build build/mingw --target burnout3
+```
+
+It needs `src/game/recomp/gen/` first (step 4). `regen.sh` calls `py -3`, which
+exists only on Windows: elsewhere put a `py` on `PATH` that drops the `-3` and
+runs Python 3 with capstone, or generate on Windows and copy `gen/` over.
+
+A MinGW build puts the exe in its build dir (`build/mingw/burnout3.exe`, with
+`burnout3.pdb` for fault reports) rather than `bin\`. It links
+`xinput1_4`, as MSVC's build does, so it starts on a stock Windows 10 or 11.
+
 ## Contributors
 
 See [CONTRIBUTORS.md](CONTRIBUTORS.md). Contributions are welcome; read
