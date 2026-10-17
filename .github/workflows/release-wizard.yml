@@ -1,0 +1,212 @@
+# The player's build wizard: on a release tag, the three assets and
+# SHA256SUMS built by `./burnout3 wizard build` from game.toml's [wizard]
+# table (xboxrecomp-cli's docs/wizard.md) and attached to the tag's
+# release. `xbr new` writes this file; keep it the same as the CLI's
+# template, so a later diff against a fresh scaffold is empty.
+#
+# The bootstrap resolves the CLI at game.toml's [cli] pin, as on a
+# player's machine; the CLI fetches Go and llvm-mingw by sha256 itself.
+# macOS runners have no Docker, so the Linux asset is built apart, on an
+# arm64 runner where the pinned builder image runs natively (the same
+# bytes as on an Apple-silicon Mac). Public repositories run these
+# standard runners free. Dry run: Actions > release-wizard > Run
+# workflow, with a tag and "release" off: every job then runs read-only.
+# The release's notes are the tag's section of CHANGELOG.md (`## [X.Y.Z]`,
+# the tag without its v); the notes job stops the run before any build
+# when the tag has none. Only the release job can write: it creates the
+# release as a draft, attaches the assets, then publishes it, so the
+# release is never public without all four files. A -rc. tag is a
+# pre-release.
+name: release-wizard
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "The release tag to build (it must exist)"
+        required: true
+        type: string
+      release:
+        description: "Attach the assets to that tag's release"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# One run per tag at a time: a second push or dispatch for the same tag
+# waits, so two runs never draft, upload and publish one release at once.
+concurrency:
+  group: release-wizard-${{ inputs.tag || github.ref_name }}
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
+
+jobs:
+  notes:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TAG }}
+          sparse-checkout: CHANGELOG.md
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - name: Take the tag's section of CHANGELOG.md
+        run: |
+          python3 - "$TAG" <<'EOF'
+          import re
+          import sys
+
+          tag = sys.argv[1]
+          version = tag.removeprefix("v")
+          try:
+              with open("CHANGELOG.md", encoding="utf-8") as f:
+                  text = f.read()
+          except OSError:
+              print("::error::%s has no CHANGELOG.md" % tag)
+              sys.exit(1)
+          body = None
+          for line in text.splitlines():
+              if body is not None and line.startswith("## "):
+                  break
+              m = re.match(r"## \[([^\]]+)\]", line)
+              if m and m.group(1).removeprefix("v") == version:
+                  body = []
+              elif body is not None and not re.match(r"\[[^\]]+\]: ", line):
+                  body.append(line)
+          notes = "\n".join(body or []).strip()
+          if not notes:
+              print(
+                  "::error file=CHANGELOG.md::CHANGELOG.md at %s has no notes under "
+                  "'## [%s] - YYYY-MM-DD'; the section belongs in the tagged commit" % (tag, version)
+              )
+              sys.exit(1)
+          with open("notes.md", "w", encoding="utf-8") as f:
+              f.write(notes + "\n")
+          EOF
+          cat notes.md
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-notes
+          path: notes.md
+          if-no-files-found: error
+
+  build-macos:
+    needs: notes
+    runs-on: macos-15
+    outputs:
+      sums: ${{ steps.sums.outputs.sums }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TAG }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          # No restored cache takes part in a published asset.
+          enable-cache: false
+      - name: Build the macOS and Windows assets
+        run: ./burnout3 wizard build --only macos,windows --tag "$TAG" --out dist/wizard
+      - id: sums
+        name: Record their sha256s
+        run: |
+          cd dist/wizard
+          { echo "sums<<EOF"; shasum -a 256 *.zip; echo "EOF"; } >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: wizard-macos-windows
+          path: dist/wizard/*.zip
+          if-no-files-found: error
+
+  build-linux:
+    needs: notes
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      sums: ${{ steps.sums.outputs.sums }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TAG }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          # No restored cache takes part in a published asset.
+          enable-cache: false
+      - name: Build the Linux asset
+        run: ./burnout3 wizard build --only linux --tag "$TAG" --out dist/wizard
+      - id: sums
+        name: Record its sha256
+        run: |
+          cd dist/wizard
+          { echo "sums<<EOF"; sha256sum *.tar.gz; echo "EOF"; } >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: wizard-linux
+          path: dist/wizard/*.tar.gz
+          if-no-files-found: error
+
+  verify:
+    needs: [build-macos, build-linux]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: wizard-*
+          path: assets
+          merge-multiple: true
+      - name: SHA256SUMS, checked against what each build printed
+        env:
+          MAC_SUMS: ${{ needs.build-macos.outputs.sums }}
+          LINUX_SUMS: ${{ needs.build-linux.outputs.sums }}
+        run: |
+          cd assets
+          sha256sum -- *.zip *.tar.gz | sort -k 2 > SHA256SUMS
+          printf '%s\n%s\n' "$MAC_SUMS" "$LINUX_SUMS" | sed '/^$/d' | sort -k 2 > printed
+          diff -u printed SHA256SUMS
+          rm printed
+          cat SHA256SUMS
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: wizard-sha256sums
+          path: assets/SHA256SUMS
+          if-no-files-found: error
+
+  release:
+    needs: [notes, verify]
+    if: github.event_name == 'push' || inputs.release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: wizard-*
+          path: assets
+          merge-multiple: true
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-notes
+          path: notes
+      - name: Check the assets against SHA256SUMS
+        run: cd assets && sha256sum -c SHA256SUMS
+      - name: Draft the release, attach the assets, then publish it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          case "$TAG" in *-rc.*) pre=true ;; *) pre=false ;; esac
+          # A release that already exists (a draft from an earlier run)
+          # takes the title, notes and pre-release mark from this run too.
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release edit "$TAG" --title "$TAG" --notes-file notes/notes.md --prerelease="$pre" --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" --draft --verify-tag --title "$TAG" \
+              --notes-file notes/notes.md --prerelease="$pre" --repo "$GITHUB_REPOSITORY"
+          fi
+          gh release upload "$TAG" assets/*.zip assets/*.tar.gz assets/SHA256SUMS --clobber --repo "$GITHUB_REPOSITORY"
+          gh release edit "$TAG" --draft=false --repo "$GITHUB_REPOSITORY"

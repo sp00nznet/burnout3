@@ -34,7 +34,33 @@ if(BO3_ABI_CHECK)
 endif()
 
 set(XBOXRECOMP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../xboxrecomp" CACHE PATH "Path to xboxrecomp toolkit")
+
+# Off Windows, xbox_kernel links OpenSSL::Crypto PUBLIC but finds it inside
+# its own subdirectory, where the imported target stays invisible to this
+# executable; a clean configure then fails with "target was not found".
+# Finding it here first puts it in scope for both.
+if(NOT WIN32)
+    find_package(OpenSSL REQUIRED)
+endif()
+
+# The toolkit's enhancements layer (render scale, present filter,
+# fullscreen; config/config.toml over config.default.toml beside the
+# executable). ON for this title, every key stock by default; not FORCE, so
+# -DXBOXRECOMP_ENHANCE=OFF builds a layer-free binary for A/B. Upstream's
+# toolkit has no such option and ignores it.
+set(XBOXRECOMP_ENHANCE ON CACHE BOOL
+    "Build the enhancements layer (config.toml, RECOMP_RENDER_SCALE, ...)")
+
 add_subdirectory(${XBOXRECOMP_DIR} ${CMAKE_BINARY_DIR}/xboxrecomp)
+
+# A toolkit with an environment table (recomp_env) takes this game's defaults
+# for its keys from src/env/recomp_env_game.h: vblank on, the DSP doorbell
+# found from GPSADDR, two pads. Upstream's toolkit reads getenv directly and
+# has no recomp_env target; there main.c's _putenv_s defaults do the job.
+if(TARGET recomp_env)
+    target_compile_definitions(recomp_env PUBLIC RECOMP_ENV_HAVE_GAME_KEYS)
+    target_include_directories(recomp_env PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/env)
+endif()
 
 add_subdirectory(src/game)
 

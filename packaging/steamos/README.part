@@ -1,0 +1,98 @@
+Install and update (Steam Deck or a Linux gaming PC, from Desktop Mode)
+----------------------------------------------------------------------
+This bundle runs on a Steam Deck with stock SteamOS, and on a Linux gaming
+distribution that ships umu-run. The game runs under Proton through umu-run
+(umu-launcher): a stock Steam Deck does not have it, and the installer
+offers to download it (see "umu-run" below).
+
+Copy @APP@-@VERSION@-steamos.tar to the PC (USB stick, network share,
+scp), unpack it (Dolphin: right-click > Extract > Extract archive here, or
+`tar -xf @APP@-@VERSION@-steamos.tar`), open a terminal (Konsole) in the
+unpacked @APP@-@VERSION@-steamos folder and run the installer. If
+`./install.sh` says "permission denied" (an unpacker that dropped the
+modes), run `bash install.sh` instead; the options are the same. The
+unpacked folder can be deleted after the install.
+
+  ./install.sh --steam      first time: installs to @DEFAULT_ROOT@ and adds
+                            "@APP@" to Steam (Steam must be open)
+  ./install.sh              every later version: installs on top, keeps the
+                            last 3 versions, saves untouched
+  ./install.sh rollback     back to the previous version
+  ./install.sh status       what is installed, where the saves are, which
+                            umu-run the game uses
+  ./install.sh list         installed versions
+  ./install.sh uninstall    removes the program; keeps hdd/, config/, logs/
+  Options: --root DIR (default @DEFAULT_ROOT@), --keep N (default 3),
+           --import-saves DIR (copy an old save root into an empty hdd/),
+           --fetch-umu, --umu-dir DIR (below).
+
+Play from Game Mode: the shortcut is "@APP@" in your library. Leave
+"Force the use of a specific Steam Play compatibility tool" OFF for it: the
+launcher starts Proton itself (umu-run, GE-Proton).
+
+The first launch downloads the Steam Linux Runtime and GE-Proton (about
+1 GB) and creates the Wine prefix, which takes a few minutes. A window
+(or, in Game Mode, a notification) says so, and closes when the game
+starts. Later launches are quick. The prefix (@DEFAULT_ROOT@/prefix) holds
+nothing of value and can be deleted; it is recreated.
+
+If Steam was not open during the install, add the shortcut by hand:
+Steam (Desktop Mode) > Games > Add a Non-Steam Game to My Library > Browse >
+@DEFAULT_ROOT@/@APP@.
+
+umu-run
+-------
+The installer looks for umu-run on PATH, then in ~/.local/bin, then in the
+copy it downloaded itself. When there is none (a stock Steam Deck), it asks
+whether to download umu-launcher @UMU_VERSION@, the one release this bundle
+pins, checked against its sha256; answer y. `./install.sh --fetch-umu` does
+the same without asking. The copy goes to ~/.local/share/xboxrecomp/umu
+(or --umu-dir DIR), in your home folder, so a SteamOS update keeps it, and
+every game installed this way shares it. The launcher finds it there in
+Game Mode too, whose PATH lacks ~/.local/bin.
+
+Troubleshooting
+---------------
+- "umu-run is not installed" (a notification at launch, or from
+  install.sh): run `./install.sh --fetch-umu` in the unpacked bundle
+  folder, from Desktop Mode. `./install.sh status` shows which umu-run the
+  game uses. UMU_RUN=/path/to/umu-run in config/launch.env picks another.
+- Nothing on screen at the first launch: the downloads take a few minutes
+  on a slow network. @DEFAULT_ROOT@/logs/umu.log shows their progress;
+  the game's own log is the newest logs/game-*.log.
+- The first launch failed half-way (no network): launch again; umu-run
+  resumes. If it keeps failing, delete @DEFAULT_ROOT@/prefix and launch
+  again.
+- The notice window gets in the way: LAUNCH_NOTICE=0 in
+  config/launch.env turns it off. It closes by itself when the game
+  starts, or after NOTICE_MAX seconds (1200; set it there too).
+- Steam's scaling filter (FSR): under gamescope (Game Mode) the launcher
+  sets RECOMP_HOST_GAMESCOPE=1 and the game hands gamescope the frame at
+  its internal resolution to scale. FSR applies only when that is smaller
+  than the screen (render scale 1 on a Steam Deck).
+  RECOMP_HOST_GAMESCOPE=0 in config/launch.env goes back to a window the
+  size of the screen.
+- Settings go in @DEFAULT_ROOT@/config/launch.env (KEY=value lines). The
+  installer creates config/ and never changes what is in it.
+- Proton's own log for a bug report: PROTON_LOG=1 in config/launch.env
+  writes it to logs/ (steam-default.log). At each launch, a log in logs/
+  over LOG_MAX_MB (64) is cut to its first and last halves; LOG_MAX_MB=0
+  keeps them whole.
+
+Controls
+--------
+Two controllers work, as players 1 and 2 (the split-screen modes): on a
+Steam Deck its own controls are player 1 and a connected pad player 2.
+There is no keyboard or mouse: the game's menus and races read only the
+pad.
+
+Burnout 3 on a Steam Deck
+-------------------------
+The game starts in a window: fullscreen is off by default
+("fullscreen = false" under [present] in config.default.toml). Started
+from Konsole in Desktop Mode, the Deck's controls are a mouse and a
+keyboard, which the game does not read, and nothing quits it. So play it
+from Steam: add it with ./install.sh --steam (or by hand, above), open the
+shortcut's controller settings and pick the Gamepad template, and start it
+from Steam, in Game Mode or Desktop Mode. Quit from the pad with the Steam
+button, then Exit game.

@@ -1,0 +1,47 @@
+# The Python environment for the toolkit's tools and the build. ./burnout3
+# (burnout3.py, standard library only) runs xboxrecomp-cli at the commit
+# game.toml pins; `burnout3 setup` makes .venv/ from uv.lock
+# (`uv sync --locked`) for the toolkit's tools (cmake, ninja, capstone, pefile)
+# and, with --dev, ruff. `burnout3 pins refresh` rewrites the lock.
+# Upstream's regen.sh and Setup.cmd do not use it.
+
+[project]
+name = "burnout3"
+version = "0"
+description = "Burnout 3 static recompilation: the tools environment (the CLI is xboxrecomp-cli)"
+requires-python = ">=3.9"
+dependencies = [
+  "cmake",
+  "ninja",
+  # The lifter decodes with capstone: a different version could change gen/.
+  "capstone==5.0.9",
+  "pefile==2024.8.26",
+]
+
+[dependency-groups]
+dev = [
+  "pytest",
+  "ruff",
+  "tomli; python_version < '3.11'",
+  # The toolkit's tests (setup --dev); numpy 2.5 needs Python 3.12.
+  "numpy==2.5.3; python_version >= '3.12'",
+]
+
+[tool.uv]
+package = false   # a plain environment: nothing here is installed as a project
+# Wheels only, as pip --only-binary :all: did: nothing builds from an sdist at install time.
+no-build = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+extend-exclude = ["src/game/recomp/gen", "external", "third_party", ".venv*", "build*", "dist", "_local", "docs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = [
+  "E501",     # format wraps code; long strings and comments are left to review
+  "UP031",    # the code uses %-formatting throughout (326 sites); f-strings by hand
+              # would be churn, and the unsafe fix can change a tuple argument's meaning
+]
+

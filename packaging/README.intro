@@ -1,0 +1,8 @@
+PRIVATE: This bundle contains your own copy of Burnout 3: Takedown and code
+generated from it. It is for your own machines only. The game is not yours
+to redistribute: never share, upload or publish this bundle.
+
+This is a static recompilation of the original Xbox game, built on your
+machine from your own disc dump with the burnout3 recompilation project and
+xboxrecomp-cli. It is not affiliated with the game's owners. Built from:
+@SOURCES@.
