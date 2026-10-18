@@ -1,0 +1,35 @@
+schema: spec-driven
+
+context: |
+  Project: static recompilation of the original Xbox game Burnout 3: Takedown
+  (title 0x4541005B) into a native executable, built through xboxrecomp-cli
+  (`burnout3` runs it at the sha pinned in game.toml) against the xboxrecomp
+  toolkit fork (apexJCL/xboxrecomp).
+  Language: C11. Build: CMake. Python 3 tooling (uv, ruff, pytest).
+  Hosts: Windows x86-64 builds (llvm-mingw), tested natively and under Proton
+  on Linux and the Steam Deck with the D3D11 render backend; macOS on Apple
+  Silicon with the Metal render backend in an SDL2 window.
+  Layout: src/ holds the host glue and per-title code; the generated C is
+  written by the CLI into a gitignored folder and is never hand-edited
+  (missed functions are seeded in config/, then regenerated); the user's own
+  dumped disc is never committed.
+  Conventions: environment variables go through the toolkit's recomp_env
+  table (game keys in src/env/); no raw getenv. Optional features default off
+  and never change stock behaviour. A behaviour change on one render path is
+  mirrored on the other or recorded as a follow-up. Comments explain why;
+  match the surrounding code. Commit subjects read "area: what changed".
+  Constraints: toolkit changes are kept upstreamable where possible and are
+  offered upstream (sp00nznet/xboxrecomp, sp00nznet/burnout3) as tested PRs.
+  No game data, frames, audio or saves are ever committed.
+
+rules:
+  proposal:
+    - State which render backends and hosts the change affects.
+    - Say whether it touches the toolkit or the CLI and, if so, whether it is meant for upstream.
+  design:
+    - New settings go through recomp_env; default off unless it fixes stock behaviour.
+    - Say how D3D11 and Metal stay in agreement, or what is deferred.
+  tasks:
+    - Include the verification tasks - build on macOS and for Windows, a run on Proton or native Windows, and the race gate where it applies.
+    - Include a docs task when settings, scripts or user-visible behaviour change.
+    - Include a review task before merge.
