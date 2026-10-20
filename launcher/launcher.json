@@ -1,0 +1,17 @@
+{
+  "title": "Burnout 3: Takedown",
+  "repo": "sp00nznet/burnout3",
+  "accent": "#f26b1d",
+  "note": {
+    "windows": "Choose the folder your Burnout 3: Takedown disc image (.iso) is in. The first build takes 30 to 60 minutes and about 12 GB. Python, Git, CMake and the Visual Studio Build Tools (about 6 GB) are installed if they are missing; Windows asks for permission. It runs on a software GPU: menus are smooth, races run a few frames a second."
+  },
+  "game": {
+    "name": "Burnout 3: Takedown",
+    "files": ["*.iso"]
+  },
+  "sources": [{ "repo": "sp00nznet/xboxrecomp", "ref": "main", "dir": "xboxrecomp" }],
+  "setup": {
+    "windows": ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "tools\setup.ps1", "-Yes", "-GameDir", "{game}"]
+  },
+  "play": "Play *"
+}

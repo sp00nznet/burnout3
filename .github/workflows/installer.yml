@@ -1,0 +1,11 @@
+# The Windows installer, built by recomp-launcher from launcher/launcher.json.
+# Every push to main leaves it as an artifact; a v* tag puts it on the release.
+name: installer
+on:
+  push: { branches: [main], tags: ["v*"] }
+  workflow_dispatch:
+permissions: { contents: write }
+jobs:
+  installer:
+    uses: sp00nznet/recomp-launcher/.github/workflows/installer.yml@main
+    with: { name: Burnout3-Installer, platforms: windows }

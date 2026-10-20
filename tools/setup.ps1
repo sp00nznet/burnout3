@@ -8,14 +8,19 @@
 # in the repo folder. Each step is skipped when its output already exists
 # (-Force redoes them), so a rerun after a failure resumes. Everything it does
 # goes to setup.log. Nothing is downloaded but tools; the game comes from you.
-param([switch]$Force, [string]$Iso = "")
+#
+# -GameDir (old name -Iso) is your disc image, a folder holding it, or a folder
+# with the disc already unpacked (default.xbe). -Yes installs what's missing and
+# takes the first answer to every question, so nothing waits for a person: the
+# recomp installer runs it that way (recomp-launcher's setup contract).
+param([switch]$Force, [switch]$Yes, [Alias('Iso')][string]$GameDir = "")
 
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot
 $Toolkit = Join-Path (Split-Path -Parent $Root) 'xboxrecomp'
 # The toolkit branch to clone.
 $ToolkitRef = 'main'
-$GameDir = Join-Path $Root 'Burnout 3 Takedown'
+$DiscDir = Join-Path $Root 'Burnout 3 Takedown'
 $Log = Join-Path $Root 'setup.log'
 Set-Location $Root
 function Log($t) { Add-Content -Path $Log -Value $t -Encoding UTF8 }
@@ -26,9 +31,14 @@ function Step($n, $t) { Write-Host ""; Say "[$n/5] $t" 'Cyan' }
 function Fail($t) {
   Say "" ; Say "Setup stopped: $t" 'Red'
   Say "The details are in $Log. Fix that and run Setup.cmd again; finished steps are skipped." 'Yellow'
-  Read-Host "Press Enter to close" | Out-Null; exit 1
+  Pause-End; exit 1
 }
-function Ask($q) { $a = Read-Host "$q [Y/n]"; return -not ($a -match '^[nN]') }   # Enter = yes
+# The recomp installer sets RECOMP_LAUNCHER: no one is there to press Enter.
+function Pause-End { if (-not $env:RECOMP_LAUNCHER) { Read-Host "Press Enter to close" | Out-Null } }
+function Ask($q) {   # Enter = yes; -Yes answers yes without asking
+  if ($Yes) { Say "$q yes (-Yes)"; return $true }
+  $a = Read-Host "$q [Y/n]"; return -not ($a -match '^[nN]')
+}
 function Refresh-Path {
   $env:Path = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [Environment]::GetEnvironmentVariable('Path', 'User')
 }
@@ -139,10 +149,26 @@ Say "  xboxrecomp: $Toolkit"
 # ---------------------------------------------------------------- the game
 Step 2 "Unpacking your disc image into 'Burnout 3 Takedown\'"
 function Is-Iso([string]$f) { return ($f -and (Test-Path -PathType Leaf $f)) }
-if ((Test-Path (Join-Path $GameDir 'default.xbe')) -and -not $Force) {
+$Iso = $GameDir.Trim('"', ' ')
+if ($Iso -and (Test-Path -PathType Container $Iso)) {
+  if (Test-Path (Join-Path $Iso 'default.xbe')) {
+    $Unpacked = $Iso; $Iso = ''
+  } else {
+    # A folder: the Burnout 3 image in it, or its only image.
+    $imgs = @(Get-ChildItem -Path $Iso -Filter '*.iso' -File -ErrorAction SilentlyContinue)
+    $bo3 = @($imgs | Where-Object { $_.Name -like '*Burnout 3*' })
+    if ($bo3.Count) { $Iso = $bo3[0].FullName } elseif ($imgs.Count -eq 1) { $Iso = $imgs[0].FullName }
+    else { Fail "no Burnout 3 disc image in $Iso. Choose the folder with your Burnout 3 .iso in it." }
+  }
+}
+if ((Test-Path (Join-Path $DiscDir 'default.xbe')) -and -not $Force) {
   Say "  Already unpacked (skipping)."
+} elseif ($Unpacked) {
+  # robocopy's exit codes below 8 are success
+  Say "  Copying the unpacked disc from $Unpacked (about 3 GB)..."
+  $code = Exec @('robocopy', $Unpacked, $DiscDir, '/E', '/NP', '/NFL', '/NDL')
+  if ($code -ge 8) { Fail "copying $Unpacked failed (robocopy exit code $code)." }
 } else {
-  $Iso = $Iso.Trim('"', ' ')
   if (-not (Is-Iso $Iso)) {
     # Next to the repo, next to the toolkit, or in Downloads.
     $near = @((Split-Path -Parent $Root), $Root, (Join-Path $env:USERPROFILE 'Downloads')) |
@@ -150,15 +176,16 @@ if ((Test-Path (Join-Path $GameDir 'default.xbe')) -and -not $Force) {
       Select-Object -First 1
     if ($near -and (Ask "  Use $($near.FullName)?")) { $Iso = $near.FullName }
   }
+  if (-not (Is-Iso $Iso) -and $Yes) { Fail "no Burnout 3 disc image found. Run it again with -GameDir <your .iso>." }
   while (-not (Is-Iso $Iso)) {
     $Iso = (Read-Host "  Paste the path to your Burnout 3: Takedown .iso").Trim('"', ' ')
     if (-not (Is-Iso $Iso)) { Say "  No file there." 'Yellow' }
   }
   Push-Location $Toolkit
-  Run "Unpacking $Iso (about 3 GB)" ($pyargs + @('-m', 'tools.xiso', 'unpack', $Iso, '-o', $GameDir))
+  Run "Unpacking $Iso (about 3 GB)" ($pyargs + @('-m', 'tools.xiso', 'unpack', $Iso, '-o', $DiscDir))
   Pop-Location
-  if (-not (Test-Path (Join-Path $GameDir 'default.xbe'))) { Fail "the image unpacked, but there is no default.xbe in it. Is it the right disc?" }
 }
+if (-not (Test-Path (Join-Path $DiscDir 'default.xbe'))) { Fail "there is no default.xbe in the disc. Is it Burnout 3: Takedown?" }
 
 # ---------------------------------------------------------------- regen
 Step 3 "Regenerating the C from default.xbe (a few minutes)"
@@ -191,4 +218,4 @@ Say "  $launcher"
 Write-Host ""
 Say "Done. Double-click 'Play Burnout 3.cmd' to play (an Xbox or XInput pad, or two)." 'Green'
 Say "It runs on a software GPU: menus are smooth, races run a few frames a second. See the README."
-Read-Host "Press Enter to close" | Out-Null
+Pause-End
