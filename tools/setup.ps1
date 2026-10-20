@@ -18,8 +18,10 @@ param([switch]$Force, [switch]$Yes, [Alias('Iso')][string]$GameDir = "")
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot
 $Toolkit = Join-Path (Split-Path -Parent $Root) 'xboxrecomp'
-# The toolkit branch to clone.
-$ToolkitRef = 'main'
+# The toolkit commit this title is known to work with. xboxrecomp changes after
+# it (by 2026-10-18) stop the title before its first draw; move this on once
+# a newer commit plays.
+$ToolkitRef = 'afeb69fe482930f5ccbb5d348740636807fe0784'
 $DiscDir = Join-Path $Root 'Burnout 3 Takedown'
 $Log = Join-Path $Root 'setup.log'
 Set-Location $Root
@@ -69,7 +71,7 @@ function Winget-Install($name, $id, $size, [string[]]$extra = @()) {
 Clear-Host
 Say "Burnout 3: Takedown - static recompilation setup" 'White'
 Say "You need your own Burnout 3: Takedown disc image (.iso) and about 12 GB free."
-Say "The long steps are regenerating the C (a few minutes) and building it (20-40 minutes, once)."
+Say "The long steps are regenerating the C (about an hour) and building it (10-40 minutes), once."
 
 # ---------------------------------------------------------------- tools
 Step 1 "Checking the tools the build needs"
@@ -142,7 +144,12 @@ Say "  MSVC: found"
 if (-not (Test-Path (Join-Path $Toolkit 'tools\recomp'))) {
   Say "  The xboxrecomp toolkit is not beside this folder ($Toolkit)."
   if (-not (Ask "  Download it now (git, about 50 MB)?")) { Fail "xboxrecomp is required at $Toolkit." }
-  Run "Cloning xboxrecomp" @('git', 'clone', '--branch', $ToolkitRef, 'https://github.com/sp00nznet/xboxrecomp', $Toolkit)
+  Run "Cloning xboxrecomp" @('git', 'clone', 'https://github.com/sp00nznet/xboxrecomp', $Toolkit)
+  Run "Checking out the tested toolkit commit" @('git', '-C', $Toolkit, 'checkout', '-q', $ToolkitRef)
+}
+elseif ((Test-Path (Join-Path $Toolkit '.git')) -and (git -C $Toolkit rev-parse HEAD) -ne $ToolkitRef) {
+  $short = $ToolkitRef.Substring(0, 7)
+  Say "  Note: the toolkit is not at the tested commit $short. If the game stays black, run: git -C `"$Toolkit`" checkout $short" Yellow
 }
 Say "  xboxrecomp: $Toolkit"
 
@@ -188,7 +195,7 @@ if ((Test-Path (Join-Path $DiscDir 'default.xbe')) -and -not $Force) {
 if (-not (Test-Path (Join-Path $DiscDir 'default.xbe'))) { Fail "there is no default.xbe in the disc. Is it Burnout 3: Takedown?" }
 
 # ---------------------------------------------------------------- regen
-Step 3 "Regenerating the C from default.xbe (a few minutes)"
+Step 3 "Regenerating the C from default.xbe (about an hour the first time)"
 if ((Test-Path 'src\game\recomp\gen\recomp_funcs.h') -and -not $Force) { Say "  Already done (skipping)." }
 else {
   # Git Bash turns regen.sh's /c/... paths into C:\... for py; don't set
@@ -197,7 +204,7 @@ else {
 }
 
 # ---------------------------------------------------------------- build
-Step 4 "Building bin\burnout3.exe (20-40 minutes the first time)"
+Step 4 "Building bin\burnout3.exe (10-40 minutes the first time)"
 if ((Test-Path 'bin\burnout3.exe') -and -not $Force) { Say "  Already built (skipping)." }
 else {
   Run "Configuring" @('cmake', '-S', '.', '-B', 'build-xr', '-G', 'Visual Studio 17 2022', '-A', 'x64')

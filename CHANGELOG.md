@@ -6,11 +6,13 @@ All notable changes to this project are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-20
+
 The project now runs on the shared xboxrecomp runtime instead of its own fork,
 and the title boots and plays through its own code. Needs xboxrecomp
-#138-#156 (on its `main`): the vertex-program interpreter, register combiners,
-x87 precision control, SSE compare predicates, multi-pad USB, the DPC queue lock
-and per-flip frame dumps.
+#138-#156, pinned at `afeb69f` (2026-09-30): the vertex-program interpreter,
+register combiners, x87 precision control, SSE compare predicates, multi-pad
+USB, the DPC queue lock and per-flip frame dumps.
 
 ### Added
 - Every game mode plays: Race, Time Attack, Road Rage and Crash for one player;
@@ -38,6 +40,8 @@ and per-flip frame dumps.
 - CONTRIBUTING, CONTRIBUTORS, ROADMAP, this changelog, and the MIT LICENSE file.
 
 ### Changed
+- Setup and the installer fetch xboxrecomp `afeb69f`, not `main`: toolkit
+  changes after it (by 2026-10-18) stop the title before its first draw.
 - The build links the xboxrecomp runtime libraries (`../xboxrecomp`) instead of
   in-tree copies.
 - Format and engine research notes moved to `docs/research/`.
@@ -58,3 +62,6 @@ and per-flip frame dumps.
 ### Fixed
 - The README described a build that did not run (#1, reported by
   [@VincxBlox](https://github.com/VincxBlox)).
+
+[Unreleased]: https://github.com/sp00nznet/burnout3/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/sp00nznet/burnout3/releases/tag/v0.1.0

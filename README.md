@@ -103,8 +103,9 @@ installer from [`launcher/launcher.json`](launcher/launcher.json).
    wrong goes in `setup.log`, and the window says what to do next.
 3. Double-click **`Play Burnout 3.cmd`**, which the setup leaves in the repo folder.
 
-The first build takes 20–40 minutes. Nothing from the game is downloaded or
-bundled: the only game data used is your disc image.
+The first build takes one to two hours: about an hour regenerating the C, then
+10–40 minutes compiling. Nothing from the game is downloaded or bundled: the
+only game data used is your disc image.
 
 ### Step by step
 
@@ -139,9 +140,12 @@ the step says Git Bash.
    ```
    git clone https://github.com/sp00nznet/burnout3
    git clone https://github.com/sp00nznet/xboxrecomp
+   git -C xboxrecomp checkout afeb69f
    ```
 
-   The toolkit's `main` has everything Burnout 3 needs (xboxrecomp #138-#156).
+   Use toolkit commit `afeb69f` (2026-09-30, xboxrecomp #138-#156). Later
+   toolkit changes, by 2026-10-18, stop the title before its first draw; Setup
+   and the installer fetch `afeb69f` for you.
 
 3. **Unpack your disc image** into `burnout3\Burnout 3 Takedown\`, using the
    toolkit's XDVDFS reader:
