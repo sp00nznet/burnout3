@@ -68,11 +68,29 @@ You need:
 - your own Burnout 3: Takedown disc image (`.iso`)
 - an Xbox or XInput controller (two for split-screen); there is no keyboard mapping
 
-### Quick start
+### Quick start: the installer
+
+1. Download **`Burnout3-Installer-windows-x64.exe`** from the
+   [latest release](https://github.com/sp00nznet/burnout3/releases/latest) and run it.
+   It isn't signed, so SmartScreen asks first: **More info**, **Run anyway**.
+2. **Choose folder…**: the folder your `.iso` is in. **Build my recomp**.
+
+   It downloads this repo and the xboxrecomp toolkit into `%USERPROFILE%\recomp`
+   (**Change** picks another place), then runs `Setup.cmd` below with no questions:
+   it installs whatever is missing, and Windows asks for permission once, for the
+   Visual Studio Build Tools. **Show details** has the full output; every run is
+   also logged under `recomp\logs\`.
+3. **Play Burnout 3**. Opened again later, the installer starts at that button.
+
+[recomp-launcher](https://github.com/sp00nznet/recomp-launcher) builds the
+installer from [`launcher/launcher.json`](launcher/launcher.json).
+
+### Quick start: Setup.cmd
 
 1. Download this repository (green **Code** button, **Download ZIP**) and unzip it
    somewhere with space, for example `C:\recomp\burnout3`.
-2. Double-click **`Setup.cmd`**.
+2. Double-click **`Setup.cmd`**. `Setup.cmd -GameDir <your .iso, or its folder>`
+   skips the question; `-Yes` installs what's missing without asking.
 
    It checks for Python 3.10+, the capstone package, Git, CMake and the Visual
    Studio 2022 C++ build tools, and asks before installing any that are missing

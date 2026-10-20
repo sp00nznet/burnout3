@@ -24,6 +24,12 @@ and per-flip frame dumps.
 - `Setup.cmd` / `tools/setup.ps1`: one-click setup from a clean machine. It
   checks and offers to install the tools, fetches the toolkit, unpacks your disc
   image, regenerates, builds and leaves a launcher.
+- A Windows installer (`Burnout3-Installer-windows-x64.exe` on the release),
+  built by recomp-launcher from `launcher/launcher.json`: choose the folder with
+  your `.iso`, **Build my recomp**, **Play**.
+- `Setup.cmd -Yes -GameDir <iso or folder>`: installs what's missing and asks
+  nothing (the recomp-launcher setup contract). `-GameDir` takes the image, a
+  folder holding it, or an unpacked disc; `-Iso` still works.
 - `regen.sh`: the toolkit pipeline in order. `config/seed_functions.json`:
   function entries only a run can find.
 - Hang watchdog and a NaN trap (`BO3_TRAP_NAN`) in `main.c` for debugging.
