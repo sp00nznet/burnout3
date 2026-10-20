@@ -11,7 +11,7 @@
   },
   "sources": [{ "repo": "sp00nznet/xboxrecomp", "ref": "main", "dir": "xboxrecomp" }],
   "setup": {
-    "windows": ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "tools\setup.ps1", "-Yes", "-GameDir", "{game}"]
+    "windows": ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "tools/setup.ps1", "-Yes", "-GameDir", "{game}"]
   },
   "play": "Play *"
 }
