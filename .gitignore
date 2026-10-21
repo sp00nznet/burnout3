@@ -52,3 +52,6 @@ Desktop.ini
 .DS_Store
 *.tmp
 *.bak
+
+# Disposable private research overlays and fixtures
+tools/research/linux-live/out/
