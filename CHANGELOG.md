@@ -38,6 +38,11 @@ USB, the DPC queue lock and per-flip frame dumps.
 - Docs: `architecture.md`, `running.md`, and `boot.md`, which records each fix
   between the entry point and a playable race.
 - CONTRIBUTING, CONTRIBUTORS, ROADMAP, this changelog, and the MIT LICENSE file.
+- Builds with llvm-mingw (Clang, MinGW ABI), on Windows or cross from macOS
+  and Linux: the 16 MB stack and a PDB beside the exe, `xinput1_4` in place
+  of MinGW's `xinput` (which needs `XINPUT1_3.dll`), and no
+  `-Wparentheses-equality` flood from the generated code. A MinGW build puts
+  the exe in its build dir instead of `bin\`; every MSVC build keeps `bin\`.
 
 ### Changed
 - Setup and the installer fetch xboxrecomp `afeb69f`, not `main`: toolkit
