@@ -18,7 +18,7 @@
 set -uo pipefail
 
 BO3="$(cd "$(dirname "$0")" && pwd)"
-RECOMP="$BO3/../xboxrecomp"
+RECOMP="${XBOXRECOMP_DIR:-$BO3/../xboxrecomp}"   # as CMake's XBOXRECOMP_DIR
 XBE="$BO3/Burnout 3 Takedown/default.xbe"
 OUT="$BO3/build/xr"
 
