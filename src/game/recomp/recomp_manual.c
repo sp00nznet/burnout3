@@ -18,6 +18,7 @@
  *   - Intercept D3D/audio calls for custom rendering or sound
  */
 
+#include <stddef.h>   /* ptrdiff_t: MSVC gets it through stdio.h, Clang does not */
 #include <stdio.h>
 #include <stdint.h>
 

@@ -1,0 +1,3 @@
+#!/bin/sh
+# burnout3: the project CLI (burnout3.py). Python 3.9 or newer.
+exec python3 "$(dirname "$0")/burnout3.py" "$@"

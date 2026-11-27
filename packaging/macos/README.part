@@ -1,0 +1,46 @@
+Install and update (macOS)
+--------------------------
+Open the .dmg and drag Burnout3Takedown.app to Applications, replacing the
+old one for an update. The game files are inside the app. To uninstall,
+drag the app to the Trash; your saves stay in Application Support.
+
+The app is signed ad hoc on the Mac that built it, not notarized. On
+another Mac, Gatekeeper may refuse it: right-click > Open once, or run
+  xattr -dr com.apple.quarantine /Applications/Burnout3Takedown.app
+
+To keep saves and settings somewhere else, set BURNOUT3TAKEDOWN_DATA_DIR
+to that folder before starting the game.
+@if enhance@
+
+Options
+-------
+Your options live in config/config.toml in
+~/Library/Application Support/Burnout3Takedown. The app's
+Contents/Resources/config.default.toml lists every option at its stock
+value. Copy a line from it into your config.toml and change it there, for
+example "scale = 2" under "[render]" to draw at twice the resolution. An
+update replaces config.default.toml but never touches your file.
+@endif@
+
+Controls
+--------
+Use a controller (Xbox, PlayStation or another SDL-supported pad); it is
+player 1, and a second one is player 2 (the split-screen modes). The
+keyboard works too, as player 1, while the game window has the focus
+(RECOMP_KEYBOARD=0 in config/launch.env turns it off):
+
+  arrows          d-pad            Enter       START
+  Z X C V         A B X Y          Backspace   BACK
+  Q E             white, black     1 3         left, right trigger
+  W/S/A/D         left stick       I/K/J/L     right stick
+  numpad 8/2/4/6  left stick too   Shift Ctrl  left, right stick click
+
+Speed
+-----
+The game steps a fixed amount per frame. On a machine that cannot keep up,
+races play in slow motion but correctly.
+
+Known gaps on the Mac
+---------------------
+The title screen and menu music is silent (the intro movies and the races
+have sound).
