@@ -22,11 +22,22 @@ else()
     set(_bo3_subsystem WIN32)
 endif()
 
+if(ANDROID)
+    # Android: SDL's Java activity loads libmain.so and calls SDL_main.
+    add_library(burnout3 SHARED
+        main.c
+        recomp/recomp_manual.c
+        ${RECOMP_GEN_SOURCES}
+    )
+    set_target_properties(burnout3 PROPERTIES OUTPUT_NAME main)
+    target_link_libraries(burnout3 PRIVATE android log)
+else()
 add_executable(burnout3 ${_bo3_subsystem}
     main.c
     recomp/recomp_manual.c
     ${RECOMP_GEN_SOURCES}
 )
+endif()
 # main(argc, argv) stays the entry point under both subsystems: MSVC would
 # look for WinMain under WIN32, so name the CRT's main startup. MinGW's CRT
 # starts a main program under -mwindows by itself.

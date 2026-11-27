@@ -47,9 +47,14 @@
 #else
 #define BO3_NO_SYSTEM 0
 #endif
-#if BO3_NO_SYSTEM
-/* iOS: SDL's main starts UIKit and calls this file's main (renamed SDL_main)
- * on the main thread, which is where xbox_HostWindowMain pumps events. */
+/* iOS and Android: SDL's entry point starts the app (UIKit, or the Java
+ * activity) and calls this file's main, renamed SDL_main. */
+#if BO3_NO_SYSTEM || defined(__ANDROID__)
+#define BO3_MOBILE 1
+#else
+#define BO3_MOBILE 0
+#endif
+#if BO3_MOBILE
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <sys/stat.h>
@@ -1094,17 +1099,48 @@ static int host_main(void)
 }
 
 
-#if BO3_NO_SYSTEM
-/* An iOS app has no launcher script to set the environment the packaged
+#if BO3_MOBILE
+/* An iOS or Android app has no launcher script to set the environment the packaged
  * builds set (packaging/macos/Burnout3Takedown.in): the game files ship in
  * the bundle, and saves, options and logs go to the app's Documents folder,
  * which the Files app shows. Anything already set wins. */
-static void ios_defaults(void)
+static void mobile_defaults(void)
 {
     static char game[BO3_PATH_MAX], hdd[BO3_PATH_MAX], cfg[BO3_PATH_MAX],
                 logs[BO3_PATH_MAX], log[BO3_PATH_MAX];
+#if defined(__ANDROID__)
+    /* Android: the game files and the user data both live in the app's
+     * external files folder (Android/data/<package>/files), where adb push
+     * can put a dump; the GPU through Vulkan. */
+    static char ext[BO3_PATH_MAX], in[BO3_PATH_MAX];
+    const char *e = SDL_GetAndroidExternalStoragePath();
+    const char *n = SDL_GetAndroidInternalStoragePath();
+    const char *base = NULL, *docs = NULL;
+    struct stat st;
+    if (e) {
+        snprintf(ext, sizeof ext, "%s/", e);
+        base = docs = ext;
+    }
+    /* Files adb pushes into the external folder belong to the shell user,
+     * and the app may not read them: the dump can go to internal storage
+     * instead (run-as, packaging/android/push_game.sh), which wins. */
+    if (n) {
+        snprintf(in, sizeof in, "%s/game_files/default.xbe", n);
+        if (stat(in, &st) == 0) {
+            snprintf(in, sizeof in, "%s/", n);
+            base = in;
+        }
+    }
+    setenv("RECOMP_PB_BACKEND", "vulkan", 0);
+    setenv("RECOMP_RENDER_SCALE", "3", 0);
+    setenv("RECOMP_FLIP_PACING", "1", 0);
+    /* Landscape only: SDL otherwise lets a resizable window take any
+     * orientation, over the manifest's. */
+    SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
+#else
     const char *base = SDL_GetBasePath();
     const char *docs = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
+#endif
 
     if (base && !getenv("RECOMP_GAME_FILES")) {
         snprintf(game, sizeof game, "%sgame_files", base);
@@ -1116,15 +1152,51 @@ static void ios_defaults(void)
     snprintf(logs, sizeof logs, "%slogs", docs);
     mkdir(cfg, 0755);
     mkdir(logs, 0755);
+    /* config/launch.env: KEY=value lines, as the macOS launcher reads them
+     * (packaging/macos/Burnout3Takedown.in); anything already set wins. On
+     * Android, internal storage's launch.env first (run-as can write it). */
+    {
+        char envp[BO3_PATH_MAX], line[1024];
+        FILE *f;
+        int pass;
+        for (pass = 0; pass < 2; pass++) {
+#if defined(__ANDROID__)
+        if (pass == 0) {
+            const char *in2 = SDL_GetAndroidInternalStoragePath();
+            if (!in2)
+                continue;
+            snprintf(envp, sizeof envp, "%s/launch.env", in2);
+        } else
+#else
+        if (pass == 0)
+            continue;
+#endif
+        snprintf(envp, sizeof envp, "%sconfig/launch.env", docs);
+        if ((f = fopen(envp, "r")) != NULL) {
+            while (fgets(line, sizeof line, f)) {
+                char *eq, *end = line + strlen(line);
+                while (end > line && (end[-1] == '\n' || end[-1] == '\r'))
+                    *--end = 0;
+                if (line[0] == '#' || !(eq = strchr(line, '=')))
+                    continue;
+                *eq = 0;
+                setenv(line, eq + 1, 0);
+            }
+            fclose(f);
+        }
+        }
+    }
     snprintf(hdd, sizeof hdd, "%shdd", docs);
     setenv("RECOMP_HDD_DIR", hdd, 0);
     snprintf(cfg, sizeof cfg, "%sconfig/config.toml", docs);
     setenv("RECOMP_CONFIG", cfg, 0);
     snprintf(log, sizeof log, "%s/game.log", logs);
     setenv("RECOMP_STDIO_LOG", log, 0);
+#if !defined(__ANDROID__)
     setenv("RECOMP_PB_BACKEND", "metal", 0);
     setenv("RECOMP_RENDER_SCALE", "2", 0);
     setenv("RECOMP_FLIP_PACING", "1", 0);
+#endif
     setenv("RECOMP_FB_WINDOW", "1", 0);
     /* xbox_kernel.log opens in the working directory. */
     if (chdir(logs) != 0)
@@ -1134,8 +1206,8 @@ static void ios_defaults(void)
 
 int main(int argc, char **argv)
 {
-#if BO3_NO_SYSTEM
-    ios_defaults();
+#if BO3_MOBILE
+    mobile_defaults();
 #endif
     const char *record = NULL;
     unsigned seconds = 0;
@@ -1276,9 +1348,13 @@ int main(int argc, char **argv)
          * plain tick, which ran the game at about 42 vblanks a second on an
          * M4 Pro; "paced" (understood by upstream v0.18 too) holds 60. */
         const char *b = getenv("RECOMP_PB_BACKEND");
-        env_set("RECOMP_VBLANK", !b || !strcmp(b, "metal") ? "paced" : "1");
+        env_set("RECOMP_VBLANK", !b || !strcmp(b, "metal") || !strcmp(b, "vulkan")
+                                 ? "paced" : "1");
 #else
-        env_set("RECOMP_VBLANK", "1");
+        /* Vulkan on Android as Metal: the plain tick ran a Pixel 7 Pro
+         * at 30-35 vblanks a second; paced holds 60. */
+        const char *b = getenv("RECOMP_PB_BACKEND");
+        env_set("RECOMP_VBLANK", b && !strcmp(b, "vulkan") ? "paced" : "1");
 #endif
     }
 #endif
