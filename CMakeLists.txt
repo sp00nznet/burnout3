@@ -41,7 +41,7 @@ set(XBOXRECOMP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../xboxrecomp" CACHE PATH "Path 
 # Finding it here first puts it in scope for both.
 # iOS: the toolkit's crypto is its own (kernel_crypto.c); nothing calls
 # OpenSSL, and the iOS SDK has none to link.
-if(NOT WIN32 AND NOT IOS)
+if(NOT WIN32 AND NOT IOS AND NOT ANDROID)
     find_package(OpenSSL REQUIRED)
 endif()
 
