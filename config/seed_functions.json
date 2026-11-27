@@ -46,5 +46,29 @@
  {
   "start": "0x003641DB",
   "note": "XPP XID input-report completion callback, set as a transfer completion routine; reached only indirectly. Follows a ret 8, not inside any function."
+ },
+ {
+  "start": "0x00014C80",
+  "note": "Called through a pointer once the language movie (englis30.xmv) starts; packed straight after a switch table, which xboxrecomp v0.14.0's disassembler does not walk past. Unresolved, the boot loops on [ICALL] Failed to resolve and stays on a black screen. sp00nznet/xboxrecomp#186 finds it statically."
+ },
+ {
+  "start": "0x000229E0",
+  "note": "Indirect-call target that runs on xboxrecomp v0.14.0 log as unresolved (once, during the boot); sp00nznet/xboxrecomp#186 finds it statically."
+ },
+ {
+  "start": "0x00022B30",
+  "note": "Indirect-call target that runs on xboxrecomp v0.14.0 log as unresolved (once, during the boot); sp00nznet/xboxrecomp#186 finds it statically."
+ },
+ {
+  "start": "0x00022D30",
+  "note": "Indirect-call target that runs on xboxrecomp v0.14.0 log as unresolved (once, during the boot); sp00nznet/xboxrecomp#186 finds it statically."
+ },
+ {
+  "start": "0x00067D10",
+  "note": "Indirect-call target that runs on xboxrecomp v0.14.0 log as unresolved (once, during the boot); sp00nznet/xboxrecomp#186 finds it statically."
+ },
+ {
+  "start": "0x000782C0",
+  "note": "Indirect-call target reached at the main menu once the profile has loaded (UDATA); unresolved on xboxrecomp v0.14.0, it fails on every call and the menus no longer advance. sp00nznet/xboxrecomp#186 finds it statically."
  }
 ]
