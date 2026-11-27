@@ -1,0 +1,16 @@
+PRIVATE: This bundle contains your own copy of Burnout 3: Takedown and code
+generated from it. It is for your own machines only. The game is not yours
+to redistribute: never share, upload or publish this bundle.
+
+This is a static recompilation of the original Xbox game, built on your
+machine from your own disc dump with the burnout3 recompilation project and
+xboxrecomp-cli. It is not affiliated with the game's owners. Built from:
+@SOURCES@.
+@if !enhance@
+
+This build is on upstream xboxrecomp, which draws in software (its CPU
+rasteriser): the menus run at about 6 frames per second and a race at 1 to
+2, in slow motion. The GPU (Direct3D 11, Metal), the graphics options and
+Steam's FSR scaling need a build on the xboxrecomp fork pin (the project's
+docs/running.md, "Testing with the fork pin").
+@endif@

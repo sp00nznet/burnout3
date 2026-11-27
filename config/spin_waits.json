@@ -1,0 +1,8 @@
+{
+  "about": "Guest busy-wait loops that the toolkit's recomp (--spin-waits) lowers to RECOMP_SPIN_WAIT: at present.pacing = \"spin\" (stock) the loop still busy-waits but hands the guest CPU to a waiting guest thread, at \"sleep\" it blocks until the kernel signals. Listed sites only: a listed site that fails the matcher stops the recomp stage.",
+  "auto": false,
+  "sites": [
+    {"va": "0x00351BF0", "note": "D3D KickOff (sub_00351BD0): while ([regs+0x100410] & 0x10000), the PFB flush bit the toolkit's ack loop clears once the walker has caught up; behind the toolkit fork's flip hold it waits up to a vblank per frame, so it must yield the guest CPU to the audio and loader threads"}
+  ],
+  "exclude": []
+}

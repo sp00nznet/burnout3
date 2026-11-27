@@ -1,4 +1,11 @@
-# cmd.exe and Windows PowerShell want CRLF.
-*.cmd text eol=crlf
-*.ps1 text eol=crlf
-*.sh  text eol=lf
+# Line endings that must survive a Windows checkout (core.autocrlf=true):
+# the shell wrapper and the files a bundle carries to Linux and macOS run
+# there, and a CR breaks them. cmd.exe wants CRLF.
+*.sh      text eol=lf
+*.py      text eol=lf
+*.in      text eol=lf
+*.toml    text eol=lf
+burnout3  text eol=lf
+*.cmd     text eol=crlf
+# Upstream's tools/setup.ps1: Windows PowerShell wants CRLF too.
+*.ps1     text eol=crlf
