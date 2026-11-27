@@ -8,8 +8,9 @@
 - **Speed.** Races run at 2–4 fps on the software NV2A. Profile the rasteriser
   and the vertex-program interpreter first; a GPU (D3D11) backend for the
   executor comes after.
-- **Menu backdrop streaks.** A vertical-stripe pattern over the frontend's
-  backdrop movie.
+- **Menu backdrop streaks.** Fixed in the toolkit: xboxrecomp PR #355 clamps
+  interpolated depth, so movie quads at the far plane pass LEQUAL. Drop this
+  item once the toolkit pin includes it.
 - **Sky dome seams.** Visible texture seams between the sky's segments.
 - **Bump and dot-product texture stages.** They read as zero today, which dulls
   the car paint and road reflections.
