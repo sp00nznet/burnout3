@@ -39,6 +39,22 @@
  * mcontext's gregs, only with _GNU_SOURCE; it must precede every header. */
 #define _GNU_SOURCE
 #endif
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#endif
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+#define BO3_NO_SYSTEM 1   /* system() is unavailable on iOS */
+#else
+#define BO3_NO_SYSTEM 0
+#endif
+#if BO3_NO_SYSTEM
+/* iOS: SDL's main starts UIKit and calls this file's main (renamed SDL_main)
+ * on the main thread, which is where xbox_HostWindowMain pumps events. */
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 #if defined(_WIN32)
 #include <windows.h>
 #include <dbghelp.h>
@@ -766,6 +782,11 @@ static void record_finish(void)
 
     if (!s_rec_out[0] || REC_DONE_TEST_AND_SET())
         return;
+#if BO3_NO_SYSTEM
+    /* iOS runs no other programs: the frames stay for encoding elsewhere. */
+    (void)cmd;
+    fprintf(stderr, "[REC] no ffmpeg on this host; the frames are in %s\n", s_rec_dir);
+#else
     snprintf(cmd, sizeof cmd,
              "ffmpeg -hide_banner -loglevel error -y -framerate 30 "
              "-i \"%s" BO3_SEP "f%%05d.bmp\" -pix_fmt yuv420p \"%s\"",
@@ -782,6 +803,7 @@ static void record_finish(void)
     snprintf(cmd, sizeof cmd, "rm -rf \"%s\"", s_rec_dir);
 #endif
     system(cmd);
+#endif /* BO3_NO_SYSTEM */
 }
 
 /* The run's end: the recording (if any) is encoded, then the process exits.
@@ -1072,8 +1094,49 @@ static int host_main(void)
 }
 
 
+#if BO3_NO_SYSTEM
+/* An iOS app has no launcher script to set the environment the packaged
+ * builds set (packaging/macos/Burnout3Takedown.in): the game files ship in
+ * the bundle, and saves, options and logs go to the app's Documents folder,
+ * which the Files app shows. Anything already set wins. */
+static void ios_defaults(void)
+{
+    static char game[BO3_PATH_MAX], hdd[BO3_PATH_MAX], cfg[BO3_PATH_MAX],
+                logs[BO3_PATH_MAX], log[BO3_PATH_MAX];
+    const char *base = SDL_GetBasePath();
+    const char *docs = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
+
+    if (base && !getenv("RECOMP_GAME_FILES")) {
+        snprintf(game, sizeof game, "%sgame_files", base);
+        setenv("RECOMP_GAME_FILES", game, 0);
+    }
+    if (!docs)
+        return;
+    snprintf(cfg, sizeof cfg, "%sconfig", docs);
+    snprintf(logs, sizeof logs, "%slogs", docs);
+    mkdir(cfg, 0755);
+    mkdir(logs, 0755);
+    snprintf(hdd, sizeof hdd, "%shdd", docs);
+    setenv("RECOMP_HDD_DIR", hdd, 0);
+    snprintf(cfg, sizeof cfg, "%sconfig/config.toml", docs);
+    setenv("RECOMP_CONFIG", cfg, 0);
+    snprintf(log, sizeof log, "%s/game.log", logs);
+    setenv("RECOMP_STDIO_LOG", log, 0);
+    setenv("RECOMP_PB_BACKEND", "metal", 0);
+    setenv("RECOMP_RENDER_SCALE", "2", 0);
+    setenv("RECOMP_FLIP_PACING", "1", 0);
+    setenv("RECOMP_FB_WINDOW", "1", 0);
+    /* xbox_kernel.log opens in the working directory. */
+    if (chdir(logs) != 0)
+        fprintf(stderr, "ios: cannot enter %s\n", logs);
+}
+#endif
+
 int main(int argc, char **argv)
 {
+#if BO3_NO_SYSTEM
+    ios_defaults();
+#endif
     const char *record = NULL;
     unsigned seconds = 0;
     const char *xbe_arg = NULL;

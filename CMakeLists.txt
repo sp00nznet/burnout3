@@ -39,7 +39,9 @@ set(XBOXRECOMP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../xboxrecomp" CACHE PATH "Path 
 # its own subdirectory, where the imported target stays invisible to this
 # executable; a clean configure then fails with "target was not found".
 # Finding it here first puts it in scope for both.
-if(NOT WIN32)
+# iOS: the toolkit's crypto is its own (kernel_crypto.c); nothing calls
+# OpenSSL, and the iOS SDK has none to link.
+if(NOT WIN32 AND NOT IOS)
     find_package(OpenSSL REQUIRED)
 endif()
 
