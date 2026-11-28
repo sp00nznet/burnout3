@@ -1,10 +1,12 @@
 # Burnout 3: Takedown options: every key at its default, except
 # present.pacing, whose default is set per build and so is not written here
 # (see the present table below). Each default is the stock behaviour except
-# two: present.pacing sleeps on every non-Windows build (macOS: it frees a
-# CPU core; the Windows build keeps the console's spin), and the cache
-# partition lives in memory (storage.ram_cache: the game sees the same
-# files, the host disk is spared). The game reads this file on each
+# three: present.pacing sleeps on every non-Windows build (macOS: it frees a
+# CPU core; the Windows build keeps the console's spin), the in-game menu is
+# on (closed, it changes no frame; the game loses only the presses of the
+# chords that open it), and the cache partition lives in memory
+# (storage.ram_cache: the game sees the same files, the host disk is
+# spared). The game reads this file on each
 # launch, beside its executable; it is never copied, and an update replaces
 # it, so new keys and defaults reach you. Do not edit it: put the keys you
 # change in config/config.toml (copy a line from here), which the game
@@ -49,6 +51,37 @@ surface = "auto"          # "auto": the frame-sized surface goes to gamescope fo
 # profile = "none"        # a shader profile, config/shader-profiles/<name>.toml,
                           # saved from the menu's Shaders page; "none" is stock.
                           # When set in the same file it wins over shader
+
+[menu]
+enabled = true            # the in-game menu over the game: F10, Guide+A or
+                          # Back+L3 held 0.4 s opens and closes it, and on
+                          # macOS an Elite's P1 too (XInput has no paddles).
+                          # Steam Deck: SteamOS keeps Guide+A for itself, so
+                          # use Back+L3, or bind R4 to F10 once in Steam
+                          # Input (the game's controller settings > Back Grip
+                          # Buttons > R4 > Keyboard > F10). The game keeps
+                          # running behind it and gets no input. Save writes
+                          # only what you changed to config/config.toml.
+                          # false (the toolkit's default): no menu; with the
+                          # strip off too, no binding under [input.actions]
+                          # is read
+
+[input.actions]
+# Host actions: what the host does, not the game. To change one, put it
+# under [input.actions] in config/config.toml: it replaces this line whole.
+# Reference: the toolkit's docs/runtime/config.md, "Host actions".
+menu.open = ["F10", "guide+a", "paddle1", "back+left_thumb@400"]
+                          # the toolkit's defaults, written out for a build on
+                          # a toolkit from before Back+L3 was one of them.
+                          # Back+L3 is for hosts that never pass Guide on
+                          # (SteamOS, the Xbox Game Bar on Windows, Steam
+                          # under Proton). A lone Back or L3 press reaches
+                          # the game, and so does the first of the two until
+                          # the second is down; while both are down the game
+                          # sees neither, and held 0.4 s they open the menu
+overlay.stats = "F3"      # toggles the stats strip; no key of the game's.
+                          # A toolkit default, written out for a build on a
+                          # toolkit from before F3 was one
 
 [storage]
 ram_cache = true          # the cache partition (Z:) in memory, capped at the

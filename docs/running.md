@@ -101,6 +101,13 @@ the table (every game's packaged launcher sets them; the defaults are
 | `RECOMP_HDD_DIR` | `saves` | A toolkit key: the emulated hard disk (partition images, the profile). Made with its parents. |
 | `RECOMP_STDIO_LOG` | unset | A toolkit key: stdout and stderr go to this file (truncated at start). Proton drops a game's own output, so the bench's `game-stdio.log` and the launchers' `logs\` come from it. |
 
+The game also gives toolkit keys a default of its own
+(`src/env/recomp_env_game.h`), used when the key is not set:
+
+| Variable | Default | Why |
+|---|---|---|
+| `RECOMP_DEBUG=run_ahead` | `0` (the toolkit's default is `64`) | The KickOff lockstep. With the toolkit's run-ahead the race route stops flipping after the front-end movie opens. `RECOMP_DEBUG=run_ahead=64` is the A/B. |
+
 The packaged launchers set those three below the user-data folder:
 `%LOCALAPPDATA%\Burnout3Takedown` on Windows (`BURNOUT3TAKEDOWN_DATA_DIR`
 names another, for a test that must not touch the player's saves), and

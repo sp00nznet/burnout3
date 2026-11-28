@@ -73,6 +73,7 @@ Link are not attempted.
 |---|---|---|
 | Windows 10 or 11 | Direct3D 11 | Builds and installs; checked to start and reach Press START on Windows 11. Played and tested under Proton. |
 | Steam Deck, Linux (Proton) | Direct3D 11 (DXVK) | Plays: a scripted race runs at about 57 frames a second on the Deck. |
+| Steam Deck, Linux (native, testing) | Direct3D 11 (DXVK-native, Vulkan) | Builds with `burnout3 package linux`; boots to the title and the attract movie. Shader presets work as on Windows, except that in Steam's Game Mode they draw at the game's 640x480 and gamescope scales the result, so CRT presets show moiré there; `RECOMP_PRESENT_SURFACE=window` in `config/launch.env` draws them at the window's size instead. The keyboard is off by default, as on Windows; `RECOMP_KEYBOARD=1` in `config/launch.env` turns it on. Not in the wizard yet. |
 | Mac (Apple silicon) | Metal | Plays: the same race runs at about 55 frames a second. The title and menu music is silent. |
 
 Top known issues (all of them: [docs/playing.md](docs/playing.md#known-issues)):

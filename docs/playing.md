@@ -10,7 +10,7 @@ developers' side is in [developers.md](developers.md).
 | Item | Why |
 |---|---|
 | Your own, legally obtained copy of Burnout 3: Takedown: a disc image (`.iso`) or the extracted folder with `default.xbe` | The game's code and assets come from it. This project does not provide or link to them, and refuses other titles. |
-| A build machine: a Mac (Apple silicon), a Linux PC or a Windows PC, with about 15 GB free | The bundle is built from your dump on your machine. A Mac can build every target; Linux and Windows build the Windows and SteamOS bundles. |
+| A build machine: a Mac (Apple silicon), a Linux PC or a Windows PC, with about 15 GB free | The bundle is built from your dump on your machine. A Mac can build every target; Linux builds the Windows, SteamOS and native Linux bundles, Windows the Windows and SteamOS ones. The native Linux bundle needs Docker for its first build (the Steam Runtime sysroot). |
 | The build wizard, or [uv](https://docs.astral.sh/uv/getting-started/installation/), git and Python 3.9 or newer | The wizard fetches what it needs itself. By hand, `./burnout3` fetches everything else (CMake, Ninja, the compiler, the toolkit), each download checked against a pinned sha256. |
 | A controller (two for split-screen), or the keyboard on a Mac | Pad 1 and pad 2 are players 1 and 2. |
 
@@ -19,6 +19,7 @@ developers' side is in [developers.md](developers.md).
 | You play on | Bundle | Graphics | Audio | Status |
 |---|---|---|---|---|
 | Steam Deck, Linux (Proton) | `steamos` (the Windows build, run under Proton through `umu-run`) | Direct3D 11 (DXVK) | XAudio2 (FAudio) | Plays: a scripted race runs at about 57 frames a second on the Deck, the regular test machine. |
+| Steam Deck, or an x86-64 Linux with glibc 2.31+ and Vulkan (testing) | `linux` (the native build, no Proton) | Direct3D 11 over Vulkan (DXVK-native) | SDL3 | Testing; boots to the title and the attract movie; not in the wizard yet. Shader presets work as on Windows, except that in Steam's Game Mode they draw at the game's 640x480 and gamescope scales the result, so CRT presets show moiré there; `RECOMP_PRESENT_SURFACE=window` in `config/launch.env` draws them at the window's size instead. The keyboard is off by default, as on Windows; `RECOMP_KEYBOARD=1` in `config/launch.env` turns it on. |
 | Mac (Apple silicon) | `macos` (`.dmg`) | Metal | SDL3 (CoreAudio) | Plays: the same race runs at about 55 frames a second. The title and menu music is silent. |
 | Windows 10 or 11 | `windows` (a setup program) | Direct3D 11 | XAudio2 | Builds and installs; checked to start and reach Press START on Windows 11. Played and tested under Proton. |
 
@@ -57,7 +58,7 @@ The first run takes a while; later runs only rebuild what changed. The
 bundle lands in `dist/`.
 
 ```sh
-./burnout3 package windows|steamos|macos   # the same, for another target
+./burnout3 package windows|steamos|macos|linux   # the same, for another target
 ./burnout3 doctor      # what this machine has, what it can package, and what to install first
 ```
 
@@ -68,6 +69,7 @@ Copy the bundle to the machine you play on and install it there:
 | **Steam Deck / Linux** (`dist/Burnout3Takedown-<v>-steamos.tar`) | In Desktop Mode: `tar -xf Burnout3Takedown-<v>-steamos.tar`, `cd Burnout3Takedown-<v>-steamos`, `./install.sh --steam` (Steam open: it adds "Burnout3Takedown" as a non-Steam game). A stock Deck has no `umu-run`; the installer offers to download it, or run `./install.sh --fetch-umu`. The first launch downloads the Steam Linux Runtime and GE-Proton, which takes a few minutes. Later versions: `./install.sh`; `./install.sh rollback` goes back one. | `~/Games/Burnout3Takedown/{hdd,config,logs}` |
 | **macOS** (`dist/Burnout3Takedown-<v>.dmg`) | Open the `.dmg` and drag `Burnout3Takedown.app` to Applications (replace the old one to update). The app is signed ad hoc, not notarized: on another Mac, right-click > Open once, or `xattr -dr com.apple.quarantine /Applications/Burnout3Takedown.app`. | `~/Library/Application Support/Burnout3Takedown/{hdd,config,logs}` |
 | **Windows** (`dist/Burnout3Takedown-<v>-windows/`) | Keep the folder together and run `Burnout3Takedown-<v>-setup.exe`. It installs for your user only, with a Start Menu entry. SmartScreen will warn (unsigned, built on your machine): More info > Run anyway. | `%LOCALAPPDATA%\Burnout3Takedown\{hdd,config,logs}` |
+| **Native Linux, testing** (`dist/Burnout3Takedown-<v>-linux.tar`) | `tar -xf Burnout3Takedown-<v>-linux.tar`, `cd Burnout3Takedown-<v>-linux`, `./launch.sh`. It runs where you unpack it, with no Proton; `lib/` holds DXVK, vkd3d-shader (LGPL-2.1; its source is named in `LICENSES/BUNDLED-LIBRARIES.md`), SDL3, libepoxy and OpenSSL 1.1. For Game Mode, add `launch.sh` as a non-Steam game with no compatibility tool forced. Shader presets work as on Windows (`librashader.so` beside the game, its licence and source link in `shaders/`). The keyboard is off by default, as on Windows; `RECOMP_KEYBOARD=1` in `config/launch.env` turns it on. The steamos bundle stays the one to play with until this one is the default. | the unpacked folder's `{hdd,config,logs}`, or `$BURNOUT3_ROOT` |
 
 Saves (`hdd/`), settings (`config/`) and logs (`logs/`) live outside the
 program files and survive every update, rollback and uninstall.

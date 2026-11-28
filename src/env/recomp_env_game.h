@@ -70,9 +70,24 @@
 #define B3_ENV_ONE_CPU_DEFAULTS(D)
 #endif
 
+/* RUN_AHEAD 0: the KickOff lockstep. With the toolkit's default run-ahead
+ * (64) the race_gate route stops flipping at flip ~5100-5245, just
+ * after the front end opens _FEMain.xmv, twice in two runs on native Windows
+ * D3D11, while the vblanks go on; every run-ahead counter stays 0 (no
+ * checkpoint or notify), so it is the flip hold or the ack-thread pass, not
+ * the early ack. The lockstep runs the route to the end. Follow-up:
+ * The tracker item; RECOMP_DEBUG=run_ahead=64 is the A/B. Tested first, since the
+ * public pin may predate the default. */
+#ifdef RECOMP_ENV_HAVE_RUN_AHEAD_DEFAULT
+#define B3_ENV_RUN_AHEAD_DEFAULT(D) D(RUN_AHEAD, "0")
+#else
+#define B3_ENV_RUN_AHEAD_DEFAULT(D)
+#endif
+
 #define RECOMP_ENV_GAME_DEFAULTS(D) \
     D(VBLANK,        "paced") \
     B3_ENV_ONE_CPU_DEFAULTS(D) \
+    B3_ENV_RUN_AHEAD_DEFAULT(D) \
     D(USB_PADS,      "2")
 
 #endif /* RECOMP_ENV_GAME_H */

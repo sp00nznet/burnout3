@@ -14,9 +14,10 @@ NOTICE.
 
 Those exceptions include LGPL-2.1-or-later code extracted from xemu
 (https://github.com/xemu-project/xemu): the MCPX APU sources under src/apu/
-(apu_core.c, apu_dsp.c, apu_vp.c and their headers) and src/nv2a/nv2a_regs.h,
-copyright espes, Jannik Vogel and Matt Borgerson. The toolkit's
-LICENSES/LGPL-2.1.txt has the full licence text.
+(apu_core.c, apu_dsp.c, apu_vp.c, apu_dsp_emu.c, apu_dsp_run.c and their
+headers) and the NV2A files src/nv2a/nv2a_regs.h, src/nv2a/nv2a_core.c and
+src/nv2a/nv2a_state.h, copyright espes, Jannik Vogel and Matt Borgerson. The
+toolkit's LICENSES/LGPL-2.1.txt has the full licence text.
 
 The toolkit's libraries are linked statically into burnout3. This matters
 if you distribute a built binary. The LGPL then requires you to do the
@@ -31,11 +32,53 @@ following:
 Distributing this repository and the toolkit as source meets these terms. A
 binary distribution must meet them separately.
 
+Every build also compiles in stb_image_write (https://github.com/nothings/stb,
+v1.16, MIT or public domain, copyright Sean Barrett), which writes the PNG
+frame and texture dumps; its text is the toolkit's LICENSES/MIT-stb.txt.
+
 This game builds with -DXBOXRECOMP_ENHANCE=ON, so the binary also contains
-the toolkit's vendored enhancements overlay: microui (MIT), stb_truetype
-(MIT) and the Atkinson Hyperlegible font (SIL Open Font License 1.1),
-embedded as it is. Their texts are in the toolkit's LICENSES/
-(MIT-microui.txt, MIT-stb.txt, OFL-1.1-atkinson-hyperlegible.txt).
+the toolkit's vendored enhancements overlay, with each part's text in the
+toolkit's LICENSES/. The code and the Atkinson font are unmodified; the
+Lucide font is a subset and the Kenney prompts are converted to a font:
+
+  - microui 2.02 (MIT, copyright rxi): MIT-microui.txt;
+  - stb_truetype v1.26 (MIT or public domain, copyright Sean Barrett):
+    MIT-stb.txt;
+  - the librashader C header (MIT, copyright the librashader authors);
+  - the Atkinson Hyperlegible Regular font (SIL Open Font License 1.1,
+    copyright Braille Institute of America), embedded as it is:
+    OFL-1.1-atkinson-hyperlegible.txt;
+  - the Lucide 1.57.0 icon font cut to a 20-icon subset, with its
+    copyright, licence and licence-URL names set to Lucide's terms (ISC,
+    copyright Lucide Icons and Contributors; the icons taken from Feather
+    are MIT, copyright Cole Bemis): ISC-MIT-lucide.txt;
+  - 152 of the Kenney Input Prompts 1.3 SVGs, converted to one font by the
+    toolkit's tools/overlay/glyphs_to_ttf.py (CC0 1.0, by Kenney):
+    CC0-1.0-kenney-input.txt.
+
+The build's shaders/ folder holds the slang presets for the present.shader
+option: RetroArch's, from libretro/slang-shaders (public domain, MIT and
+Unlicense; each file keeps its header), SMAA (MIT, copyright Jorge Jimenez
+and the other SMAA authors, with LICENSE-SMAA.txt beside it) and a port of
+AMD FidelityFX CAS (MIT, copyright Advanced Micro Devices, with
+LICENSE-FidelityFX-CAS.txt beside it).
+
+present.shader runs on librashader
+(https://github.com/SnowflakePowered/librashader, v0.12.0, MPL-2.0, copyright
+the librashader authors). It is loaded at run time from beside the
+executable, never linked, so MPL-2.0 covers only its own files. On Windows
+and macOS the toolkit stages a prebuilt library of the unmodified source,
+pinned by sha256; the Linux build ships a patched one (see below). Each build
+carries the licence text as shaders/LICENSE-librashader.txt (the toolkit's
+LICENSES/MPL-2.0-librashader.txt) and the source link in shaders/README.md;
+the macOS, x86-64 Windows and Linux builds also carry the licences of what
+the library links as shaders/THIRDPARTY-librashader.txt.
+
+The Windows executables also link parts of the llvm-mingw toolchain's
+runtime statically: the MinGW-w64 runtime and LLVM libunwind, whose texts
+are the toolkit's LICENSES/MinGW-w64-runtime.txt and LICENSES/LLVM-LICENSE.txt.
+The toolkit's NOTICE has the details of all of the above and what a binary
+distribution must carry.
 
 
 dsp56300
@@ -55,6 +98,71 @@ Configure downloads the library, pinned by sha256 in the toolkit's
 cmake/dsp56300.cmake. An offline build points XBOXRECOMP_DSP56300_ARCHIVE
 at a local copy of that archive; a failed download stops the configure step.
 The device runs by default; RECOMP_APU_DSP=0 goes back to the stub.
+
+
+The Linux build
+---------------
+
+The native Linux build (the linux target: `burnout3 build linux`, `burnout3
+package linux`) draws through Direct3D 11 over Vulkan and ships these shared
+libraries in its lib/ folder, each unmodified and replaceable:
+
+  - DXVK (https://github.com/doitsujin/dxvk), Zlib, copyright Philip Rebohle
+    and contributors: libdxvk_d3d11 and libdxvk_dxgi, the dxvk-native
+    release for the Steam Linux Runtime 3.0 (sniper);
+  - vkd3d-shader (https://gitlab.winehq.org/wine/vkd3d), LGPL-2.1-or-later,
+    copyright the vkd3d project authors: built by the toolkit's
+    tools/linux/vkd3d.sh from the pinned release tarball, whose URL and
+    sha256 the bundle's LICENSES/BUNDLED-LIBRARIES.md names;
+  - SDL3 (Zlib), libepoxy (MIT) and OpenSSL 1.1's libcrypto (the OpenSSL
+    and SSLeay licences), from the sniper runtime's Debian packages.
+
+The bundle's LICENSES/ holds each library's copyright file and the LGPL
+text. None of these, and none of the system libraries the game loads, is
+GPL-only; `burnout3 package linux` checks every library the binary needs
+against a table of licences and stops on one it does not know.
+
+The Linux bundle's librashader.so, beside the executable, is built from
+librashader v0.12.0 with one patch, so it is a modified MPL-2.0 work. The
+patch modifies librashader's workspace Cargo.toml (an exclude and a
+[patch.crates-io] table that points windows, windows-core, windows-strings
+and windows-future at a linux-stubs/ folder), its Cargo.lock (the registry
+source and checksum of those four crates go) and the cfg(windows) gates,
+widened to Linux, in the Cargo.toml and src files of librashader,
+librashader-cache, librashader-capi, librashader-common and
+librashader-runtime-d3d11; the toolkit's NOTICE lists every file. The
+windows-rs crates are copied into linux-stubs/ with their gates opened (and
+three string conversions made portable), and windows-future is replaced by
+an empty crate, so the library compiles against dxvk-native. A D3DCompile
+shim over vkd3d-shader (the toolkit's
+third_party/librashader/d3dcompiler_vkd3d.c, MIT) is linked in place of
+d3dcompiler_47; it calls the bundle's own lib/libvkd3d-shader.so.1, which is
+linked dynamically, not bundled into the .so. The patch ships in the bundle
+as shaders/librashader-linux-d3d11.patch: with the upstream source above, it
+is the source of librashader's modified files that MPL-2.0 asks a binary to
+point to. The toolkit's third_party/librashader/ builds the library and says
+how to redo the patch.
+
+
+The macOS package
+-----------------
+
+The macOS package (`burnout3 package macos`, an .app in a DMG) bundles, in
+Contents/Frameworks, the Homebrew libraries the executable links, changed
+only in their install names (@rpath) and ad hoc signatures:
+
+  - SDL3 (https://github.com/libsdl-org/SDL, Zlib), with the yuv2rgb code
+    vendored into it (BSD-3-Clause, copyright Adrien Descamps);
+  - libepoxy (https://github.com/anholt/libepoxy, MIT);
+  - OpenSSL's libcrypto (https://github.com/openssl/openssl, Apache-2.0).
+
+Packaging copies each library's licence, as Homebrew installed it, into
+Contents/Resources/LICENSES/ as <formula>-<file> (sdl3-LICENSE.txt,
+libepoxy-COPYING and openssl@<version>-LICENSE.txt), adds
+sdl3-yuv2rgb-BSD-3-Clause.txt, and writes BUNDLED-LIBRARIES.md there with
+each library's version and files. It stops if a bundled library has no
+licence. The same folder holds the toolkit's LICENSES/, NOTICE (as
+xboxrecomp-NOTICE) and LICENSE (as xboxrecomp-LICENSE).
 
 
 Game data

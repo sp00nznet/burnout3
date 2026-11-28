@@ -48,8 +48,8 @@ title = "Burnout 3"
 # launcher; the commit below is the floor, since it reads [public] and
 # [layout].
 [cli]
-tag = "v0.22.0"
-commit = "a994f6aec0972346f65063bd2586398aad1e4b21"
+tag = "v0.23.0"
+commit = "e40187fceae835266125d77e64bf28070be77b4a"
 url = "https://github.com/apexJCL/xboxrecomp-cli.git"
 
 [toolkit]
@@ -57,9 +57,9 @@ url = "https://github.com/apexJCL/xboxrecomp-cli.git"
 # one-window guard and folder rows, render.aniso, Partition1\CACHE out
 # of the game folder).
 url = "https://github.com/apexJCL/xboxrecomp.git"
-tag = "blinx2-v0.15.0"
+tag = "blinx2-v0.16.0"
 branch = "blinx2/portability"
-commit = "92f8954cac77fb95f11955ebd0b28b1267a31fdb"
+commit = "aa4fdc289af3d808feffa07ec66435da28ab855d"
 
 [toolchain]
 llvm_mingw = "20260922"
@@ -94,9 +94,12 @@ extra_sections = []
 [build]
 exe = "burnout3"
 # macos: the developer build on a Mac (Metal); there is no macOS bundle.
-targets = ["windows", "macos"]
+# linux: the native Linux build (DXVK-native), cross-built against the
+# Steam Runtime 3.0 (sniper) sysroot.
+targets = ["windows", "macos", "linux"]
 windows_dir = "build-win"
 macos_dir = "build"
+linux_dir = "build-linux"
 # Passed on every packaging configure so a cache cannot keep a non-stock
 # value: the enhancements layer on, every key stock unless a player's
 # config.toml or the environment says otherwise.
@@ -126,7 +129,7 @@ json = ""
 # Windows file names ignore case.
 app = "Burnout3Takedown"
 product = "burnout3-recomp"
-targets = ["windows", "steamos", "macos"]
+targets = ["windows", "steamos", "macos", "linux"]
 # macos: Burnout3Takedown.app in a DMG, with the Homebrew dylibs the Mac build
 # links (otool -L build/burnout3) bundled; the launcher and Info.plist are
 # the game's own, in packaging/macos/.
@@ -140,9 +143,15 @@ icon = "xbe"
 # reader: the dump alone gives hashes and texels, and every entry stays unnamed.
 # The dump this port is made from holds no loose .dds, .xpr or .xbx file; the
 # patterns name another release's, should it have any.
+#
+# `paired` reads the files whose P8 textures carry their palettes: the cars
+# (.bgv, .btv), Global.txd and each track's enviro.dat. Each palette gives an
+# exact entry, each index plane a recolour entry, which serves the palettes
+# the game builds at run time too (the player car's paint).
 [enhance.textures]
-sources = ["dump", "loose"]
+sources = ["dump", "loose", "paired"]
 loose = ["graphics/*", "data/*"]
+paired = ["pveh/*.bgv", "pveh/*.btv", "data/*.txd", "tracks/*/enviro.dat"]
 
 [bench]
 # The host tree is ~/xbox-recomp/<this checkout's name>; settings such as

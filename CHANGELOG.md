@@ -10,17 +10,69 @@ the tagged commit has none.
 
 ## [Unreleased]
 
+## [2026.11.3] - 2026-11-27
+
+**Native Linux and the Steam Deck without Proton, a vsync switch and a
+volume knob in the menu, and faster frames on the Deck.**
+Burnout 3 also gets the in-game menu, on by default.
+
+- **An in-game menu, on by default.** F10, Guide+A or Back+L3 held for
+  0.4 s opens it (on a Steam Deck, Back+L3: SteamOS keeps Guide+A).
+  `[menu] enabled = false` in `config/config.toml` turns it off.
+- **Texture packs read P8 textures with their paired palettes**
+  (vehicles, TXDs, track environments).
+- **Native Linux.** The game now has a native Linux build of its
+  Direct3D 11 renderer (dxvk-native), so SteamOS no longer needs Proton.
+  `install.sh` copies an existing Proton install's saves and settings
+  over. A game started on a Steam Deck outside Steam warns that Game Mode
+  controls need Steam.
+- **Vsync on the menu** (`present.vsync`). Stock stays the default.
+- **Master volume** (`audio.volume`) on a new Audio page in the menu.
+- **The same menu everywhere:** holding Back+L3 opens the menu and F3
+  shows the stats strip, as in every game. The menu is drawn at the
+  display's native resolution, so it stays sharp at any render scale.
+- **Texture packs:** pick a pack by name on the Pack page. Pack v5
+  recolours palettised textures from the live palette, and pack v6 gives
+  shrunk text and 2D art mip chains, so text at 2x and 3x is no longer
+  doubled or stair-stepped.
+- **Faster frames:** the occlusion wait happens on the GPU instead of a
+  spin, draws merge across more state changes, and stdio is buffered on
+  Windows. The run-ahead walker the toolkit now turns on stays off for
+  this game.
+- **Fixes:**
+  - Textures that use signed channels now filter correctly on D3D11 and
+    Metal.
+  - A pad button held while the game boots no longer fires on the first
+    frame.
+  - The recompiler no longer reads unset CPU flags where code paths join.
+- **Crash reports:** a `[FATAL]` line on every host when startup config
+  fails.
+
 ### For developers
 
-- **Pins:** xboxrecomp-cli v0.22.0 and toolkit blinx2-v0.15.0, up from
-  v0.21.0 and blinx2-v0.14.0.
-- **Present shaders come from the toolkit:** blinx2-v0.15.0 stages
-  librashader and the `shaders/` presets beside every exe that links the
+- **Pins:** xboxrecomp-cli v0.23.0 and toolkit blinx2-v0.16.0, up from
+  v0.21.0 and blinx2-v0.14.0 (2026.11.2).
+- **Present shaders come from the toolkit:** librashader and the
+  `shaders/` presets are staged beside every exe that links the
   enhancements layer, so the game's own `xboxrecomp_present_shaders` call
   is gone.
 - **A key that waited for the pin:** `[enhance.textures]` builds the
   texture pack from the dump for `burnout3 enhance textures`; v0.21.0
   refused the table.
+- **Toolkit blinx2-v0.16.0:** the dxvk-native D3D11 backend for Linux
+  and librashader's D3D11 runtime there; the occlusion settle on the GPU;
+  the checkpoint and semaphore defers, on by default; walker decode trims;
+  `d3d11_prof` GPU timestamps and `host_prof`; PNG frame dumps on writer
+  threads; `recomp --trace-stores`; `RECOMP_TRACE=suspend`; flags assigned
+  at joins the recompiler cannot follow; the NOTICE's LGPL list and the
+  patched librashader.so.
+- **CLI v0.23.0:** `package` for native Linux, with the migration from a
+  Proton install; `.recomp.json` for recomp.fyi; `doctor` warns on menu
+  drift; `disc run` and `disc list`; `bench golden` ships hdd seeds and
+  pad files to native Windows hosts; the build wizard's redesign (welcome,
+  update path, help report); `enhance` packs v4 to v6 (recolour, mips,
+  detile, dering, tone flattening); `report` replays menu bug reports; a
+  disk-floor guard.
 
 ## [2026.11.2] - 2026-11-04
 

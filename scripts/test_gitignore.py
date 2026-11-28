@@ -34,6 +34,7 @@ KEYS = {
     ("pipeline", "out"): "analysis",
     ("build", "windows_dir"): "build-win",
     ("build", "macos_dir"): "build",
+    ("build", "linux_dir"): "build-linux",
 }
 
 SAMPLES = (
@@ -48,6 +49,7 @@ SAMPLES = (
     "@out@/x",
     "@windows_dir@/x",
     "@macos_dir@/x",
+    "@linux_dir@/x",
     "build-x/x",
     "build-logs/x",
     ".venv/x",
